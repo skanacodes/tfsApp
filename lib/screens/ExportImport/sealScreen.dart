@@ -31,7 +31,7 @@ class _SealScreenState extends State<SealScreen> {
       text: TextSpan(
           text: 'Export',
           style: GoogleFonts.portLligatSans(
-            textStyle: Theme.of(context).textTheme.display1,
+            //  textStyle: Theme.of(context).textTheme.bodyText1,
             fontSize: 15.0.sp,
             fontWeight: FontWeight.w700,
             color: kPrimaryColor,
@@ -624,7 +624,6 @@ class _SealScreenState extends State<SealScreen> {
         case 'Successfully Sealed':
           setState(() {
             res = json.decode(response.body);
-
 
             message("Successfully Sealed", "success");
 

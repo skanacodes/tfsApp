@@ -2,8 +2,10 @@ import 'package:tfsappv1/screens/ExportImport/InspectionForm.dart';
 import 'package:tfsappv1/screens/ExportImport/grading.dart';
 import 'package:tfsappv1/screens/ExportImport/permitList.dart';
 import 'package:tfsappv1/screens/ExportImport/sealScreen.dart';
+import 'package:tfsappv1/screens/POSmanagement/posRegistration.dart';
 import 'package:tfsappv1/screens/dashboard/dashboardScreen.dart';
 import 'package:tfsappv1/screens/login/login.dart';
+import 'package:tfsappv1/screens/otp/otp.dart';
 import 'package:tfsappv1/screens/payments/billForm.dart';
 import 'package:tfsappv1/screens/payments/paymentList.dart';
 import 'package:tfsappv1/screens/payments/payments.dart';
@@ -27,5 +29,7 @@ final Map<String, WidgetBuilder> routes = {
   VerificationScreen.routeName: (context) => VerificationScreen(),
   Grading.routeName: (context) => Grading(),
   InspectionForm.routeName: (context) => InspectionForm(),
-  SealScreen.routeName: (context) => SealScreen('')
+  SealScreen.routeName: (context) => SealScreen(''),
+  PosReg.routeName: (context) => PosReg(),
+  Otp.routeName: (context) => Otp()
 };

@@ -206,7 +206,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                   child: Column(
                     children: [
                       Text(
-                          '-----------------------------------------------------------'),
+                          '--------------------------------------------------'),
                       Text(
                         'TFSApp',
                         style: TextStyle(color: Colors.black),
@@ -216,7 +216,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                         style: TextStyle(color: Colors.black),
                       ),
                       Text(
-                          '-----------------------------------------------------------'),
+                          '--------------------------------------------------'),
                     ],
                   ),
                 ),
@@ -594,7 +594,6 @@ class _PaymentWidgetState extends State<PaymentWidget> {
             ],
           );
         }));
-    await Printing.layoutPdf(
-        onLayout: (PdfPageFormat format) async => doc.save());
+   
   }
 }

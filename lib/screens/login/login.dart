@@ -2,10 +2,12 @@ import 'dart:convert';
 
 //import 'package:tfsappv1/screens/dashboard/dashboardScreen.dart';
 
-import 'package:tfsappv1/screens/dashboard/dashboardScreen.dart';
+import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
+
 import 'package:tfsappv1/screens/login/Widget/bezierContainer.dart';
+import 'package:tfsappv1/screens/otp/otp.dart';
 import 'package:tfsappv1/services/size_config.dart';
-import 'package:tfsappv1/services/usermodel.dart' as user2;
+
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sizer/sizer.dart';
 import 'package:tfsappv1/services/constants.dart';
@@ -30,6 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
   String? useremail;
   String? password;
   String auth = '';
+  var userId;
+  var devId;
   final List<String> errors = [];
   var roles = [];
 
@@ -37,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
       String token,
       int userId,
       int stationId,
-      int checkpointId,
+      String checkpointId,
       String fname,
       String lname,
       String email,
@@ -52,94 +56,19 @@ class _LoginScreenState extends State<LoginScreen> {
       prefs.setString('lname', lname);
       prefs.setString('email', email);
       prefs.setString('phoneNumber', phoneNumber);
-      prefs.setInt('checkpointId', checkpointId);
+      prefs.setString('checkpointId', checkpointId);
     });
   }
-  // Future<String> storetUserDetailsLocaly(
-  //     int id, String fname, String lname, String email, String password) async {
-  //   List output = [
-  //     {
-  //       'email': email,
-  //       'firstName': fname,
-  //       'lastName': lname,
-  //       'password': password
-  //     }
-  //   ];
-  //   var result = (output as List).map((user) async {
-  //     print('Inserting $user');
-
-  //     await DBProvider.db.createUser(usersS.User.fromJson(user));
-  //   }).toList();
-
-  //   return 'success';
-  // }
-
-  // Future<String> storeVehicleTypeLocal() async {
-  //   var data = await VehicleTypeDataProvider().getVehicleType();
-  //   var result = (data as List).map((vehicleType) async {
-  //     print('Inserting $vehicleType');
-
-  //     await DBProvider.db.createVehicleType(VehicleType.fromJson(vehicleType));
-  //   }).toList();
-  //   print(result);
-  //   return 'success';
-  // }
-
-  // Future<String> storeCargoChargeLocal() async {
-  //   var data = await CargoChargeDataProvider().getVehicleType();
-  //   var result = (data as List).map((cargoCharge) async {
-  //     print('Inserting $cargoCharge');
-  //     await DBProvider.db.createCargoCharge(CargoCharge.fromJson(cargoCharge));
-  //   }).toList();
-  //   print(result);
-  //   return 'success';
-  // }
-
-  // Future<String> storeDefaultPrivateList() async {
-  //   var data = await DefaultPrivateDataProvider().getDefaultPrivateList();
-  //   var result = (data as List).map((list) async {
-  //     print('Inserting $list');
-  //     await DBProvider.db
-  //         .createDefaultList(PrivateTransportModal.fromJson(list));
-  //   }).toList();
-  //   print(result);
-  //   return 'success';
-  // }
-
-  // Future<String> checkUserStatus(String email, String password) async {
-  //   int? count = await DBProvider.db.checkId(email);
-  //   if (count! > 0) {
-  //     print("The User Exists");
-  //     var x = await DBProvider.db.verifyUser(email, password);
-  //     if (x == 'success') {
-  //       return 'success';
-  //     } else {
-  //       setState(() {
-  //         addError(error: 'Incorrect Password or Username');
-  //       });
-  //       return 'fail';
-  //     }
-  //   } else {
-  //     var y = await getUserDetails();
-  //     if (y == 'success') {
-  //       return 'success';
-  //     } else {
-  //       return 'fail';
-  //     }
-  //   }
-  // }
 
   Future<String> getUserDetails() async {
     try {
       // print(username);
       // print(password);
-      setState(() {
-        isLoading = true;
-      });
+
       var url = Uri.parse('$baseUrl/api/v1/login');
       final response = await http.post(
         url,
-        body: {'email': username, 'password': password},
+        body: {'email': username, 'password': password, 'android_id': devId!},
       );
       var res;
       //final sharedP prefs=await
@@ -149,13 +78,13 @@ class _LoginScreenState extends State<LoginScreen> {
           setState(() {
             res = json.decode(response.body);
             print(res);
-            isLoading = false;
           });
+
           await createUser(
             res['access_token'],
             res['user']['user_id'],
             res['user']['station_id'],
-            res['user']['checkpoint_id'] ?? 0,
+            res['user']['checkpoint_id'].toString(),
             res['user']['first_name'],
             res['user']['last_name'],
             res['user']['email'].toString(),
@@ -169,8 +98,28 @@ class _LoginScreenState extends State<LoginScreen> {
           setState(() {
             res = json.decode(response.body);
             print(res);
-            addError(error: 'Incorrect Password or Email');
+            if (res['message'] == 'Invalid Credentials') {
+              addError(error: 'Incorrect Password or Email');
+            } else if (res['message'] ==
+                'Your Device Is Locked Please Contact User Support Team') {
+              addError(
+                  error:
+                      'Your Device Is Locked Please Contact User Support Team');
+            }
+
             isLoading = false;
+          });
+          return 'fail';
+          // ignore: dead_code
+          break;
+
+        case 1200:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            addError(
+                error:
+                    'Your Device Is Locked Please Contact User Support Team');
           });
           return 'fail';
           // ignore: dead_code
@@ -277,15 +226,25 @@ class _LoginScreenState extends State<LoginScreen> {
       onTap: () async {
         errors.clear();
         if (_formKey.currentState!.validate()) {
+          var pref = await SharedPreferences.getInstance();
           setState(() {
             isLoading = true;
+            userId = pref.getInt("user_id");
+            devId = pref.getString("deviceId");
           });
           _formKey.currentState!.save();
+
+          print(devId);
           var res = await getUserDetails();
           if (res == "success") {
-            Navigator.pushNamed(context, DashboardScreen.routeName,
-                arguments: user2.User(
-                    useremail: username!, username: username!, id: 8));
+            await RealTimeCommunication()
+                .createConnection('1', androidId: devId, id: userId);
+            Navigator.pushNamed(
+              context,
+              Otp.routeName,
+            ).then((_) => RealTimeCommunication().createConnection("1"));
+
+            _formKey.currentState!.reset();
           } else {
             print('fail');
           }
@@ -369,7 +328,7 @@ class _LoginScreenState extends State<LoginScreen> {
       text: TextSpan(
           text: 'Tanzania  ',
           style: GoogleFonts.portLligatSlab(
-            textStyle: Theme.of(context).textTheme.bodyText1,
+            // textStyle: Theme.of(context).textTheme.bodyText1,
             fontSize: 20,
             fontWeight: FontWeight.w700,
             color: Color(0XFF105F01),
@@ -481,7 +440,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       _title2(),
                       SizedBox(height: getProportionateScreenHeight(20)),
                       _emailPasswordWidget(),
-                      FormError(errors: errors),
+                      Container(child: FormError(errors: errors)),
                       SizedBox(height: getProportionateScreenHeight(15)),
                       _submitButton(),
                       SizedBox(height: getProportionateScreenHeight(15)),

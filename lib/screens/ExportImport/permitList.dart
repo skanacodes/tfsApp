@@ -3,13 +3,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:tfsappv1/screens/ExportImport/InspectionForm.dart';
 import 'package:tfsappv1/screens/ExportImport/grading.dart';
-import 'package:qrscan/qrscan.dart' as scanner;
+
 import 'package:tfsappv1/screens/ExportImport/sealScreen.dart';
+import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/services/constants.dart';
+import 'package:tfsappv1/services/modal/gradingModal.dart';
 import 'package:tfsappv1/services/modal/inspectionModal.dart';
 
 import 'package:tfsappv1/services/size_config.dart';
@@ -98,7 +101,9 @@ class _PermittListState extends State<PermittList> {
 
   Future _scanQR() async {
     try {
-      String? barcodeScanRes = await scanner.scan();
+      String? barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          "GREEN", "Cancel", true, ScanMode.QR);
+      // ignore: unnecessary_null_comparison
       var x = barcodeScanRes == null ? null : barcodeScanRes.substring(19, 28);
       String tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token').toString());
@@ -120,17 +125,10 @@ class _PermittListState extends State<PermittList> {
         result = barcodeScanRes.toString();
       });
     } on PlatformException catch (ex) {
-      if (ex.code == scanner.CameraAccessDenied) {
-        setState(() {
-          result = "Camera permission was denied";
-        });
-        message(result, 'error');
-      } else {
-        setState(() {
-          result = "Unknown Error $ex";
-        });
-        message(result, 'error');
-      }
+      setState(() {
+        result = "Unknown Error $ex";
+      });
+      message(result, 'error');
     } on FormatException {
       setState(() {
         result = "You pressed the back button before scanning anything";
@@ -197,9 +195,11 @@ class _PermittListState extends State<PermittList> {
           setState(() {
             res = json.decode(response.body);
             print(res);
-            data = res['exports'];
+            data = res['grading'];
           });
-
+          RealTimeCommunication().createConnection(
+            "12",
+          );
           break;
 
         default:
@@ -235,9 +235,11 @@ class _PermittListState extends State<PermittList> {
           setState(() {
             res = json.decode(response.body);
             print(res);
-            data = res['imports'];
+            data = res['inspection'];
           });
-
+          RealTimeCommunication().createConnection(
+            "11",
+          );
           break;
 
         default:
@@ -274,10 +276,12 @@ class _PermittListState extends State<PermittList> {
           setState(() {
             res = json.decode(response.body);
             print(res);
-            data = res['exports'];
+            data = res['inspection'];
             //  print(data[0]["dealer"].toString() + "hjsdkjdskjdsjk");
           });
-
+          RealTimeCommunication().createConnection(
+            "10",
+          );
           break;
 
         default:
@@ -326,8 +330,16 @@ class _PermittListState extends State<PermittList> {
   }
 
   @override
+  void initState() {
+    RealTimeCommunication().createConnection(
+      "9",
+    );
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    String args = ModalRoute.of(context)!.settings.arguments.toString();
+    //String args = ModalRoute.of(context)!.settings.arguments.toString();
 
     return Scaffold(
       appBar: AppBar(
@@ -459,13 +471,26 @@ class _PermittListState extends State<PermittList> {
                                                       onTap: () {
                                                         type == 'Grading'
                                                             ? Navigator.pushNamed(
-                                                                context,
-                                                                Grading
-                                                                    .routeName,
-                                                                arguments: data[
-                                                                            index]
-                                                                        ["id"]
-                                                                    .toString())
+                                                                    context,
+                                                                    Grading
+                                                                        .routeName,
+                                                                    arguments: GradingArguments(
+                                                                        data[index]['id']
+                                                                            .toString(),
+                                                                        data[index]['export_id']
+                                                                            .toString()))
+                                                                .then(
+                                                                    (value) async {
+                                                                setState(() {
+                                                                  isLoading =
+                                                                      true;
+                                                                });
+                                                                await getData();
+                                                                setState(() {
+                                                                  isLoading =
+                                                                      false;
+                                                                });
+                                                              })
                                                             : Navigator
                                                                 .pushNamed(
                                                                 context,
@@ -475,8 +500,24 @@ class _PermittListState extends State<PermittList> {
                                                                     data[index][
                                                                             "id"]
                                                                         .toString(),
-                                                                    type!),
-                                                              );
+                                                                    type!,
+                                                                    data[index][
+                                                                        'insp_prod']),
+                                                              ).then(
+                                                                (value) async {
+                                                                setState(() {
+                                                                  isLoading =
+                                                                      true;
+                                                                });
+                                                                type == 'Export Inspection'
+                                                                    ? await getDataInspection()
+                                                                    : await getDataImport();
+
+                                                                setState(() {
+                                                                  isLoading =
+                                                                      false;
+                                                                });
+                                                              });
                                                       },
                                                       trailing: Icon(
                                                         Icons.arrow_right,
@@ -490,24 +531,38 @@ class _PermittListState extends State<PermittList> {
                                                       title: Text(type! ==
                                                               'Grading'
                                                           ? "Name: " +
-                                                              data[index][
+                                                              data[index]['export_ref']
+                                                                      [
                                                                       "exporter_name"]
                                                                   .toString()
                                                           : type ==
                                                                   'Export Inspection'
                                                               ? "Name: " +
                                                                   data[index][
-                                                                          "exporter_name"]
+                                                                          "dealer_name"]
                                                                       .toString()
                                                               : "Name: " +
                                                                   data[index][
-                                                                          "importer_name"]
+                                                                          "dealer_name"]
                                                                       .toString()),
-                                                      subtitle: Text(
-                                                          'ID Code: ' +
-                                                              data[index]
+                                                      subtitle: Text(type! ==
+                                                              'Grading'
+                                                          ? "ID Code: " +
+                                                              data[index]['export_ref']
                                                                       ["code"]
-                                                                  .toString()),
+                                                                  .toString()
+                                                          : type! ==
+                                                                  'Export Inspection'
+                                                              ? 'ID Code: ' +
+                                                                  data[index]["export"]
+                                                                          [
+                                                                          "code"]
+                                                                      .toString()
+                                                              : 'ID Code: ' +
+                                                                  data[index]["import"]
+                                                                          [
+                                                                          "code"]
+                                                                      .toString()),
                                                     ),
                                                   ),
                                                 ),

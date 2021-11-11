@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/screens/payments/billForm.dart';
 import 'package:tfsappv1/screens/payments/payments.dart';
 
@@ -114,6 +115,9 @@ class _PaymentListState extends State<PaymentList> {
 
   @override
   void initState() {
+    RealTimeCommunication().createConnection(
+      "5",
+    );
     this.getData();
     // ignore: todo
     // TODO: implement initState
@@ -143,7 +147,7 @@ class _PaymentListState extends State<PaymentList> {
           Navigator.pushNamed(
             context,
             BillForm.routeName,
-          );
+          ).then((_) => RealTimeCommunication().createConnection("5"));
         },
       ),
       body: SingleChildScrollView(

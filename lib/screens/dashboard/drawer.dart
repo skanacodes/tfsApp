@@ -1,3 +1,5 @@
+import 'package:tfsappv1/screens/POSmanagement/posRegistration.dart';
+import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
 import 'package:flutter/material.dart';
@@ -37,14 +39,23 @@ class CustomDrawer extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: Text('Profile', style: TextStyle(color: Colors.black)),
+              title:
+                  Text('Register POS', style: TextStyle(color: Colors.black)),
               leading: Icon(
                 Icons.account_circle,
                 color: Colors.black,
               ),
-              onTap: () {
-                Navigator.of(context).pop();
+              onTap: () async {
+                Navigator.pop(context);
+
+                Navigator.pushNamed(
+                  context,
+                  PosReg.routeName,
+                ).then((_) => RealTimeCommunication().createConnection("3"));
               },
+            ),
+            Divider(
+              color: Colors.black,
             ),
             ListTile(
                 title: Text('Settings', style: TextStyle(color: Colors.black)),
@@ -55,10 +66,8 @@ class CustomDrawer extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).pop();
                 }),
-            Container(
-              height: getProportionateScreenHeight(2),
-              decoration: BoxDecoration(
-                  color: Colors.black38, shape: BoxShape.rectangle),
+            Divider(
+              color: Colors.black,
             ),
             ListTile(
               title: Text('Updates', style: TextStyle(color: Colors.black)),
@@ -73,19 +82,30 @@ class CustomDrawer extends StatelessWidget {
                 Navigator.of(context).pop();
               },
             ),
+            Divider(
+              color: Colors.black,
+            ),
             ListTile(
               title: Text('Logout', style: TextStyle(color: Colors.black)),
               leading: Icon(
                 Icons.arrow_forward,
                 color: Colors.black,
               ),
-              onTap: () {
-                SharedPreferences.getInstance().then((prefs) {
-                  prefs.clear();
-                });
+              onTap: () async {
+                // SharedPreferences.getInstance().then((prefs) {
+                //   prefs.clear();
+                // });
+                var pref = await SharedPreferences.getInstance();
+                var userId = pref.getInt("user_id");
+                var devId = pref.getString("deviceId");
+                await RealTimeCommunication()
+                    .createConnection('2', androidId: devId, id: userId);
                 Navigator.of(context).pushNamedAndRemoveUntil(
                     '/login', (Route<dynamic> route) => false);
               },
+            ),
+            Divider(
+              color: Colors.black,
             ),
           ],
         ),

@@ -1,6 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
+textField(
+  String? hint,
+  String textType,
+) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 10, right: 16, left: 16),
+    child: Container(
+      child: TextFormField(
+        keyboardType: TextInputType.number,
+        key: Key("No"),
+        onSaved: (val) => hint = val!,
+        decoration: InputDecoration(
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide(
+              color: Colors.cyan,
+            ),
+          ),
+          fillColor: Color(0xfff3f3f4),
+          filled: true,
+          labelText: "No. Of Pieces",
+          border: InputBorder.none,
+          isDense: true,
+          contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
+        ),
+        validator: (value) {
+          if (value == '') return "This Field Is Required";
+          return null;
+        },
+      ),
+    ),
+  );
+}
+
 const kPrimaryColor = Color(0xFF0C9869);
 const kPrimaryLightColor = Color(0xFF960000);
 // const kPrimaryGradientColor = LinearGradient(
@@ -12,7 +46,7 @@ const kSecondaryColor = Color(0xFF979797);
 const kTextColor = Color(0xFF757575);
 
 const kAnimationDuration = Duration(milliseconds: 200);
-var baseUrl = "https://mis.tfs.go.tz/fremis-test";
+var baseUrl = "https://mis.tfs.go.tz/fremis";
 final headingStyle = TextStyle(
   fontSize: getProportionateScreenWidth(28),
   fontWeight: FontWeight.bold,

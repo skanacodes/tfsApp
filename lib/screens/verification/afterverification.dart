@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
 import 'package:http/http.dart' as http;
@@ -140,7 +141,7 @@ class _AfterVerificationState extends State<AfterVerification> {
       text: TextSpan(
           text: 'Transit',
           style: GoogleFonts.portLligatSans(
-            textStyle: Theme.of(context).textTheme.display1,
+            // textStyle: Theme.of(context).textTheme.bodyText1,
             fontSize: 15.0.sp,
             fontWeight: FontWeight.w700,
             color: kPrimaryColor,
@@ -364,6 +365,15 @@ class _AfterVerificationState extends State<AfterVerification> {
               ),
             ),
     );
+  }
+
+  @override
+  void initState() {
+    RealTimeCommunication().createConnection(
+      "8",
+    );
+    // TODO: implement initState
+    super.initState();
   }
 
   @override

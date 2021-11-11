@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:qrscan/qrscan.dart' as scanner;
+
 import 'package:http/http.dart' as http;
+import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/screens/verification/afterverification.dart';
 import 'package:tfsappv1/services/size_config.dart';
@@ -112,6 +114,10 @@ class _ScanQrState extends State<ScanQr> {
             if (res['message'] == 'Error! Checkpoint Skipped') {
               message('Some Previous Checkpoints Have Not Verified This TP',
                   'error');
+            }
+            if (res['message'] ==
+                'Vessel Was Not Assigned to this checkpoint') {
+              message('Vessel Was Not Assigned to this checkpoint', 'error');
             } else {
               message('You Do Not Have Permission To Scan TP', 'error');
             }
@@ -212,10 +218,13 @@ class _ScanQrState extends State<ScanQr> {
 
   Future _scanQR() async {
     try {
-      String? barcodeScanRes = await scanner.scan();
+      String? barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          "GREEN", "Cancel", true, ScanMode.QR);
+      // ignore: unnecessary_null_comparison
       var x = barcodeScanRes == null ? null : barcodeScanRes.substring(11, 19);
       String tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token').toString());
+      print(x);
       if (x != null) {
         await verifyTp(x, tokens);
       } else {
@@ -226,17 +235,10 @@ class _ScanQrState extends State<ScanQr> {
         result = barcodeScanRes.toString();
       });
     } on PlatformException catch (ex) {
-      if (ex.code == scanner.CameraAccessDenied) {
-        setState(() {
-          result = "Camera permission was denied";
-        });
-        message(result, 'error');
-      } else {
-        setState(() {
-          result = "Unknown Error $ex";
-        });
-        message(result, 'error');
-      }
+      setState(() {
+        result = "Unknown Error $ex";
+      });
+      message(result, 'error');
     } on FormatException {
       setState(() {
         result = "You pressed the back button before scanning anything";
@@ -281,6 +283,16 @@ class _ScanQrState extends State<ScanQr> {
               ),
             ),
           );
+  }
+
+  @override
+  void initState() {
+    RealTimeCommunication().createConnection(
+      "7",
+    );
+    // ignore: todo
+    // TODO: implement initState
+    super.initState();
   }
 
   @override

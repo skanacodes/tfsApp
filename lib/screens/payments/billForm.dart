@@ -14,9 +14,12 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/modal/dealer.dart';
 import 'package:tfsappv1/services/modal/gfsCodes.dart';
+import 'package:tfsappv1/services/modal/productmodel.dart';
+import 'package:tfsappv1/services/modal/speciesModel.dart';
 
 import 'package:tfsappv1/services/size_config.dart';
 
@@ -31,14 +34,18 @@ class BillForm extends StatefulWidget {
 class _BillFormState extends State<BillForm> {
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
+  String? dealerName;
   var datas;
   var gfsCodes;
-  String? result;
+  int result = 0;
   String? dropdownvalue;
   String? billDesc;
-  int amount = 1;
+  int quantity = 0;
+  int amount = 0;
   double subtotal = 0.0;
+  final _dealerEditTextController = TextEditingController();
   String? currency;
+
   //DateTime now = DateTime.now();
   String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
   final formKey = new GlobalKey<FormState>();
@@ -52,6 +59,12 @@ class _BillFormState extends State<BillForm> {
       value: "TSH",
     ),
   ];
+  getSum() {
+    setState(() {
+      result = (amount * quantity);
+    });
+  }
+
   message(String hint, String message) {
     return Alert(
       context: context,
@@ -80,6 +93,9 @@ class _BillFormState extends State<BillForm> {
 
   @override
   void initState() {
+    RealTimeCommunication().createConnection(
+      "6",
+    );
     // this.getDealers();
     this.getData('');
     super.initState();
@@ -175,7 +191,7 @@ class _BillFormState extends State<BillForm> {
       text: TextSpan(
           text: 'Fill',
           style: GoogleFonts.portLligatSans(
-            textStyle: Theme.of(context).textTheme.display1,
+            textStyle: Theme.of(context).textTheme.bodyText1,
             fontSize: 15.0.sp,
             fontWeight: FontWeight.w700,
             color: kPrimaryColor,
@@ -392,55 +408,175 @@ class _BillFormState extends State<BillForm> {
                                   SizedBox(
                                     height: getProportionateScreenHeight(10),
                                   ),
+                                  SizedBox(
+                                      height: getProportionateScreenHeight(10)),
                                   Padding(
                                     padding: const EdgeInsets.only(
-                                        top: 1, right: 16, left: 16),
-                                    child: Container(
-                                      height: getProportionateScreenHeight(70),
-                                      child: Center(
-                                        child: DropdownSearch<DealerModel>(
-                                          // showSelectedItem: true,
-                                          showSearchBox: true,
-                                          showClearButton: true,
-                                          mode: Mode.BOTTOM_SHEET,
-                                          dropdownSearchDecoration:
-                                              InputDecoration(
-                                            filled: true,
-                                            enabledBorder: InputBorder.none,
-                                            contentPadding: EdgeInsets.all(5),
-                                            fillColor: Color(0xfff3f3f4),
-                                          ),
-                                          compareFn: (i, s) => i!.isEqual(s),
-                                          label: " Select Dealer",
-                                          onFind: (String? filter) =>
-                                              getDataDealer(filter),
-                                          onChanged: (data) {
-                                            print(data);
-                                          },
-                                          //  dropdownBuilder: _customDropDownExample,
-                                          popupItemBuilder:
-                                              _customPopupItemBuilderExampleForDealers,
-                                        ),
+                                        top: 10, right: 18, left: 18),
+                                    child: DropdownSearch<GfsModel>(
+                                      // showSelectedItem: true,
+                                      showSearchBox: true,
+                                      validator: (v) => v == null
+                                          ? "This Field Is required"
+                                          : null,
+                                      popupTitle: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Center(
+                                            child: Text(
+                                          'List Of Dealers',
+                                        )),
                                       ),
+                                      searchFieldProps: TextFieldProps(
+                                        controller: _dealerEditTextController,
+                                        decoration: InputDecoration(
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              borderSide: BorderSide(
+                                                color: Colors.cyan,
+                                              ),
+                                            ),
+                                            fillColor: Color(0xfff3f3f4),
+                                            filled: true,
+                                            labelText: "Search",
+                                            border: InputBorder.none,
+                                            isDense: true,
+                                            contentPadding: EdgeInsets.fromLTRB(
+                                                30, 10, 15, 10),
+                                            suffixIcon: IconButton(
+                                              icon: Icon(Icons.clear),
+                                              color: Colors.red,
+                                              onPressed: () {
+                                                _dealerEditTextController
+                                                    .clear();
+                                              },
+                                            )),
+                                      ),
+                                      mode: Mode.BOTTOM_SHEET,
+                                      popupElevation: 20,
+
+                                      dropdownSearchDecoration: InputDecoration(
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5.0),
+                                            borderSide: BorderSide(
+                                              color: Colors.cyan,
+                                            ),
+                                          ),
+                                          fillColor: Color(0xfff3f3f4),
+                                          filled: true,
+                                          isDense: true,
+                                          contentPadding:
+                                              EdgeInsets.fromLTRB(30, 5, 10, 5),
+                                          hintText: "Select GFS Code Name",
+                                          border: InputBorder.none),
+                                      compareFn: (i, s) => i!.isEqual(s),
+
+                                      onFind: (filter) => getData(filter),
+
+                                      onChanged: (data) {
+                                        setState(() {
+                                          //dealerName = data!.fname;
+                                          // unit = data.unit;
+                                        });
+                                      },
+
+                                      popupItemBuilder:
+                                          _customPopupItemBuilderGFS,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 10, right: 18, left: 18),
+                                    child: DropdownSearch<DealerModel>(
+                                      // showSelectedItem: true,
+                                      showSearchBox: true,
+                                      validator: (v) => v == null
+                                          ? "This Field Is required"
+                                          : null,
+                                      popupTitle: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Center(
+                                            child: Text(
+                                          'List Of Dealers',
+                                        )),
+                                      ),
+                                      searchFieldProps: TextFieldProps(
+                                        controller: _dealerEditTextController,
+                                        decoration: InputDecoration(
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              borderSide: BorderSide(
+                                                color: Colors.cyan,
+                                              ),
+                                            ),
+                                            fillColor: Color(0xfff3f3f4),
+                                            filled: true,
+                                            labelText: "Search",
+                                            border: InputBorder.none,
+                                            isDense: true,
+                                            contentPadding: EdgeInsets.fromLTRB(
+                                                30, 10, 15, 10),
+                                            suffixIcon: IconButton(
+                                              icon: Icon(Icons.clear),
+                                              color: Colors.red,
+                                              onPressed: () {
+                                                _dealerEditTextController
+                                                    .clear();
+                                              },
+                                            )),
+                                      ),
+                                      mode: Mode.BOTTOM_SHEET,
+                                      popupElevation: 20,
+
+                                      dropdownSearchDecoration: InputDecoration(
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5.0),
+                                            borderSide: BorderSide(
+                                              color: Colors.cyan,
+                                            ),
+                                          ),
+                                          fillColor: Color(0xfff3f3f4),
+                                          filled: true,
+                                          isDense: true,
+                                          contentPadding:
+                                              EdgeInsets.fromLTRB(30, 5, 10, 5),
+                                          hintText: "Select Dealer Name",
+                                          border: InputBorder.none),
+                                      compareFn: (i, s) => i!.isEqual(s),
+
+                                      onFind: (filter) => getDataDealer(filter),
+
+                                      onChanged: (data) {
+                                        setState(() {
+                                          dealerName = data!.fname;
+                                          // unit = data.unit;
+                                        });
+                                      },
+
+                                      popupItemBuilder:
+                                          _customPopupItemBuilder2,
                                     ),
                                   ),
                                   SizedBox(
-                                      height: getProportionateScreenHeight(10)),
+                                    height: getProportionateScreenHeight(10),
+                                  ),
                                   Padding(
                                     padding: const EdgeInsets.only(
                                         top: 1, right: 16, left: 16),
                                     child: Row(
                                       children: [
                                         Expanded(
-                                          //flex: 5,
+                                          flex: 4,
                                           child: Padding(
                                             padding: const EdgeInsets.only(
                                                 top: 1, right: 1, left: 1),
                                             child: Container(
                                               child: TextFormField(
-                                                maxLines: 5,
                                                 keyboardType:
-                                                    TextInputType.emailAddress,
+                                                    TextInputType.number,
                                                 key: Key("plat"),
                                                 // onSaved: (val) => task.licencePlateNumber = val,
                                                 decoration: InputDecoration(
@@ -455,9 +591,55 @@ class _BillFormState extends State<BillForm> {
                                                   ),
                                                   fillColor: Color(0xfff3f3f4),
                                                   filled: true,
-                                                  labelText: "Bill Description",
+                                                  labelText: "Amount",
                                                   border: InputBorder.none,
                                                   isDense: true,
+                                                  contentPadding:
+                                                      EdgeInsets.fromLTRB(
+                                                          30, 10, 15, 10),
+                                                ),
+                                                onChanged: (val) {
+                                                  setState(() {
+                                                    amount = int.parse(val);
+                                                    getSum();
+                                                  });
+                                                },
+                                                validator: (value) {
+                                                  if (value!.isEmpty)
+                                                    return "This Field Is Required";
+                                                  return null;
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 2,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 1, right: 1, left: 1),
+                                            child: Container(
+                                              child: TextFormField(
+                                                initialValue: "0",
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                key: Key("plat"),
+                                                // onSaved: (val) => task.licencePlateNumber = val,
+                                                decoration: InputDecoration(
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5.0),
+                                                    borderSide: BorderSide(
+                                                      color: Colors.cyan,
+                                                    ),
+                                                  ),
+                                                  fillColor: Color(0xfff3f3f4),
+                                                  filled: true,
+                                                  border: InputBorder.none,
+                                                  isDense: true,
+                                                  labelText: 'Quantity',
                                                   contentPadding:
                                                       EdgeInsets.fromLTRB(
                                                           30, 10, 15, 10),
@@ -478,164 +660,47 @@ class _BillFormState extends State<BillForm> {
                                   SizedBox(
                                     height: getProportionateScreenHeight(10),
                                   ),
-                                  SafeArea(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 1, right: 16, left: 16),
-                                      child: Container(
-                                        child: DropdownButtonFormField(
-                                            decoration: InputDecoration(
-                                              focusedBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(5.0),
-                                                borderSide: BorderSide(
-                                                  color: Colors.cyan,
-                                                ),
-                                              ),
-                                              fillColor: Color(0xfff3f3f4),
-                                              filled: true,
-                                              labelText: "Currency",
-                                              border: InputBorder.none,
-                                              isDense: true,
-                                              contentPadding:
-                                                  EdgeInsets.fromLTRB(
-                                                      30, 10, 15, 10),
-                                            ),
-                                            items: _currencyType,
-                                            value: currency,
-                                            validator: (value) => value == null
-                                                ? "This Field is Required"
-                                                : null,
-                                            onChanged: (value) async {}),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: getProportionateScreenHeight(20),
-                                  ),
-                                  // DropdownSearch<GfsModel>.multiSelection(
-                                  //   // searchFieldProps: TextFieldProps(
-                                  //   //   controller:
-                                  //   //       TextEditingController(text: 'Mrs'),
-                                  //   // ),
-                                  //   mode: Mode.DIALOG,
-                                  //   maxHeight: 500,
-                                  //   isFilteredOnline: true,
-                                  //   showClearButton: true,
-
-                                  //   compareFn: (item, selectedItem) =>
-                                  //       item?.gfsCode == selectedItem?.gfsCode,
-                                  //   showSearchBox: true,
-                                  //   label: 'Services *',
-                                  //   dropdownSearchDecoration: InputDecoration(
-                                  //     filled: true,
-                                  //     fillColor: Theme.of(context)
-                                  //         .inputDecorationTheme
-                                  //         .fillColor,
-                                  //   ),
-                                  //   autoValidateMode:
-                                  //       AutovalidateMode.onUserInteraction,
-                                  //   validator: (u) => u == null || u.isEmpty
-                                  //       ? "user field is required "
-                                  //       : null,
-                                  //   onFind: (String? filter) => getData(filter),
-                                  //   onChange: (data) {
-                                  //     print(data);
-                                  //   },
-                                  //   dropdownBuilder:
-                                  //       _customDropDownExampleMultiSelection,
-                                  //   popupItemBuilder:
-                                  //       _customPopupItemBuilderExample,
-                                  //   popupSafeArea:
-                                  //       PopupSafeArea(top: true, bottom: true),
-                                  //   scrollbarProps: ScrollbarProps(
-                                  //     isAlwaysShown: true,
-                                  //     thickness: 7,
-                                  //   ),
-                                  // ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 1, right: 16, left: 16),
-                                    child: DropdownSearch<GfsModel>(
-                                      // showSelectedItem: true,
-                                      showSearchBox: true,
-                                      showClearButton: true,
-                                      mode: Mode.DIALOG,
-                                      dropdownSearchDecoration: InputDecoration(
-                                        filled: true,
-                                        enabledBorder: InputBorder.none,
-                                        contentPadding: EdgeInsets.all(0),
-                                        fillColor: Color(0xfff3f3f4),
-                                      ),
-                                      compareFn: (i, s) => i!.isEqual(s),
-                                      label: "Select GFS code",
-                                      onFind: (String? filter) =>
-                                          getData(filter),
-                                      onChanged: (data) {
-                                        print(data);
-                                      },
-                                      //  dropdownBuilder: _customDropDownExample,
-                                      popupItemBuilder:
-                                          _customPopupItemBuilderExample2,
-                                    ),
-                                  ),
-                                  Divider(),
                                   Padding(
                                     padding: const EdgeInsets.only(
                                         top: 1, right: 16, left: 16),
                                     child: Row(
                                       children: [
                                         Expanded(
-                                          flex: 2,
+                                          flex: 3,
                                           child: Padding(
                                             padding: const EdgeInsets.only(
                                                 top: 1, right: 1, left: 1),
-                                            child: Container(
-                                              child: TextFormField(
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                key: Key("plat"),
-                                                // onSaved: (val) => task.licencePlateNumber = val,
-                                                decoration: InputDecoration(
-                                                  focusedBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5.0),
-                                                    borderSide: BorderSide(
-                                                      color: Colors.cyan,
+                                            child: SafeArea(
+                                              child: Container(
+                                                child: DropdownButtonFormField(
+                                                    decoration: InputDecoration(
+                                                      focusedBorder:
+                                                          OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5.0),
+                                                        borderSide: BorderSide(
+                                                          color: Colors.cyan,
+                                                        ),
+                                                      ),
+                                                      fillColor:
+                                                          Color(0xfff3f3f4),
+                                                      filled: true,
+                                                      labelText: "Currency",
+                                                      border: InputBorder.none,
+                                                      isDense: true,
+                                                      contentPadding:
+                                                          EdgeInsets.fromLTRB(
+                                                              30, 7, 15, 7),
                                                     ),
-                                                  ),
-                                                  fillColor: Color(0xfff3f3f4),
-                                                  filled: true,
-                                                  labelText: "Item Amount",
-                                                  border: InputBorder.none,
-                                                  isDense: true,
-                                                  contentPadding:
-                                                      EdgeInsets.fromLTRB(
-                                                          30, 10, 15, 10),
-                                                ),
-                                                onChanged: (val) {
-                                                  setState(() {
-                                                    // if (val != '') {
-                                                    //   amount = int.parse(val);
-                                                    //   subtotal = amount *
-                                                    //       double.parse(
-                                                    //           args.unitPrice);
-                                                    // } else {
-                                                    //   val = '1';
-                                                    //   amount = int.parse(val);
-                                                    //   subtotal = amount *
-                                                    //       double.parse(
-                                                    //           args.unitPrice);
-                                                    // }
-                                                  });
-                                                },
-                                                validator: (value) {
-                                                  if (value!.isEmpty)
-                                                    return "This Field Is Required";
-                                                  return null;
-                                                },
+                                                    items: _currencyType,
+                                                    value: currency,
+                                                    validator: (value) => value ==
+                                                            null
+                                                        ? "This Field is Required"
+                                                        : null,
+                                                    onChanged:
+                                                        (value) async {}),
                                               ),
                                             ),
                                           ),
@@ -647,11 +712,15 @@ class _BillFormState extends State<BillForm> {
                                                 top: 1, right: 1, left: 1),
                                             child: Container(
                                               child: TextFormField(
+                                                initialValue: result.toString(),
                                                 keyboardType:
                                                     TextInputType.number,
+                                                enabled: false,
+
                                                 key: Key("plat"),
                                                 // onSaved: (val) => task.licencePlateNumber = val,
                                                 decoration: InputDecoration(
+                                                  labelText: "Total",
                                                   focusedBorder:
                                                       OutlineInputBorder(
                                                     borderRadius:
@@ -665,23 +734,69 @@ class _BillFormState extends State<BillForm> {
                                                   filled: true,
                                                   border: InputBorder.none,
                                                   isDense: true,
-                                                  enabled: false,
-                                                  labelText: 'qef'
+
                                                   // subtotal.toString() ==
                                                   //         'null'
                                                   //     ? args.unitPrice
                                                   //     : subtotal.toString(),
-                                                  ,
+
                                                   contentPadding:
                                                       EdgeInsets.fromLTRB(
                                                           30, 10, 15, 10),
                                                 ),
 
-                                                // validator: (value) {
-                                                //   if (value!.isEmpty)
-                                                //     return "This Field Is Required";
-                                                //   return null;
-                                                // },
+                                                validator: (value) {
+                                                  if (value!.isEmpty)
+                                                    return "This Field Is Required";
+                                                  return null;
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 1, right: 16, left: 16),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          //flex: 5,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 1, right: 1, left: 1),
+                                            child: Container(
+                                              child: TextFormField(
+                                                maxLines: 5,
+                                                keyboardType:
+                                                    TextInputType.emailAddress,
+                                                key: Key("plat"),
+                                                decoration: InputDecoration(
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5.0),
+                                                    borderSide: BorderSide(
+                                                      color: Colors.cyan,
+                                                    ),
+                                                  ),
+                                                  fillColor: Color(0xfff3f3f4),
+                                                  filled: true,
+                                                  labelText: "Bill Description",
+                                                  border: InputBorder.none,
+                                                  isDense: true,
+                                                  contentPadding:
+                                                      EdgeInsets.fromLTRB(
+                                                          30, 10, 15, 10),
+                                                ),
+                                                validator: (value) {
+                                                  if (value!.isEmpty)
+                                                    return "This Field Is Required";
+                                                  return null;
+                                                },
                                               ),
                                             ),
                                           ),
@@ -741,14 +856,14 @@ class _BillFormState extends State<BillForm> {
     );
   }
 
-  Widget _customPopupItemBuilderExampleForDealers(
-      BuildContext context, DealerModel item, bool isSelected) {
+  Widget _customPopupItemBuilderGFS(
+      BuildContext context, GfsModel item, bool isSelected) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 8),
       decoration: !isSelected
           ? null
           : BoxDecoration(
-              border: Border.all(color: Theme.of(context).primaryColor),
+              border: Border.all(color: kPrimaryColor),
               borderRadius: BorderRadius.circular(5),
               color: Colors.white,
             ),
@@ -756,11 +871,11 @@ class _BillFormState extends State<BillForm> {
         elevation: 5,
         child: ListTile(
           selected: isSelected,
-          title: Text(item.fname == 'null'
-              ? item.companyName
-              : '${item.fname} ${item.lname}'),
-          // subtitle: Text(item.gfsCode.toString()),
+          title: Text(item.description),
+          //subtitle: Text(item.phoneNumber),
+          tileColor: Color(0xfff3f3f4),
           leading: CircleAvatar(
+            backgroundColor: Colors.pink,
             child: Icon(Icons.code),
           ),
         ),
@@ -812,5 +927,34 @@ class _BillFormState extends State<BillForm> {
     }
 
     return [];
+  }
+
+  Widget _customPopupItemBuilder2(
+      BuildContext context, DealerModel item, bool isSelected) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 8),
+      decoration: !isSelected
+          ? null
+          : BoxDecoration(
+              border: Border.all(color: kPrimaryColor),
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.white,
+            ),
+      child: Card(
+        elevation: 5,
+        child: ListTile(
+          selected: isSelected,
+          title: Text(item.companyName == "null"
+              ? " " + item.fname + " " + item.mname + " " + item.lname
+              : item.companyName),
+          //subtitle: Text(item.phoneNumber),
+          tileColor: Color(0xfff3f3f4),
+          leading: CircleAvatar(
+            backgroundColor: Colors.pink,
+            child: Icon(Icons.code),
+          ),
+        ),
+      ),
+    );
   }
 }

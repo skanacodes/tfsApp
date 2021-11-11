@@ -9,7 +9,9 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
+import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/services/constants.dart';
+import 'package:tfsappv1/services/modal/gradingModal.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
 import 'package:dio/dio.dart';
@@ -17,7 +19,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
 
 class Grading extends StatefulWidget {
@@ -63,21 +64,6 @@ class _GradingState extends State<Grading> {
 
   //DateTime now = DateTime.now();
   String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-
-  Future<DateTime?> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      initialDatePickerMode: DatePickerMode.day,
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-    );
-    print(picked);
-    setState(() {
-      formattedDate = DateFormat('yyyy-MM-dd').format(picked!);
-    });
-    return picked;
-  }
 
   Future getCategory() async {
     try {
@@ -230,37 +216,13 @@ class _GradingState extends State<Grading> {
         ]).show();
   }
 
-  Widget _previewImage(var _imageFile) {
-    // ignore: unnecessary_null_comparison
-    if (_imageFile != null) {
-      return Container(
-        // height: 100,
-        // width: 100,
-        child: Image.file(File(_imageFile.path)),
-
-        // RaisedButton(
-        //   onPressed: () async {
-        //     var res = await uploadImage(_imageFile.path, uploadUrl);
-        //     print(res);
-        //   },
-        //   child: const Text('Upload'),
-        // )
-      );
-    } else {
-      return const Text(
-        'You have not yet picked an image.',
-        textAlign: TextAlign.center,
-      );
-    }
-  }
-
   Widget _title() {
     return RichText(
       textAlign: TextAlign.justify,
       text: TextSpan(
           text: ' Grad',
           style: GoogleFonts.portLligatSans(
-            textStyle: Theme.of(context).textTheme.display1,
+            //  textStyle: Theme.of(context).textTheme.bodyText1,
             fontSize: 15.0.sp,
             fontWeight: FontWeight.w700,
             color: kPrimaryColor,
@@ -303,11 +265,11 @@ class _GradingState extends State<Grading> {
     ).show();
   }
 
-  Future<String> uploadData(jobId, userId) async {
+  Future<String> uploadData(jobId, exportId) async {
     try {
-      print(jobId);
-      print(userId);
-      print(bytes);
+      // print(jobId);
+      // print(exportId);
+      // print(bytes);
       // print("am here");
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
@@ -321,15 +283,13 @@ class _GradingState extends State<Grading> {
           headers: headers);
       var dio = Dio(options);
       var formData = FormData.fromMap({
-        'export_id': jobId,
+        'grading_id': jobId,
+        'export_id': exportId,
         'category_id': classy,
         'no_of_pieces': quantity,
         'grading_class': ask1,
         'volume': volume,
-        'identification_mark': base64Encode(bytes),
-        'receipt_no': receiptNo,
-        'amount_paid': paid,
-        'receipt_date': formattedDate
+        'identification_mark': base64Encode(bytes)
       });
 
       var response = await dio.post('$baseUrl/api/v1/export/grade/store',
@@ -531,7 +491,7 @@ class _GradingState extends State<Grading> {
     ).show();
   }
 
-  Widget _submitButton(String jobid, String userId) {
+  Widget _submitButton(String jobid, String exportId) {
     return InkWell(
       onTap: () async {
         if (_formKey.currentState!.validate()) {
@@ -541,7 +501,7 @@ class _GradingState extends State<Grading> {
             isLoading = true;
           });
 
-          var x = await uploadData(jobid, userId);
+          var x = await uploadData(jobid, exportId);
 
           ask1 = null;
           setState(() {
@@ -583,6 +543,9 @@ class _GradingState extends State<Grading> {
 
   @override
   void initState() {
+    RealTimeCommunication().createConnection(
+      "15",
+    );
     this.getCategory();
     // ignore: todo
     // TODO: implement initState
@@ -591,8 +554,8 @@ class _GradingState extends State<Grading> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments;
-    print(args);
+    final args = ModalRoute.of(context)!.settings.arguments as GradingArguments;
+    print(args.id);
     // print(args.personId);
     return Scaffold(
       appBar: AppBar(
@@ -611,7 +574,7 @@ class _GradingState extends State<Grading> {
               child: Column(
                 children: <Widget>[
                   Container(
-                    height: getProportionateScreenHeight(140),
+                    height: getProportionateScreenHeight(110),
                     child: Stack(
                       children: [
                         Container(
@@ -649,7 +612,7 @@ class _GradingState extends State<Grading> {
                     ),
                   ),
                   // Adding the form here
-                  forms(args, "6")
+                  forms(args.id, args.exportId)
                 ],
               ),
             ),
@@ -659,7 +622,7 @@ class _GradingState extends State<Grading> {
     );
   }
 
-  forms(id, userId) {
+  forms(id, exportId) {
     return
         // Adding the form here
         Form(
@@ -867,88 +830,6 @@ class _GradingState extends State<Grading> {
                     ),
                     Padding(
                       padding:
-                          const EdgeInsets.only(top: 10, right: 16, left: 16),
-                      child: Container(
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          key: Key("Amount"),
-                          onSaved: (val) => paid = val!,
-                          decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide(
-                                color: Colors.cyan,
-                              ),
-                            ),
-                            fillColor: Color(0xfff3f3f4),
-                            filled: true,
-                            labelText: "Amount Paid",
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
-                          ),
-                          validator: (value) {
-                            if (value == '') return "This Field Is Required";
-                            return null;
-                          },
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 10, right: 16, left: 16),
-                      child: Container(
-                        child: TextFormField(
-                          keyboardType: TextInputType.text,
-                          key: Key("vol"),
-                          onSaved: (val) => receiptNo = val!,
-                          decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide(
-                                color: Colors.cyan,
-                              ),
-                            ),
-                            fillColor: Color(0xfff3f3f4),
-                            filled: true,
-                            labelText: "Receipt Number",
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
-                          ),
-                          validator: (value) {
-                            if (value == '') return "This Field Is Required";
-                            return null;
-                          },
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 10, right: 16, left: 16),
-                      child: Container(
-                          child: Card(
-                        elevation: 10,
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: kPrimaryColor,
-                            child: Icon(
-                              Icons.calendar_today,
-                              color: Colors.white,
-                            ),
-                          ),
-                          onTap: () {
-                            _selectDate(context);
-                          },
-                          title: Text(
-                            'Receipt Date: $formattedDate',
-                            style: TextStyle(color: Colors.black54),
-                          ),
-                        ),
-                      )),
-                    ),
-                    Padding(
-                      padding:
                           const EdgeInsets.only(top: 5, right: 16, left: 16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1014,7 +895,7 @@ class _GradingState extends State<Grading> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(20.0),
-                      child: _submitButton(id, userId),
+                      child: _submitButton(id, exportId),
                     ),
                     SizedBox(
                       height: getProportionateScreenHeight(30),

@@ -1,5 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
-import 'package:dropdown_search/dropdown_search.dart';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,10 +10,10 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
+import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/modal/inspectionModal.dart';
-import 'package:tfsappv1/services/modal/productmodel.dart';
-import 'package:tfsappv1/services/modal/speciesModel.dart';
+
 import 'package:tfsappv1/services/size_config.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
@@ -21,6 +22,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:path/path.dart' as path;
+import 'package:http/http.dart' as http;
 
 class InspectionForm extends StatefulWidget {
   static String routeName = "/inspection";
@@ -35,19 +37,21 @@ class _InspectionFormState extends State<InspectionForm> {
   String local = '';
   var bytes;
   final GlobalKey<SfSignaturePadState> signatureGlobalKey = GlobalKey();
-  final _speciesEditTextController = TextEditingController();
-  final _productEditTextController = TextEditingController();
+
   String? volume;
   String? mark;
   String? receiptNo;
   String imageErr = ' ';
-
+  String? inspectionMark;
+  String? noOfPiece;
   String quantity = '';
   List data = [];
   List data1 = [];
   List data2 = [];
+  int counter = 1;
   bool showPermitType = false;
   bool showPackagingMaterial = false;
+  bool isProductset = false;
   final _formKey = GlobalKey<FormState>();
   // final _formKey1 = GlobalKey<FormState>();
   List? beeProduct;
@@ -60,6 +64,7 @@ class _InspectionFormState extends State<InspectionForm> {
   ];
   String? productName;
   String? speciesName;
+
   bool isSigned = false;
   String? classy;
   String? paid;
@@ -70,6 +75,7 @@ class _InspectionFormState extends State<InspectionForm> {
   bool isImageTaken = false;
   bool isImageTaken1 = false;
   String? unit;
+  String? productId;
   final String uploadUrl = 'https://api.imgur.com/3/upload';
   final ImagePicker _picker = ImagePicker();
   //DateTime now = DateTime.now();
@@ -85,6 +91,48 @@ class _InspectionFormState extends State<InspectionForm> {
       });
     } else {
       print('Retrieve error ' + response.exception!.code);
+    }
+  }
+
+  Future getUnit() async {
+    try {
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      var headers = {"Authorization": "Bearer " + tokens!};
+      var url = Uri.parse('$baseUrl/api/v1/get-units');
+
+      final response = await http.get(url, headers: headers);
+      var res;
+      //final sharedP prefs=await
+      print(response.statusCode);
+      switch (response.statusCode) {
+        case 200:
+          setState(() {
+            res = json.decode(response.body);
+            data1 = res['units'];
+
+            print(res);
+          });
+          break;
+
+        case 401:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+          });
+          break;
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+          });
+          break;
+      }
+    } on SocketException {
+      setState(() {
+        var res = 'Server Error';
+        print(res);
+      });
     }
   }
 
@@ -267,7 +315,7 @@ class _InspectionFormState extends State<InspectionForm> {
       text: TextSpan(
           text: type == 'Export Inspection' ? ' Export ' : ' Import ',
           style: GoogleFonts.portLligatSans(
-            textStyle: Theme.of(context).textTheme.display1,
+            // textStyle: Theme.of(context).textTheme.bodyText1,
             fontSize: 15.0.sp,
             fontWeight: FontWeight.w700,
             color: kPrimaryColor,
@@ -310,27 +358,11 @@ class _InspectionFormState extends State<InspectionForm> {
     ).show();
   }
 
-  Future<DateTime?> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      initialDatePickerMode: DatePickerMode.day,
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-    );
-    print(picked);
-    setState(() {
-      formattedDate = DateFormat('yyyy-MM-dd').format(picked!);
-    });
-    return picked;
-  }
-
   Future<String> uploadData(jobId, userId, type) async {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var stationIsd = await SharedPreferences.getInstance()
-          .then((prefs) => prefs.getInt('station_id'));
+
       var fname = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('fname'));
       var lname = await SharedPreferences.getInstance()
@@ -347,17 +379,18 @@ class _InspectionFormState extends State<InspectionForm> {
       var dio = Dio(options);
       var formData = type == 'Export Inspection'
           ? FormData.fromMap({
-              'export_id': jobId,
-              'product_name': productName,
-              'species_name': speciesName,
-              'no_of_pieces': quantity,
+              'inspection_id': jobId,
+              'insp_prod_id': productId,
+              'no_of_pieces': noOfPiece,
+              'quantity': quantity,
               'unit': unit,
+              'inspection_type': 'export',
               'inspector': '$fname  $lname',
-              'station_id': stationIsd,
-              'volume': volume,
-              'receipt_no': receiptNo,
-              'amount_paid': paid,
-              'receipt_date': formattedDate,
+              'inspection_mark': inspectionMark.toString() == "null"
+                  ? "null"
+                  : inspectionMark.toString(),
+              'identification_mark':
+                  mark.toString() == "null" ? "null" : mark.toString(),
               'consignment_image[]': [
                 img1 == ''
                     ? null
@@ -374,18 +407,17 @@ class _InspectionFormState extends State<InspectionForm> {
               ],
             })
           : FormData.fromMap({
-              'import_id': jobId,
-              'product_name': productName,
-              'species_name': speciesName,
-              'no_of_pieces': quantity,
+              'inspection_id': jobId,
+              'insp_prod_id': productId,
+              'no_of_pieces': noOfPiece,
+              'quantity': quantity,
+              'inspection_type': 'import',
               'unit': unit,
               'inspector': '$fname  $lname',
-              'station_id': stationIsd,
-              'volume': volume,
-              'receipt_no': receiptNo,
-              'amount_paid': paid,
-              'receipt_date': formattedDate,
-              'identification_mark': mark,
+              'inspection_mark': inspectionMark.toString() == "null"
+                  ? "null"
+                  : inspectionMark.toString(),
+              'identification_mark': mark.toString() == "null" ? "null" : mark,
               'consignment_image[]': [
                 img1 == ''
                     ? null
@@ -416,6 +448,14 @@ class _InspectionFormState extends State<InspectionForm> {
       if (response.statusCode == 201) {
         var res = response.data;
         print(res);
+        counter++;
+        setState(() {
+          data2 = res['inspProd'];
+          isProductset = true;
+          ask1 = null;
+          print(data);
+        });
+
         message('success', 'Data Submitted Successfull');
         return 'success';
       } else {
@@ -556,7 +596,10 @@ class _InspectionFormState extends State<InspectionForm> {
 
   @override
   void initState() {
-    // this.getCategory();
+    this.getUnit();
+    RealTimeCommunication().createConnection(
+      "14",
+    );
     // this.getSpecies();
     // ignore: todo
     // TODO: implement initState
@@ -567,9 +610,8 @@ class _InspectionFormState extends State<InspectionForm> {
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as InspectionArguments;
-    print(args.id);
-    print(args.type);
-    // print(args.personId);
+    // print(data[''])
+    print(args.species.length);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
@@ -577,6 +619,29 @@ class _InspectionFormState extends State<InspectionForm> {
           ' ',
           style: TextStyle(
               fontFamily: 'Ubuntu', color: Colors.black, fontSize: 17),
+        ),
+      ),
+      floatingActionButton: Container(
+        height: getProportionateScreenHeight(30),
+        child: FloatingActionButton.extended(
+          label: counter > args.species.length
+              ? Icon(
+                  Icons.verified,
+                  color: Colors.green,
+                )
+              : Text(
+                  '$counter Of ${args.species.length}',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
+                ),
+          icon: Icon(
+            Icons.star_border,
+            color: Colors.black,
+          ),
+          backgroundColor: Colors.grey[200],
+          foregroundColor: Colors.white,
+          tooltip: 'Number Of Species',
+          onPressed: () {},
         ),
       ),
       body: SingleChildScrollView(
@@ -587,7 +652,7 @@ class _InspectionFormState extends State<InspectionForm> {
               child: Column(
                 children: <Widget>[
                   Container(
-                    height: getProportionateScreenHeight(140),
+                    height: getProportionateScreenHeight(110),
                     child: Stack(
                       children: [
                         Container(
@@ -625,7 +690,8 @@ class _InspectionFormState extends State<InspectionForm> {
                     ),
                   ),
                   // Adding the form here
-                  forms(args.id, "6", args.type)
+                  forms(args.id, "6", args.type,
+                      isProductset ? data2 : args.species)
                 ],
               ),
             ),
@@ -635,7 +701,10 @@ class _InspectionFormState extends State<InspectionForm> {
     );
   }
 
-  forms(id, userId, type) {
+  forms(id, userId, type, List species) {
+    setState(() {
+      data = species;
+    });
     return
         // Adding the form here
         Form(
@@ -650,152 +719,106 @@ class _InspectionFormState extends State<InspectionForm> {
                 shadowColor: kPrimaryColor,
                 child: Column(
                   children: <Widget>[
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 10, right: 18, left: 18),
-                      child: DropdownSearch<SpeciesModel>(
-                        // showSelectedItem: true,
-                        showSearchBox: true,
-                        popupTitle: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Center(
-                              child: Text(
-                            'List Of Species',
-                          )),
-                        ),
-                        validator: (v) =>
-                            v == null ? "This Field Is required" : null,
-                        mode: Mode.BOTTOM_SHEET,
-                        popupElevation: 20,
-                        searchFieldProps: TextFieldProps(
-                          controller: _speciesEditTextController,
-                          decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                borderSide: BorderSide(
-                                  color: Colors.cyan,
+                    SizedBox(
+                      height: getProportionateScreenHeight(10),
+                    ),
+                    data.isEmpty
+                        ? Container()
+                        : SafeArea(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 1, right: 16, left: 16),
+                              child: Container(
+                                // width: getProportionateScreenHeight(
+                                //     320),
+                                child: DropdownButtonFormField<String>(
+                                  itemHeight: 50,
+                                  decoration: InputDecoration(
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
+                                        borderSide: BorderSide(
+                                          color: Colors.cyan,
+                                        ),
+                                      ),
+                                      fillColor: Color(0xfff3f3f4),
+                                      filled: true,
+                                      isDense: true,
+                                      enabled: true,
+                                      contentPadding:
+                                          EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                      labelText: "Select Species",
+                                      border: InputBorder.none),
+                                  isExpanded: true,
+
+                                  value: ask1,
+                                  //elevation: 5,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontFamily: 'Ubuntu'),
+                                  iconEnabledColor: Colors.black,
+                                  items: data.map((item) {
+                                    // setState(() {
+                                    //   // productId = item['id'].toString();
+                                    //   // print(productId);
+                                    // });
+                                    return new DropdownMenuItem(
+                                      child: Container(
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          color: Color(0xfff3f3f4),
+                                          border: Border(
+                                            bottom: BorderSide(
+                                                width: 1, color: kPrimaryColor),
+                                          ),
+                                        ),
+                                        child: new Text(
+                                          item['species_name'].toString(),
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                      ),
+                                      value: item['species_name'].toString(),
+                                    );
+                                  }).toList(),
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return "This Field is required";
+                                    }
+                                  },
+                                  onChanged: (value) {
+                                    setState(() {
+                                      FocusScope.of(context)
+                                          .requestFocus(new FocusNode());
+                                      ask1 = value!;
+
+                                      print(ask1);
+                                    });
+
+                                    for (var i = 0; i < data.length; i++) {
+                                      if (data[i]['species_name'] == ask1) {
+                                        setState(() {
+                                          productId = data[i]['id'].toString();
+                                        });
+                                        // Found the person, stop the loop
+                                        return;
+                                      }
+                                    }
+                                  },
                                 ),
                               ),
-                              fillColor: Color(0xfff3f3f4),
-                              filled: true,
-                              labelText: "Search",
-                              border: InputBorder.none,
-                              isDense: true,
-                              contentPadding:
-                                  EdgeInsets.fromLTRB(30, 10, 15, 10),
-                              suffixIcon: IconButton(
-                                icon: Icon(Icons.clear),
-                                color: Colors.red,
-                                onPressed: () {
-                                  _speciesEditTextController.clear();
-                                },
-                              )),
-                        ),
-                        dropdownSearchDecoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: BorderSide(
-                                color: Colors.cyan,
-                              ),
                             ),
-                            fillColor: Color(0xfff3f3f4),
-                            filled: true,
-                            isDense: true,
-                            contentPadding: EdgeInsets.fromLTRB(30, 5, 10, 5),
-                            hintText: "Select Species Name",
-                            border: InputBorder.none),
-                        compareFn: (i, s) => i!.isEqual(s),
-
-                        onFind: (filter) => getData(filter),
-
-                        onChanged: (data) {
-                          // print(data!.scientificName);
-
-                          setState(() {
-                            speciesName = data!.scientificName;
-                          });
-                        },
-                        //  dropdownBuilder: _customDropDownExample,
-                        popupItemBuilder: _customPopupItemBuilderExample2,
-                      ),
+                          ),
+                    SizedBox(
+                      height: getProportionateScreenHeight(10),
                     ),
                     Padding(
                       padding:
-                          const EdgeInsets.only(top: 10, right: 18, left: 18),
-                      child: DropdownSearch<ProductModel>(
-                        // showSelectedItem: true,
-                        showSearchBox: true,
-                        validator: (v) =>
-                            v == null ? "This Field Is required" : null,
-                        popupTitle: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Center(
-                              child: Text(
-                            'List Of Products',
-                          )),
-                        ),
-                        searchFieldProps: TextFieldProps(
-                          controller: _productEditTextController,
-                          decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                borderSide: BorderSide(
-                                  color: Colors.cyan,
-                                ),
-                              ),
-                              fillColor: Color(0xfff3f3f4),
-                              filled: true,
-                              labelText: "Search",
-                              border: InputBorder.none,
-                              isDense: true,
-                              contentPadding:
-                                  EdgeInsets.fromLTRB(30, 10, 15, 10),
-                              suffixIcon: IconButton(
-                                icon: Icon(Icons.clear),
-                                color: Colors.red,
-                                onPressed: () {
-                                  _productEditTextController.clear();
-                                },
-                              )),
-                        ),
-                        mode: Mode.BOTTOM_SHEET,
-                        popupElevation: 20,
-
-                        dropdownSearchDecoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: BorderSide(
-                                color: Colors.cyan,
-                              ),
-                            ),
-                            fillColor: Color(0xfff3f3f4),
-                            filled: true,
-                            isDense: true,
-                            contentPadding: EdgeInsets.fromLTRB(30, 5, 10, 5),
-                            hintText: "Select Product Name",
-                            border: InputBorder.none),
-                        compareFn: (i, s) => i!.isEqual(s),
-
-                        onFind: (filter) => getData1(filter),
-
-                        onChanged: (data) {
-                          setState(() {
-                            productName = data!.productname;
-                            unit = data.unit;
-                          });
-                        },
-                        //  dropdownBuilder: _customDropDownExample,
-                        popupItemBuilder: _customPopupItemBuilder2,
-                      ),
-                    ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 10, right: 16, left: 16),
+                          const EdgeInsets.only(top: 5, right: 16, left: 16),
                       child: Container(
                         child: TextFormField(
                           keyboardType: TextInputType.number,
                           key: Key("No"),
-                          onSaved: (val) => quantity = val!,
+                          onSaved: (val) => noOfPiece = val!,
                           decoration: InputDecoration(
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
@@ -817,44 +840,19 @@ class _InspectionFormState extends State<InspectionForm> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 10, right: 16, left: 16),
-                      child: Container(
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          key: Key("Amount"),
-                          onSaved: (val) => paid = val!,
-                          decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide(
-                                color: Colors.cyan,
-                              ),
-                            ),
-                            fillColor: Color(0xfff3f3f4),
-                            filled: true,
-                            labelText: "Amount Paid",
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
-                          ),
-                          validator: (value) {
-                            if (value == '') return "This Field Is Required";
-                            return null;
-                          },
-                        ),
-                      ),
-                    ),
-                    productName == 'Sawn Timber'
-                        ? Padding(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          flex: 4,
+                          child: Padding(
                             padding: const EdgeInsets.only(
                                 top: 10, right: 16, left: 16),
                             child: Container(
                               child: TextFormField(
                                 keyboardType: TextInputType.number,
                                 key: Key("vol"),
-                                onSaved: (val) => volume = val!,
+                                onSaved: (val) => quantity = val!,
                                 decoration: InputDecoration(
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10.0),
@@ -864,7 +862,106 @@ class _InspectionFormState extends State<InspectionForm> {
                                   ),
                                   fillColor: Color(0xfff3f3f4),
                                   filled: true,
-                                  labelText: "Volume",
+                                  labelText: "Quantity",
+                                  border: InputBorder.none,
+                                  isDense: true,
+                                  contentPadding:
+                                      EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                ),
+                                validator: (value) {
+                                  if (value == '') return "* Required";
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                top: 10, right: 18, left: 18),
+                            child: SafeArea(
+                              child: data1.isEmpty
+                                  ? SpinKitFadingCircle(
+                                      color: kPrimaryColor,
+                                      size: 35.0.sp,
+                                    )
+                                  : Container(
+                                      child: new DropdownButtonFormField(
+                                        itemHeight: 50,
+                                        decoration: InputDecoration(
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0),
+                                              borderSide: BorderSide(
+                                                color: Colors.cyan,
+                                              ),
+                                            ),
+                                            fillColor: Color(0xfff3f3f4),
+                                            filled: true,
+                                            isDense: true,
+                                            contentPadding: EdgeInsets.fromLTRB(
+                                                30, 10, 15, 10),
+                                            labelText: "Unit",
+                                            border: InputBorder.none),
+                                        isExpanded: true,
+                                        isDense: true,
+                                        validator: (value) =>
+                                            value == null ? "* Required" : null,
+                                        items: data1.map((item) {
+                                          return new DropdownMenuItem(
+                                            child: Container(
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                color: Color(0xfff3f3f4),
+                                                border: Border(
+                                                  bottom: BorderSide(
+                                                      width: 1,
+                                                      color: kPrimaryColor),
+                                                ),
+                                              ),
+                                              child: new Text(
+                                                item['name'].toString(),
+                                              ),
+                                            ),
+                                            value: item['name'].toString(),
+                                          );
+                                        }).toList(),
+                                        onChanged: (newVal) {
+                                          setState(() {
+                                            FocusScope.of(context)
+                                                .requestFocus(new FocusNode());
+                                            unit = newVal.toString();
+                                          });
+                                        },
+                                        value: unit,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    type == 'Export Inspection'
+                        ? Padding(
+                            padding: const EdgeInsets.only(
+                                top: 10, right: 16, left: 16),
+                            child: Container(
+                              child: TextFormField(
+                                keyboardType: TextInputType.text,
+                                key: Key("vol"),
+                                onSaved: (val) => mark = val!,
+                                decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(
+                                      color: Colors.cyan,
+                                    ),
+                                  ),
+                                  fillColor: Color(0xfff3f3f4),
+                                  filled: true,
+                                  labelText: "Identification Mark",
                                   border: InputBorder.none,
                                   isDense: true,
                                   contentPadding:
@@ -874,104 +971,36 @@ class _InspectionFormState extends State<InspectionForm> {
                             ),
                           )
                         : Container(),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 10, right: 16, left: 16),
-                      child: Container(
-                        child: TextFormField(
-                          keyboardType: TextInputType.text,
-                          key: Key("vol"),
-                          onSaved: (val) => receiptNo = val!,
-                          decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide(
-                                color: Colors.cyan,
-                              ),
-                            ),
-                            fillColor: Color(0xfff3f3f4),
-                            filled: true,
-                            labelText: "Receipt Number",
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
-                          ),
-                          validator: (value) {
-                            if (value == '') return "This Field Is Required";
-                            return null;
-                          },
-                        ),
-                      ),
-                    ),
                     type == 'Export Inspection'
-                        ? Container()
-                        : productName == 'Sawn Timber'
-                            ? Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 10, right: 16, left: 16),
-                                child: Container(
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.text,
-                                    key: Key("vol"),
-                                    onSaved: (val) => mark = val!,
-                                    decoration: InputDecoration(
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        borderSide: BorderSide(
-                                          color: Colors.cyan,
-                                        ),
-                                      ),
-                                      fillColor: Color(0xfff3f3f4),
-                                      filled: true,
-                                      labelText:
-                                          "Identification Mark Of Timber",
-                                      border: InputBorder.none,
-                                      isDense: true,
-                                      contentPadding:
-                                          EdgeInsets.fromLTRB(30, 10, 15, 10),
+                        ? Padding(
+                            padding: const EdgeInsets.only(
+                                top: 10, right: 16, left: 16),
+                            child: Container(
+                              child: TextFormField(
+                                keyboardType: TextInputType.text,
+                                key: Key("vol"),
+                                onSaved: (val) => inspectionMark = val!,
+                                decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(
+                                      color: Colors.cyan,
                                     ),
                                   ),
+                                  fillColor: Color(0xfff3f3f4),
+                                  filled: true,
+                                  labelText: "Inspection Mark",
+                                  border: InputBorder.none,
+                                  isDense: true,
+                                  contentPadding:
+                                      EdgeInsets.fromLTRB(30, 10, 15, 10),
                                 ),
-                              )
-                            : Container(),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 10, right: 16, left: 16),
-                      child: Container(
-                          child: Card(
-                        elevation: 10,
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: kPrimaryColor,
-                            child: Icon(
-                              Icons.calendar_today,
-                              color: Colors.white,
+                              ),
                             ),
-                          ),
-                          onTap: () {
-                            _selectDate(context);
-                          },
-                          title: Text(
-                            'Receipt Date: $formattedDate',
-                            style: TextStyle(color: Colors.black54),
-                          ),
-                        ),
-                      )),
-                    ),
+                          )
+                        : Container(),
                     SizedBox(
                       height: getProportionateScreenHeight(10),
-                    ),
-                    Container(
-                      width: double.infinity,
-                      height: getProportionateScreenHeight(70),
-                      child: Card(
-                        elevation: 10,
-                        child: Center(
-                          child: Text(
-                              "Click On The Icons To Take Atleast Two Pictures"),
-                        ),
-                      ),
                     ),
                     Container(
                       height: getProportionateScreenHeight(200),
@@ -1085,7 +1114,11 @@ class _InspectionFormState extends State<InspectionForm> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(20.0),
-                      child: _submitButton(id, userId, type),
+                      child: _submitButton(
+                        id,
+                        userId,
+                        type,
+                      ),
                     ),
                     SizedBox(
                       height: getProportionateScreenHeight(30),
@@ -1100,96 +1133,25 @@ class _InspectionFormState extends State<InspectionForm> {
     );
   }
 
-  Future<List<SpeciesModel>> getData(filter) async {
-    var tokens = await SharedPreferences.getInstance()
-        .then((prefs) => prefs.getString('token'));
-    var headers = {"Authorization": "Bearer " + tokens!};
-    var response =
-        await Dio().get("https://mis.tfs.go.tz/fremis/api/v1/get-species",
-            queryParameters: {
-              "filter": filter,
-            },
-            options: Options(headers: headers));
+  // Future<List<SpeciesModel>> getData(filter) async {
+  //   var tokens = await SharedPreferences.getInstance()
+  //       .then((prefs) => prefs.getString('token'));
+  //   var headers = {"Authorization": "Bearer " + tokens!};
+  //   var response =
+  //       await Dio().get("https://mis.tfs.go.tz/fremis/api/v1/get-species",
+  //           queryParameters: {
+  //             "filter": filter,
+  //           },
+  //           options: Options(headers: headers));
 
-    final data = response.data;
-    // print(data['species']);
-    // print('hfr');
-    if (data != null) {
-      return SpeciesModel.fromJsonList(data['species']);
-    }
+  //   final data = response.data;
+  //   // print(data['species']);
+  //   // print('hfr');
+  //   if (data != null) {
+  //     return SpeciesModel.fromJsonList(data['species']);
+  //   }
 
-    return [];
-  }
+  //   return [];
+  // }
 
-  Future<List<ProductModel>> getData1(filter) async {
-    var tokens = await SharedPreferences.getInstance()
-        .then((prefs) => prefs.getString('token'));
-    var headers = {"Authorization": "Bearer " + tokens!};
-    var response = await Dio().get(
-        "https://mis.tfs.go.tz/fremis-test/api/v1/get-products",
-        queryParameters: {"filter": filter},
-        options: Options(headers: headers));
-
-    final data = response.data;
-    print(data);
-    if (data != null) {
-      return ProductModel.fromJsonList(data['products']);
-    }
-
-    return [];
-  }
-
-  Widget _customPopupItemBuilder2(
-      BuildContext context, ProductModel item, bool isSelected) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
-      decoration: !isSelected
-          ? null
-          : BoxDecoration(
-              border: Border.all(color: kPrimaryColor),
-              borderRadius: BorderRadius.circular(5),
-              color: Colors.white,
-            ),
-      child: Card(
-        elevation: 5,
-        child: ListTile(
-          selected: isSelected,
-          title: Text(item.productname),
-          subtitle: Text('Unit: ' + item.unit.toString()),
-          tileColor: Color(0xfff3f3f4),
-          leading: CircleAvatar(
-            backgroundColor: Colors.pink,
-            child: Icon(Icons.code),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _customPopupItemBuilderExample2(
-      BuildContext context, SpeciesModel item, bool isSelected) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
-      decoration: !isSelected
-          ? null
-          : BoxDecoration(
-              border: Border.all(color: Theme.of(context).primaryColor),
-              borderRadius: BorderRadius.circular(5),
-              color: Colors.white,
-            ),
-      child: Card(
-        elevation: 5,
-        child: ListTile(
-          selected: isSelected,
-          title: Text(item.scientificName),
-          //subtitle: Text(item.id.toString()),
-          tileColor: Color(0xfff3f3f4),
-          leading: CircleAvatar(
-            backgroundColor: Colors.pink,
-            child: Icon(Icons.code),
-          ),
-        ),
-      ),
-    );
-  }
 }
