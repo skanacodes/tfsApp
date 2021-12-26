@@ -2,16 +2,16 @@ class GfsModel {
   final String gfsCode;
 
   final String description;
-  final String price;
+  final String id;
 
   GfsModel(
-      {required this.gfsCode, required this.description, required this.price});
+      {required this.gfsCode, required this.description, required this.id});
 
   factory GfsModel.fromJson(Map<String, dynamic> json) {
     return GfsModel(
-      gfsCode: json["gfs_code"].toString(),
+      gfsCode: json["code"].toString(),
       description: json["description"],
-      price: json["unit_price"].toString(),
+      id: json["id"].toString(),
     );
   }
 
@@ -35,5 +35,5 @@ class GfsModel {
   }
 
   @override
-  String toString() => gfsCode;
+  String toString() => description;
 }

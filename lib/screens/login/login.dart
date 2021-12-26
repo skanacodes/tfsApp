@@ -3,9 +3,10 @@ import 'dart:convert';
 //import 'package:tfsappv1/screens/dashboard/dashboardScreen.dart';
 
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
+import 'package:tfsappv1/screens/dashboard/dashboardScreen.dart';
 
 import 'package:tfsappv1/screens/login/Widget/bezierContainer.dart';
-import 'package:tfsappv1/screens/otp/otp.dart';
+
 import 'package:tfsappv1/services/size_config.dart';
 
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -66,6 +67,8 @@ class _LoginScreenState extends State<LoginScreen> {
       // print(password);
 
       var url = Uri.parse('$baseUrl/api/v1/login');
+      var username = "barakasikana@gmail.com";
+      var password = "baraka540";
       final response = await http.post(
         url,
         body: {'email': username, 'password': password, 'android_id': devId!},
@@ -198,8 +201,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                     return null;
                   },
-                  validator: (value) =>
-                      value == '' ? 'This  Field Is Required' : null,
+                  // validator: (value) =>
+                  //     value == '' ? 'This  Field Is Required' : null,
                   onSaved: (value) {
                     setState(() {
                       isPassword ? password = value! : username = value!;
@@ -241,7 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 .createConnection('1', androidId: devId, id: userId);
             Navigator.pushNamed(
               context,
-              Otp.routeName,
+              DashboardScreen.routeName,
             ).then((_) => RealTimeCommunication().createConnection("1"));
 
             _formKey.currentState!.reset();
@@ -389,13 +392,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  @override
-  void initState() {
-    // ignore: todo
-    // TODO: implement initState
+  // @override
+  // void initState() {
+  //   // ignore: todo
+  // ignore: todo
+  //   // TODO: implement initState
 
-    super.initState();
-  }
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {

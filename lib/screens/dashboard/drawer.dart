@@ -1,14 +1,13 @@
 import 'package:tfsappv1/screens/POSmanagement/posRegistration.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
+import 'package:tfsappv1/screens/updates/updates.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class CustomDrawer extends StatelessWidget {
 //static const  heroTag='';
-  static const _url = 'http://mis.tfs.go.tz/fremis/download_APK';
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -76,10 +75,15 @@ class CustomDrawer extends StatelessWidget {
                 color: Colors.black,
               ),
               onTap: () async {
-                await canLaunch(_url)
-                    ? await launch(_url)
-                    : throw 'Could not launch $_url';
-                Navigator.of(context).pop();
+                // await canLaunch(_url)
+                //     ? await launch(_url)
+                //     : throw 'Could not launch $_url';
+                Navigator.pop(context);
+
+                Navigator.pushNamed(
+                  context,
+                  UpdateApp.routeName,
+                ).then((_) => RealTimeCommunication().createConnection("3"));
               },
             ),
             Divider(

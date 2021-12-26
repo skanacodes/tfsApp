@@ -27,20 +27,20 @@ class MyHttpOverrides extends HttpOverrides {
 
 void main() async {
   HttpOverrides.global = new MyHttpOverrides();
-  WidgetsFlutterBinding.ensureInitialized();
+  // WidgetsFlutterBinding.ensureInitialized();
 
-  Workmanager().initialize(
-    callbackDispatcher,
-    isInDebugMode: true,
-  );
+  // Workmanager().initialize(
+  //   callbackDispatcher,
+  //   isInDebugMode: true,
+  // );
 
-  Workmanager().registerPeriodicTask("3", simplePeriodicTask,
-      initialDelay: Duration(seconds: 120),
-      constraints: Constraints(
-        networkType: NetworkType.connected,
-      ));
+  // Workmanager().registerPeriodicTask("3", simplePeriodicTask,
+  //     initialDelay: Duration(seconds: 120),
+  //     constraints: Constraints(
+  //       networkType: NetworkType.connected,
+  //     ));
 
-  // needs to be initialized before using workmanager package
+  //needs to be initialized before using workmanager package
 
   runApp(MyApp());
 }
@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _determinePosition();
+    // _determinePosition();
     _initializeTimer();
   }
 
@@ -74,7 +74,7 @@ class _MyAppState extends State<MyApp> {
     //   and to call _initializeTimer once the user logs in
     _timer!.cancel();
     setState(() {
-      forceLogout = true;
+      forceLogout = false;
     });
   }
 
@@ -93,10 +93,10 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (forceLogout) {
-      print("ForceLogout is $forceLogout");
-      navToHomePage(context);
-    }
+    // if (forceLogout) {
+    //   print("ForceLogout is $forceLogout");
+    //   navToHomePage(context);
+    // }
     return Sizer(builder: (context, orientation, deviceType) {
       return GestureDetector(
         onTap: _handleUserInteraction,

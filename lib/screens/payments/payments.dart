@@ -11,8 +11,9 @@ class Payments extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          ' Payment',
-          style: TextStyle(color: Colors.black, fontFamily: 'ubuntu'),
+          ' Bill/Receipt',
+          style: TextStyle(
+              color: Colors.black, fontFamily: 'ubuntu', fontSize: 17),
         ),
         backgroundColor: kPrimaryColor,
       ),

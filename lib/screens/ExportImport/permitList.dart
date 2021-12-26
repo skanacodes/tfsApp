@@ -35,32 +35,34 @@ class _PermittListState extends State<PermittList> {
   bool isVerify = false;
   var exportData;
   bool isLoading = false;
-
+  String? permitNumber;
   goToTheSealScreen() {
     Navigator.push(context,
         new MaterialPageRoute(builder: (__) => new SealScreen(exportData)));
   }
 
-  Future verify(String tpNumbere, String token) async {
+  Future verify(String id, String token) async {
     // String userId = await SharedPreferences.getInstance()
     //     .then((prefs) => prefs.getInt('user_id').toString());
-    // String checkpointId = await SharedPreferences.getInstance()
-    //     .then((prefs) => prefs.getInt('checkpointId').toString());
+    // String stationId = await SharedPreferences.getInstance()
+    //     .then((prefs) => prefs.getInt('station_id').toString());
 
-    print(tpNumbere);
-    print("gfgjhjkm");
+    // print(userId);
+    // print(stationId);
     // print(userId.toString());
     // print(checkpointId.toString());
     try {
-      print(tpNumbere);
+      print(id);
+      int.parse(id);
+      print(id);
       print("gfgjhjkm");
       var headers = {"Authorization": "Bearer " + token};
-      var url = Uri.parse('$baseUrl/v1/export/find/$tpNumbere');
+      var url = Uri.parse('$baseUrl/api/v1/export/find/$id');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
-      print('dfsjjdsfsd');
+      // print('dfsjjdsfsd');
       //final sharedP prefs=await
       res = json.decode(response.body);
       print(res);
@@ -103,11 +105,15 @@ class _PermittListState extends State<PermittList> {
     try {
       String? barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           "GREEN", "Cancel", true, ScanMode.QR);
+      print(barcodeScanRes.toString() + "huushfuiewiu");
       // ignore: unnecessary_null_comparison
-      var x = barcodeScanRes == null ? null : barcodeScanRes.substring(19, 28);
+      var x = barcodeScanRes.toString() == "-1"
+          ? null
+          : barcodeScanRes.substring(7, 11);
+      // print(barcodeScanRes);
       String tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token').toString());
-
+      // print(x.toString() + "hfdhg");
       if (x != null) {
         setState(() {
           isVerify = true;
@@ -118,7 +124,7 @@ class _PermittListState extends State<PermittList> {
           isVerify = false;
         });
       } else {
-        // enterTpNoPrompt(tokens);
+        enterTpNoPrompt(tokens);
       }
 
       setState(() {
@@ -139,6 +145,53 @@ class _PermittListState extends State<PermittList> {
       });
       message(result, 'error');
     }
+  }
+
+  enterTpNoPrompt(String tokens) {
+    return Alert(
+        context: context,
+        title: "Failed Scanning Enter Permit Number",
+        content: Column(
+          children: <Widget>[
+            TextField(
+              onChanged: (value) {
+                permitNumber = value;
+                print(permitNumber);
+              },
+              cursorColor: kPrimaryColor,
+              decoration: InputDecoration(
+                icon: Icon(Icons.folder_open),
+                labelText: 'Permit Number',
+              ),
+            ),
+          ],
+        ),
+        buttons: [
+          DialogButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              setState(() {
+                isVerify = true;
+              });
+              await verify(permitNumber!, tokens);
+              setState(() {
+                isVerify = false;
+              });
+            },
+            child: Text(
+              "VERIFY",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          ),
+          DialogButton(
+            color: Colors.red,
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              "CANCEL",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          )
+        ]).show();
   }
 
   message(String desc, String type) {
@@ -467,103 +520,113 @@ class _PermittListState extends State<PermittList> {
                                                   elevation: 10,
                                                   shadowColor: Colors.grey,
                                                   child: Container(
-                                                    child: ListTile(
-                                                      onTap: () {
-                                                        type == 'Grading'
-                                                            ? Navigator.pushNamed(
-                                                                    context,
-                                                                    Grading
-                                                                        .routeName,
-                                                                    arguments: GradingArguments(
-                                                                        data[index]['id']
-                                                                            .toString(),
-                                                                        data[index]['export_id']
-                                                                            .toString()))
-                                                                .then(
-                                                                    (value) async {
-                                                                setState(() {
-                                                                  isLoading =
-                                                                      true;
-                                                                });
-                                                                await getData();
-                                                                setState(() {
-                                                                  isLoading =
-                                                                      false;
-                                                                });
-                                                              })
-                                                            : Navigator
-                                                                .pushNamed(
-                                                                context,
-                                                                InspectionForm
-                                                                    .routeName,
-                                                                arguments: InspectionArguments(
-                                                                    data[index][
-                                                                            "id"]
-                                                                        .toString(),
-                                                                    type!,
-                                                                    data[index][
-                                                                        'insp_prod']),
-                                                              ).then(
-                                                                (value) async {
-                                                                setState(() {
-                                                                  isLoading =
-                                                                      true;
-                                                                });
-                                                                type == 'Export Inspection'
-                                                                    ? await getDataInspection()
-                                                                    : await getDataImport();
+                                                    child: type! == 'Grading' &&
+                                                            data[index]['export_ref']
+                                                                    .toString() ==
+                                                                "null"
+                                                        ? Container()
+                                                        : ListTile(
+                                                            onTap: () {
+                                                              type == 'Grading'
+                                                                  ? Navigator.pushNamed(
+                                                                          context,
+                                                                          Grading
+                                                                              .routeName,
+                                                                          arguments: GradingArguments(
+                                                                              data[index]['id']
+                                                                                  .toString(),
+                                                                              data[index]['export_id']
+                                                                                  .toString()))
+                                                                      .then(
+                                                                          (value) async {
+                                                                      setState(
+                                                                          () {
+                                                                        isLoading =
+                                                                            true;
+                                                                      });
+                                                                      await getData();
+                                                                      setState(
+                                                                          () {
+                                                                        isLoading =
+                                                                            false;
+                                                                      });
+                                                                    })
+                                                                  : Navigator
+                                                                      .pushNamed(
+                                                                      context,
+                                                                      InspectionForm
+                                                                          .routeName,
+                                                                      arguments: InspectionArguments(
+                                                                          data[index]["id"]
+                                                                              .toString(),
+                                                                          type!,
+                                                                          data[index]
+                                                                              [
+                                                                              'insp_prod']),
+                                                                    ).then(
+                                                                      (value) async {
+                                                                      setState(
+                                                                          () {
+                                                                        isLoading =
+                                                                            true;
+                                                                      });
+                                                                      type == 'Export Inspection'
+                                                                          ? await getDataInspection()
+                                                                          : await getDataImport();
 
-                                                                setState(() {
-                                                                  isLoading =
-                                                                      false;
-                                                                });
-                                                              });
-                                                      },
-                                                      trailing: Icon(
-                                                        Icons.arrow_right,
-                                                        color: Colors.cyan,
-                                                      ),
-                                                      leading: CircleAvatar(
-                                                          backgroundColor:
-                                                              Colors.purple,
-                                                          child: Text(
-                                                              '${index + 1}')),
-                                                      title: Text(type! ==
-                                                              'Grading'
-                                                          ? "Name: " +
-                                                              data[index]['export_ref']
-                                                                      [
-                                                                      "exporter_name"]
-                                                                  .toString()
-                                                          : type ==
-                                                                  'Export Inspection'
-                                                              ? "Name: " +
-                                                                  data[index][
-                                                                          "dealer_name"]
-                                                                      .toString()
-                                                              : "Name: " +
-                                                                  data[index][
-                                                                          "dealer_name"]
-                                                                      .toString()),
-                                                      subtitle: Text(type! ==
-                                                              'Grading'
-                                                          ? "ID Code: " +
-                                                              data[index]['export_ref']
-                                                                      ["code"]
-                                                                  .toString()
-                                                          : type! ==
-                                                                  'Export Inspection'
-                                                              ? 'ID Code: ' +
-                                                                  data[index]["export"]
-                                                                          [
-                                                                          "code"]
-                                                                      .toString()
-                                                              : 'ID Code: ' +
-                                                                  data[index]["import"]
-                                                                          [
-                                                                          "code"]
-                                                                      .toString()),
-                                                    ),
+                                                                      setState(
+                                                                          () {
+                                                                        isLoading =
+                                                                            false;
+                                                                      });
+                                                                    });
+                                                            },
+                                                            trailing: Icon(
+                                                              Icons.arrow_right,
+                                                              color:
+                                                                  Colors.cyan,
+                                                            ),
+                                                            leading: CircleAvatar(
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .purple,
+                                                                child: Text(
+                                                                    '${index + 1}')),
+                                                            title: Text(type! ==
+                                                                    'Grading'
+                                                                ? data[index]['export_ref']
+                                                                            .toString() ==
+                                                                        "null"
+                                                                    ? ""
+                                                                    : "Name: " +
+                                                                        data[index]['export_ref']["exporter_name"]
+                                                                            .toString()
+                                                                : type ==
+                                                                        'Export Inspection'
+                                                                    ? "Name: " +
+                                                                        data[index]["dealer_name"]
+                                                                            .toString()
+                                                                    : "Name: " +
+                                                                        data[index]["dealer_name"]
+                                                                            .toString()),
+                                                            subtitle: Text(type! ==
+                                                                    'Grading'
+                                                                ? data[index]['export_ref']
+                                                                            .toString() ==
+                                                                        "null"
+                                                                    ? ""
+                                                                    : "ID Code: " +
+                                                                        data[index]['export_ref']["code"]
+                                                                            .toString()
+                                                                : type! ==
+                                                                        'Export Inspection'
+                                                                    ? 'ID Code: ' +
+                                                                        data[index]["export"]["code"]
+                                                                            .toString()
+                                                                    : 'ID Code: ' +
+                                                                        data[index]["import"]["code"]
+                                                                            .toString()),
+                                                          ),
                                                   ),
                                                 ),
                                               ),

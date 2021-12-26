@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
 textField(
@@ -47,13 +48,14 @@ const kTextColor = Color(0xFF757575);
 
 const kAnimationDuration = Duration(milliseconds: 200);
 var baseUrl = "https://mis.tfs.go.tz/fremis";
+var baseUrlSeed = "http://41.59.227.103:9092";
 final headingStyle = TextStyle(
   fontSize: getProportionateScreenWidth(28),
   fontWeight: FontWeight.bold,
   color: Colors.black,
   height: 1.5,
 );
-
+final formatNumber = new NumberFormat("#,##0.00", "en_US");
 const defaultDuration = Duration(milliseconds: 250);
 
 // Form Error

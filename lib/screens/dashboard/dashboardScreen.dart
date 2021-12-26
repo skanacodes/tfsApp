@@ -1,13 +1,19 @@
+// ignore_for_file: unused_import
+
+import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tfsappv1/screens/ExportImport/permitList.dart';
+import 'package:tfsappv1/screens/Inventory/forestInventoryScreen.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/screens/dashboard/drawer.dart';
-import 'package:tfsappv1/screens/payments/paymentList.dart';
+
+import 'package:tfsappv1/screens/payments/systemsList.dart';
 import 'package:tfsappv1/screens/verification/verificationScreen.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
@@ -25,6 +31,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String? stationName;
   var userId;
   var devId;
+
   late Map<String, double> dataMap;
 
   Widget _title() {
@@ -145,6 +152,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
               '',
               style: TextStyle(color: Colors.black, fontFamily: 'Ubuntu'),
             ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Badge(
+                    badgeColor: Colors.white,
+                    animationType: BadgeAnimationType.scale,
+                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    badgeContent: Padding(
+                      padding: const EdgeInsets.all(1.0),
+                      child: Text(
+                        "1",
+                        style: TextStyle(color: Colors.red, fontSize: 15),
+                      ),
+                    ),
+                    child: Icon(Icons.notifications)),
+              )
+            ],
           ),
           drawer: CustomDrawer(),
           body: Container(
@@ -163,7 +187,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       decoration: BoxDecoration(color: kPrimaryColor),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
                       child: Align(
                         alignment: Alignment.bottomCenter,
                         child: Card(
@@ -175,6 +199,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               child: Icon(Icons.verified_user_rounded),
                             ),
                             title: _title(),
+                            subtitle: Text(
+                              "Station: ${stationName}",
+                              style: TextStyle(fontWeight: FontWeight.w400),
+                            ),
                             trailing: Icon(
                               Icons.person,
                               color: Colors.black,
@@ -190,7 +218,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Padding(
                   padding: const EdgeInsets.all(0.0),
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    color: Colors.transparent,
+                    padding: EdgeInsets.symmetric(horizontal: 15),
                     child: AnimationLimiter(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -205,7 +234,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                           children: <Widget>[
                             Container(
-                                height: getProportionateScreenHeight(530),
+                                height: getProportionateScreenHeight(522),
+                                color: Colors.transparent,
                                 child: GridView.extent(
                                   padding: const EdgeInsets.all(16),
                                   crossAxisSpacing: 10,
@@ -247,7 +277,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       onTap: () {
                                         Navigator.pushNamed(
                                           context,
-                                          PaymentList.routeName,
+                                          ListSystems.routeName,
                                         ).then((_) => RealTimeCommunication()
                                             .createConnection("3"));
                                       },
@@ -272,7 +302,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                 color: Colors.purple,
                                               ),
                                               Text(
-                                                "Payments",
+                                                "Bills And Payments",
                                                 style: TextStyle(
                                                     color: Colors.black87,
                                                     fontSize: 10.sp,
@@ -337,12 +367,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               MainAxisAlignment.center,
                                           children: [
                                             Icon(
-                                              Icons.history_rounded,
+                                              Icons.do_not_disturb_alt_sharp,
                                               color: Colors.cyan,
                                               size: 40.sp,
                                             ),
                                             Text(
-                                              "Payment History",
+                                              "Illegal Product",
                                               style: TextStyle(
                                                   color: Colors.black87,
                                                   fontSize: 10.sp,
@@ -391,35 +421,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                             ],
                                           )),
                                     ),
-                                    Container(
-                                        decoration: BoxDecoration(
-                                            color: Color(0xfff3f3f4),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  color: Colors.grey,
-                                                  offset: Offset.zero,
-                                                  blurRadius: 2)
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                          context,
+                                          ForestInventoryScreen.routeName,
+                                        ).then((_) => RealTimeCommunication()
+                                            .createConnection("3"));
+                                      },
+                                      child: Container(
+                                          decoration: BoxDecoration(
+                                              color: Color(0xfff3f3f4),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    color: Colors.grey,
+                                                    offset: Offset.zero,
+                                                    blurRadius: 2)
+                                              ],
+                                              borderRadius:
+                                                  BorderRadius.circular(20)),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.nature_outlined,
+                                                color: kPrimaryColor,
+                                                size: 40.sp,
+                                              ),
+                                              Text(
+                                                "Mensuration",
+                                                style: TextStyle(
+                                                    color: Colors.black87,
+                                                    fontSize: 10.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              )
                                             ],
-                                            borderRadius:
-                                                BorderRadius.circular(20)),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.receipt,
-                                              color: Colors.blue,
-                                              size: 40.sp,
-                                            ),
-                                            Text(
-                                              "TP",
-                                              style: TextStyle(
-                                                  color: Colors.black87,
-                                                  fontSize: 10.sp,
-                                                  fontWeight: FontWeight.bold),
-                                            )
-                                          ],
-                                        )),
+                                          )),
+                                    ),
                                   ],
                                 )),
                           ],

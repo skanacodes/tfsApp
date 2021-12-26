@@ -18,8 +18,6 @@ import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/modal/dealer.dart';
 import 'package:tfsappv1/services/modal/gfsCodes.dart';
-import 'package:tfsappv1/services/modal/productmodel.dart';
-import 'package:tfsappv1/services/modal/speciesModel.dart';
 
 import 'package:tfsappv1/services/size_config.dart';
 
@@ -41,10 +39,15 @@ class _BillFormState extends State<BillForm> {
   String? dropdownvalue;
   String? billDesc;
   int quantity = 0;
+  int? levelOneId;
+  int? levelTwoId;
   int amount = 0;
   double subtotal = 0.0;
   final _dealerEditTextController = TextEditingController();
   String? currency;
+  bool isLevelOne = false;
+  bool isLevelTwo = false;
+  bool isLevelThree = false;
 
   //DateTime now = DateTime.now();
   String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -61,7 +64,10 @@ class _BillFormState extends State<BillForm> {
   ];
   getSum() {
     setState(() {
+      print(amount);
+      print(quantity);
       result = (amount * quantity);
+      print(result);
     });
   }
 
@@ -87,7 +93,7 @@ class _BillFormState extends State<BillForm> {
   @override
   void dispose() {
     // Clean up the controller when the widget is removed
-
+    _dealerEditTextController.dispose();
     super.dispose();
   }
 
@@ -97,7 +103,7 @@ class _BillFormState extends State<BillForm> {
       "6",
     );
     // this.getDealers();
-    this.getData('');
+
     super.initState();
   }
 
@@ -216,32 +222,31 @@ class _BillFormState extends State<BillForm> {
   }
 
   Future postDetails() async {
+    print("executing");
     try {
       var url = Uri.parse('http://41.59.82.189:9292/api/Bill/PostBillRequest');
       final response = await http.post(
         url,
         body: jsonEncode({
-          "ClientPrimaryKey": "",
-          "RequestId": 4,
-          "PaymentCallBack": "sdsd",
-          "BillExprDt": null,
-          "PyrId": 56456645,
-          "PyrName": "Matoke",
-          "BillDesc": "Some description",
-          "BillGenDt": "Default",
+          "ClientPrimaryKey": "ireiuhdbhvjhjfbviufvnnnn",
+          "RequestId": 5,
+          "CallBackServer": "https://mis.tfs.go.tz",
+          "CallBack": "fremis-test/api/v1/update-bill",
+          "ValidDays": 3,
+          "PyrId": 59,
+          "PyrName": "Juma & Company",
+          "BillDesc": "Multiple Payments",
           "BillApprBy": null,
-          "PyrCellNum": "755237904",
-          "PyrEmail": "baraka12@gmail.com",
-          "BillItemRef": 3456435345,
-          "BillItemAmt": 5,
-          "BillItemEqvAmt": 1,
-          "GfsCode": "46456",
+          "PaymentCallBack": "fremis-test/api/v1/receive-payment",
+          "PyrCellNum": "0764184955",
+          "PyrEmail": null,
+          "Ccy": "TZS",
           "BillItems": [
             {
-              "BillItemRef": 3456435345,
-              "BillItemAmt": 5,
-              "BillItemEqvAmt": 1,
-              "GfsCode": "110625"
+              "BillItemRef": 48,
+              "BillItemAmt": 2000,
+              "BillItemEqvAmt": 200,
+              "GfsCode": 142201710276
             }
           ]
         }),
@@ -423,7 +428,7 @@ class _BillFormState extends State<BillForm> {
                                         padding: const EdgeInsets.all(8.0),
                                         child: Center(
                                             child: Text(
-                                          'List Of Dealers',
+                                          'List Of GFS-CODE for Level One',
                                         )),
                                       ),
                                       searchFieldProps: TextFieldProps(
@@ -468,15 +473,19 @@ class _BillFormState extends State<BillForm> {
                                           isDense: true,
                                           contentPadding:
                                               EdgeInsets.fromLTRB(30, 5, 10, 5),
-                                          hintText: "Select GFS Code Name",
+                                          hintText: "Select Level 1 GFS Code",
                                           border: InputBorder.none),
                                       compareFn: (i, s) => i!.isEqual(s),
 
-                                      onFind: (filter) => getData(filter),
+                                      onFind: (filter) => getData(filter, "1"),
 
                                       onChanged: (data) {
                                         setState(() {
-                                          //dealerName = data!.fname;
+                                          levelOneId = int.parse(data!.id);
+                                          print(levelOneId);
+
+                                          isLevelTwo = true;
+                                          isLevelThree = false;
                                           // unit = data.unit;
                                         });
                                       },
@@ -485,6 +494,187 @@ class _BillFormState extends State<BillForm> {
                                           _customPopupItemBuilderGFS,
                                     ),
                                   ),
+                                  isLevelTwo
+                                      ? Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 10, right: 18, left: 18),
+                                          child: DropdownSearch<GfsModel>(
+                                            // showSelectedItem: true,
+                                            showSearchBox: true,
+                                            validator: (v) => v == null
+                                                ? "This Field Is required"
+                                                : null,
+                                            popupTitle: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Center(
+                                                  child: Text(
+                                                'List of Level Two GFS-CODE',
+                                              )),
+                                            ),
+                                            searchFieldProps: TextFieldProps(
+                                              controller:
+                                                  _dealerEditTextController,
+                                              decoration: InputDecoration(
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10.0),
+                                                    borderSide: BorderSide(
+                                                      color: Colors.cyan,
+                                                    ),
+                                                  ),
+                                                  fillColor: Color(0xfff3f3f4),
+                                                  filled: true,
+                                                  labelText: "Search",
+                                                  border: InputBorder.none,
+                                                  isDense: true,
+                                                  contentPadding:
+                                                      EdgeInsets.fromLTRB(
+                                                          30, 10, 15, 10),
+                                                  suffixIcon: IconButton(
+                                                    icon: Icon(Icons.clear),
+                                                    color: Colors.red,
+                                                    onPressed: () {
+                                                      _dealerEditTextController
+                                                          .clear();
+                                                    },
+                                                  )),
+                                            ),
+                                            mode: Mode.BOTTOM_SHEET,
+                                            popupElevation: 20,
+
+                                            dropdownSearchDecoration:
+                                                InputDecoration(
+                                                    focusedBorder:
+                                                        OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5.0),
+                                                      borderSide: BorderSide(
+                                                        color: Colors.cyan,
+                                                      ),
+                                                    ),
+                                                    fillColor:
+                                                        Color(0xfff3f3f4),
+                                                    filled: true,
+                                                    isDense: true,
+                                                    contentPadding:
+                                                        EdgeInsets.fromLTRB(
+                                                            30, 5, 10, 5),
+                                                    hintText:
+                                                        "Select Level 2 GFS Code",
+                                                    border: InputBorder.none),
+                                            compareFn: (i, s) => i!.isEqual(s),
+
+                                            onFind: (filter) =>
+                                                getData(filter, "2"),
+
+                                            onChanged: (data) {
+                                              setState(() {
+                                                levelTwoId =
+                                                    int.parse(data!.id);
+
+                                                isLevelThree = true;
+                                                // unit = data.unit;
+                                              });
+                                            },
+
+                                            popupItemBuilder:
+                                                _customPopupItemBuilderGFS,
+                                          ),
+                                        )
+                                      : Container(),
+                                  isLevelThree
+                                      ? Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 10, right: 18, left: 18),
+                                          child: DropdownSearch<GfsModel>(
+                                            // showSelectedItem: true,
+                                            showSearchBox: true,
+                                            validator: (v) => v == null
+                                                ? "This Field Is required"
+                                                : null,
+                                            popupTitle: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Center(
+                                                  child: Text(
+                                                'List of Level Three GFS-CODE',
+                                              )),
+                                            ),
+                                            searchFieldProps: TextFieldProps(
+                                              controller:
+                                                  _dealerEditTextController,
+                                              decoration: InputDecoration(
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10.0),
+                                                    borderSide: BorderSide(
+                                                      color: Colors.cyan,
+                                                    ),
+                                                  ),
+                                                  fillColor: Color(0xfff3f3f4),
+                                                  filled: true,
+                                                  labelText: "Search",
+                                                  border: InputBorder.none,
+                                                  isDense: true,
+                                                  contentPadding:
+                                                      EdgeInsets.fromLTRB(
+                                                          30, 10, 15, 10),
+                                                  suffixIcon: IconButton(
+                                                    icon: Icon(Icons.clear),
+                                                    color: Colors.red,
+                                                    onPressed: () {
+                                                      _dealerEditTextController
+                                                          .clear();
+                                                    },
+                                                  )),
+                                            ),
+                                            mode: Mode.BOTTOM_SHEET,
+                                            popupElevation: 20,
+
+                                            dropdownSearchDecoration:
+                                                InputDecoration(
+                                                    focusedBorder:
+                                                        OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5.0),
+                                                      borderSide: BorderSide(
+                                                        color: Colors.cyan,
+                                                      ),
+                                                    ),
+                                                    fillColor:
+                                                        Color(0xfff3f3f4),
+                                                    filled: true,
+                                                    isDense: true,
+                                                    contentPadding:
+                                                        EdgeInsets.fromLTRB(
+                                                            30, 5, 10, 5),
+                                                    hintText:
+                                                        "Select Level 3 GFS Code",
+                                                    border: InputBorder.none),
+                                            compareFn: (i, s) => i!.isEqual(s),
+
+                                            onFind: (filter) =>
+                                                getData(filter, "3"),
+
+                                            onChanged: (data) {
+                                              setState(() {
+                                                //levelTwoId = int.parse(data!.id);
+                                                // unit = data.unit;
+                                              });
+                                            },
+
+                                            popupItemBuilder:
+                                                _customPopupItemBuilderGFS,
+                                          ),
+                                        )
+                                      : Container(),
                                   Padding(
                                     padding: const EdgeInsets.only(
                                         top: 10, right: 18, left: 18),
@@ -498,7 +688,7 @@ class _BillFormState extends State<BillForm> {
                                         padding: const EdgeInsets.all(8.0),
                                         child: Center(
                                             child: Text(
-                                          'List Of Dealers',
+                                          'List Of  Dealers',
                                         )),
                                       ),
                                       searchFieldProps: TextFieldProps(
@@ -551,8 +741,29 @@ class _BillFormState extends State<BillForm> {
 
                                       onChanged: (data) {
                                         setState(() {
-                                          dealerName = data!.fname;
-                                          // unit = data.unit;
+                                          dealerName = data!.companyName ==
+                                                  "null"
+                                              ? " " + data.fname.toString() ==
+                                                      "null"
+                                                  ? ""
+                                                  : data.fname.toString() +
+                                                              " " +
+                                                              data.mname
+                                                                  .toString() ==
+                                                          "null"
+                                                      ? ""
+                                                      : data.mname.toString() +
+                                                                  " " +
+                                                                  data.lname
+                                                                      .toString() ==
+                                                              "null"
+                                                          ? "null"
+                                                          : data.lname
+                                                              .toString()
+                                              : data.companyName.toString() ==
+                                                      "null"
+                                                  ? ""
+                                                  : data.companyName.toString();
                                         });
                                       },
 
@@ -600,7 +811,10 @@ class _BillFormState extends State<BillForm> {
                                                 ),
                                                 onChanged: (val) {
                                                   setState(() {
-                                                    amount = int.parse(val);
+                                                    val.isEmpty
+                                                        ? print(val)
+                                                        : amount =
+                                                            int.parse(val);
                                                     getSum();
                                                   });
                                                 },
@@ -620,11 +834,22 @@ class _BillFormState extends State<BillForm> {
                                                 top: 1, right: 1, left: 1),
                                             child: Container(
                                               child: TextFormField(
-                                                initialValue: "0",
+                                                initialValue:
+                                                    quantity.toString(),
                                                 keyboardType:
                                                     TextInputType.number,
                                                 key: Key("plat"),
                                                 // onSaved: (val) => task.licencePlateNumber = val,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    value.isEmpty
+                                                        ? print(value)
+                                                        : quantity =
+                                                            int.parse(value);
+
+                                                    getSum();
+                                                  });
+                                                },
                                                 decoration: InputDecoration(
                                                   focusedBorder:
                                                       OutlineInputBorder(
@@ -831,31 +1056,6 @@ class _BillFormState extends State<BillForm> {
     );
   }
 
-  Widget _customPopupItemBuilderExample2(
-      BuildContext context, GfsModel item, bool isSelected) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
-      decoration: !isSelected
-          ? null
-          : BoxDecoration(
-              border: Border.all(color: Theme.of(context).primaryColor),
-              borderRadius: BorderRadius.circular(5),
-              color: Colors.white,
-            ),
-      child: Card(
-        elevation: 5,
-        child: ListTile(
-          selected: isSelected,
-          title: Text(item.description),
-          subtitle: Text(item.gfsCode.toString()),
-          leading: CircleAvatar(
-            child: Icon(Icons.code),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _customPopupItemBuilderGFS(
       BuildContext context, GfsModel item, bool isSelected) {
     return Container(
@@ -872,7 +1072,7 @@ class _BillFormState extends State<BillForm> {
         child: ListTile(
           selected: isSelected,
           title: Text(item.description),
-          //subtitle: Text(item.phoneNumber),
+          subtitle: Text("GFS - CODE: " + item.gfsCode),
           tileColor: Color(0xfff3f3f4),
           leading: CircleAvatar(
             backgroundColor: Colors.pink,
@@ -883,19 +1083,26 @@ class _BillFormState extends State<BillForm> {
     );
   }
 
-  Future<List<GfsModel>> getData(filter) async {
+  Future<List<GfsModel>> getData(filter, level) async {
+    var url;
+
+    level == "1"
+        ? url = "http://41.59.82.189:5555/api/v1/gfs_lv_one"
+        : level == "2"
+            ? url = "http://41.59.82.189:5555/api/v1/gfs_lv_two/$levelOneId"
+            : url = "http://41.59.82.189:5555/api/v1/gfs_lv_three/$levelTwoId";
     var response = await Dio().get(
-      "http://41.59.227.103:5013/api/Setup/GetTarrifs",
+      url,
       queryParameters: {"filter": filter},
     );
 
     final data = response.data;
-    print(data);
+    print(data['data']);
     if (data != null) {
       setState(() {
-        datas = data;
+        // datas = data[];
       });
-      return GfsModel.fromJsonList(data);
+      return GfsModel.fromJsonList(data['data']);
     }
 
     return [];
@@ -945,8 +1152,18 @@ class _BillFormState extends State<BillForm> {
         child: ListTile(
           selected: isSelected,
           title: Text(item.companyName == "null"
-              ? " " + item.fname + " " + item.mname + " " + item.lname
-              : item.companyName),
+              ? " " + item.fname.toString() == "null"
+                  ? ""
+                  : item.fname.toString() + " " + item.mname.toString() ==
+                          "null"
+                      ? ""
+                      : item.mname.toString() + " " + item.lname.toString() ==
+                              "null"
+                          ? "null"
+                          : item.lname.toString()
+              : item.companyName.toString() == "null"
+                  ? ""
+                  : item.companyName.toString()),
           //subtitle: Text(item.phoneNumber),
           tileColor: Color(0xfff3f3f4),
           leading: CircleAvatar(

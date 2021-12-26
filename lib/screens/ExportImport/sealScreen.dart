@@ -428,7 +428,7 @@ class _SealScreenState extends State<SealScreen> {
                           style: flatButtonStyle,
                           onPressed: () {
                             cardA.currentState?.collapse();
-                            cardB.currentState?.toggleExpansion();
+                            cardC.currentState?.toggleExpansion();
                           },
                           child: Column(
                             children: <Widget>[
@@ -437,7 +437,7 @@ class _SealScreenState extends State<SealScreen> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 2.0),
                               ),
-                              Text('Toggle Previous CheckPoint'),
+                              Text('Toggle Exported Product'),
                             ],
                           ),
                         ),
@@ -486,18 +486,38 @@ class _SealScreenState extends State<SealScreen> {
                             Expanded(
                                 flex: 1,
                                 child: Icon(
+                                  Icons.stay_primary_landscape_outlined,
+                                  color: kPrimaryColor,
+                                )),
+                            Expanded(flex: 3, child: Text('Species Name : ')),
+                            Expanded(
+                                flex: 4,
+                                child: Text(widget.objectData['species']
+                                            .toString() ==
+                                        'null'
+                                    ? ''
+                                    : widget.objectData['species'].toString())),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Expanded(
+                                flex: 1,
+                                child: Icon(
                                   Icons.ac_unit,
                                   color: kPrimaryColor,
                                 )),
                             Expanded(flex: 3, child: Text('Product Name : ')),
                             Expanded(
                                 flex: 4,
-                                child: Text(widget
-                                            .objectData['product_category']
+                                child: Text(widget.objectData['prod_ref']
+                                                ['product_name']
                                             .toString() ==
                                         'null'
                                     ? ''
-                                    : widget.objectData['product_category']
+                                    : widget.objectData['prod_ref']
+                                            ['product_name']
                                         .toString())),
                           ],
                         ),
@@ -553,6 +573,7 @@ class _SealScreenState extends State<SealScreen> {
                           style: flatButtonStyle,
                           onPressed: () {
                             cardA.currentState?.toggleExpansion();
+                            cardC.currentState?.collapse();
                           },
                           child: Column(
                             children: <Widget>[
@@ -561,7 +582,7 @@ class _SealScreenState extends State<SealScreen> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 2.0),
                               ),
-                              Text('Toggle'),
+                              Text('Toggle Export Info'),
                             ],
                           ),
                         ),
@@ -606,12 +627,22 @@ class _SealScreenState extends State<SealScreen> {
   Future seal() async {
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
-    print(tokens);
+    String userId = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getInt('user_id').toString());
+    String stationId = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getInt('station_id').toString());
+    print(userId);
+    print(stationId);
+    var id = widget.objectData['id'].toString();
+    print(widget.objectData['id'].toString());
     try {
       var headers = {"Authorization": "Bearer " + tokens!};
-      var url =
-          Uri.parse('https://mis.tfs.go.tz/fremis/api/v1/export/seal/151');
-      final response = await http.get(url, headers: headers);
+      var url = Uri.parse('https://mis.tfs.go.tz/fremis/api/v1/export/seal');
+      final response = await http.post(url, headers: headers, body: {
+        "export_id": id.toString(),
+        "user_id": userId.toString(),
+        "station_id": stationId.toString()
+      });
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
@@ -690,7 +721,7 @@ class _SealScreenState extends State<SealScreen> {
                       end: Alignment.centerRight,
                       colors: [kPrimaryColor, Colors.green[200]!])),
               child: Text(
-                'Submit',
+                'Seal',
                 style: TextStyle(fontSize: 20, color: Colors.white),
               ),
             ),

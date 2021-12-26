@@ -38,7 +38,7 @@ class DealerModel {
 
   ///custom comparing function to check if two users are equal
   bool isEqual(DealerModel? model) {
-    if (this.fname == 'null') {
+    if (this.companyName != 'null') {
       return this.companyName == model?.companyName;
     } else {
       return this.fname == model?.fname;
@@ -46,5 +46,15 @@ class DealerModel {
   }
 
   @override
-  String toString() => fname;
+  String toString() => companyName == "null"
+      ? " " + fname.toString() == "null"
+          ? ""
+          : fname.toString() + " " + mname.toString() == "null"
+              ? ""
+              : mname.toString() + " " + lname.toString() == "null"
+                  ? "null"
+                  : lname.toString()
+      : companyName.toString() == "null"
+          ? ""
+          : companyName.toString();
 }
