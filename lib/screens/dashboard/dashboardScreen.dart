@@ -12,6 +12,7 @@ import 'package:tfsappv1/screens/ExportImport/permitList.dart';
 import 'package:tfsappv1/screens/Inventory/forestInventoryScreen.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/screens/dashboard/drawer.dart';
+import 'package:tfsappv1/screens/illegalproduct/illegal_product_screen.dart';
 
 import 'package:tfsappv1/screens/payments/systemsList.dart';
 import 'package:tfsappv1/screens/verification/verificationScreen.dart';
@@ -242,37 +243,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   mainAxisSpacing: 10,
                                   maxCrossAxisExtent: 200.0,
                                   children: <Widget>[
-                                    Container(
-                                        decoration: BoxDecoration(
-                                            color: Color(0xfff3f3f4),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  color: Colors.grey,
-                                                  offset: Offset.zero,
-                                                  blurRadius: 2)
-                                            ],
-                                            // border:
-                                            //     Border.all(color: Colors.grey),
-                                            borderRadius:
-                                                BorderRadius.circular(20)),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.grading_sharp,
-                                              size: 40.sp,
-                                              color: Colors.pink,
-                                            ),
-                                            Text(
-                                              "DashBoard",
-                                              style: TextStyle(
-                                                  fontSize: 10.sp,
-                                                  color: Colors.black87,
-                                                  fontWeight: FontWeight.bold),
-                                            )
-                                          ],
-                                        )),
                                     InkWell(
                                       onTap: () {
                                         Navigator.pushNamed(
@@ -351,6 +321,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                             ],
                                           )),
                                     ),
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                          context,
+                                          IllegalProductScreen.routeName,
+                                        ).then((_) => RealTimeCommunication()
+                                            .createConnection("3"));
+                                      },
+                                      child: Container(
+                                          decoration: BoxDecoration(
+                                              color: Color(0xfff3f3f4),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    color: Colors.grey,
+                                                    offset: Offset.zero,
+                                                    blurRadius: 3)
+                                              ],
+                                              borderRadius:
+                                                  BorderRadius.circular(20)),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.do_not_disturb_alt_sharp,
+                                                color: Colors.cyan,
+                                                size: 40.sp,
+                                              ),
+                                              Text(
+                                                "Illegal Product",
+                                                style: TextStyle(
+                                                    color: Colors.black87,
+                                                    fontSize: 10.sp,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              )
+                                            ],
+                                          )),
+                                    ),
                                     Container(
                                         decoration: BoxDecoration(
                                             color: Color(0xfff3f3f4),
@@ -358,8 +367,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               BoxShadow(
                                                   color: Colors.grey,
                                                   offset: Offset.zero,
-                                                  blurRadius: 3)
+                                                  blurRadius: 2)
                                             ],
+                                            // border:
+                                            //     Border.all(color: Colors.grey),
                                             borderRadius:
                                                 BorderRadius.circular(20)),
                                         child: Column(
@@ -367,15 +378,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               MainAxisAlignment.center,
                                           children: [
                                             Icon(
-                                              Icons.do_not_disturb_alt_sharp,
-                                              color: Colors.cyan,
+                                              Icons.animation_outlined,
                                               size: 40.sp,
+                                              color: Colors.pink,
                                             ),
                                             Text(
-                                              "Illegal Product",
+                                              " NFR",
                                               style: TextStyle(
-                                                  color: Colors.black87,
                                                   fontSize: 10.sp,
+                                                  color: Colors.black87,
                                                   fontWeight: FontWeight.bold),
                                             )
                                           ],

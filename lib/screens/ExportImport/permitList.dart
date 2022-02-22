@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:tfsappv1/screens/ExportImport/InspectionForm.dart';
@@ -103,33 +103,33 @@ class _PermittListState extends State<PermittList> {
 
   Future _scanQR() async {
     try {
-      String? barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          "GREEN", "Cancel", true, ScanMode.QR);
-      print(barcodeScanRes.toString() + "huushfuiewiu");
-      // ignore: unnecessary_null_comparison
-      var x = barcodeScanRes.toString() == "-1"
-          ? null
-          : barcodeScanRes.substring(7, 11);
+      // String? barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+      //     "GREEN", "Cancel", true, ScanMode.QR);
+      // print(barcodeScanRes.toString() + "huushfuiewiu");
+      // // ignore: unnecessary_null_comparison
+      // var x = barcodeScanRes.toString() == "-1"
+      //     ? null
+      //     : barcodeScanRes.substring(7, 11);
       // print(barcodeScanRes);
-      String tokens = await SharedPreferences.getInstance()
-          .then((prefs) => prefs.getString('token').toString());
+      // String tokens = await SharedPreferences.getInstance()
+      //     .then((prefs) => prefs.getString('token').toString());
       // print(x.toString() + "hfdhg");
-      if (x != null) {
-        setState(() {
-          isVerify = true;
-        });
+      // if (x != null) {
+      //   setState(() {
+      //     isVerify = true;
+      //   });
 
-        await verify(x, tokens);
-        setState(() {
-          isVerify = false;
-        });
-      } else {
-        enterTpNoPrompt(tokens);
-      }
+      //   await verify(x, tokens);
+      //   setState(() {
+      //     isVerify = false;
+      //   });
+      // } else {
+      //   enterTpNoPrompt(tokens);
+      // }
 
-      setState(() {
-        result = barcodeScanRes.toString();
-      });
+      // setState(() {
+      //   result = barcodeScanRes.toString();
+      // });
     } on PlatformException catch (ex) {
       setState(() {
         result = "Unknown Error $ex";

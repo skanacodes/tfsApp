@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:flutter/foundation.dart';
@@ -31,7 +32,9 @@ class _PosRegState extends State<PosReg> {
   String? issuedDate;
   String? androidId;
   String? brand;
-
+  static const platform1 = MethodChannel(
+    'samples.flutter.dev/deviceInfo',
+  );
   late TextEditingController _posnameController;
   TextEditingController? _serialNoController;
   TextEditingController? _imei1Controller;
@@ -41,7 +44,8 @@ class _PosRegState extends State<PosReg> {
   TextEditingController? _androidIdController;
 
   final _formKey = GlobalKey<FormState>();
-
+  bool isDevice = false;
+  var deviceInfo;
   String? ask1;
   List<String> ask = [
     'Operational',
@@ -49,6 +53,26 @@ class _PosRegState extends State<PosReg> {
     'Out Of Service',
     'New',
   ];
+
+  Future<void> _getDeviceInfo() async {
+    try {
+      var result =
+          await platform1.invokeMethod('getDeviceInfo', {"operation": "1"});
+
+      print(result);
+      if (result == "Not Supported") {
+        setState(() {
+          isDevice = true;
+        });
+      } else {
+        setState(() {
+          deviceInfo = result;
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   //DateTime now = DateTime.now();
   String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -80,13 +104,13 @@ class _PosRegState extends State<PosReg> {
 
       final response = await http.post(url,
           body: {
-            "android_id": androidId,
+            "android_id": deviceInfo['android_id'].toString(),
             "station_id": stationId.toString(),
             "pos_name": _posnameController.text,
-            "imei_1": _imei1Controller!.text,
-            "imei_2": _imei2Controller!.text,
+            "imei_1": deviceInfo["imeiSim1"].toString(),
+            "imei_2": deviceInfo["imeiSim2"].toString(),
             "checkpoint_id": checkpoint,
-            "brand": brand,
+            "brand": deviceInfo["brand"].toString(),
             "serial_no": _serialNoController!.text,
             "status": ask1,
             "issue_date": formattedDate,
@@ -284,6 +308,7 @@ class _PosRegState extends State<PosReg> {
 
   @override
   void initState() {
+    _getDeviceInfo();
     _posnameController = TextEditingController();
     _imei1Controller = TextEditingController();
     _imei2Controller = TextEditingController();
@@ -369,7 +394,12 @@ class _PosRegState extends State<PosReg> {
                     ),
                   ),
                   // Adding the form here
-                  forms()
+                  deviceInfo == null
+                      ? Center(
+                          child: Text(
+                              "Your Device Is Not Supported For Registration"),
+                        )
+                      : forms()
                 ],
               ),
             ),
@@ -380,6 +410,7 @@ class _PosRegState extends State<PosReg> {
   }
 
   forms() {
+    //print(deviceInfo["imeiSim2"].toString());
     return
         // Adding the form here
         Form(
@@ -397,31 +428,35 @@ class _PosRegState extends State<PosReg> {
                     TextFieldConstant(
                       textName: _androidIdController,
                       enabled: false,
-                      hintText: "ID: $androidId",
+                      textValue: deviceInfo["android_id"].toString(),
+                      hintText: "Android_ID: ",
                     ),
                     TextFieldConstant(
                       textName: _brandController,
                       enabled: false,
-                      hintText: "Brand: $brand",
+                      textValue: deviceInfo["brand"].toString(),
+                      hintText: "Brand",
+                    ),
+                    TextFieldConstant(
+                      textName: _imei1Controller,
+                      enabled: false,
+                      textValue: deviceInfo["imeiSim1"].toString(),
+                      hintText: "IMEI Sim1",
+                    ),
+                    TextFieldConstant(
+                      textName: _imei2Controller,
+                      enabled: false,
+                      textValue: deviceInfo["imeiSim2"].toString(),
+                      hintText: "IMEI Sim2",
+                    ),
+                    TextFieldConstant(
+                      textName: _serialNoController,
+                      enabled: true,
+                      hintText: "Serial Number ",
                     ),
                     TextFieldConstant(
                       textName: _posnameController,
                       hintText: "POS Name",
-                      enabled: true,
-                    ),
-                    TextFieldConstant(
-                      textName: _imei1Controller,
-                      hintText: "Imei_1",
-                      enabled: true,
-                    ),
-                    TextFieldConstant(
-                      textName: _imei2Controller,
-                      hintText: "Imei_2",
-                      enabled: true,
-                    ),
-                    TextFieldConstant(
-                      textName: _serialNoController,
-                      hintText: "Serial Number",
                       enabled: true,
                     ),
                     TextFieldConstant(

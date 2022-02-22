@@ -5,6 +5,7 @@ import 'package:tfsappv1/screens/ExportImport/sealScreen.dart';
 import 'package:tfsappv1/screens/Inventory/forestInventoryScreen.dart';
 import 'package:tfsappv1/screens/POSmanagement/posRegistration.dart';
 import 'package:tfsappv1/screens/dashboard/dashboardScreen.dart';
+import 'package:tfsappv1/screens/illegalproduct/illegal_product_screen.dart';
 import 'package:tfsappv1/screens/login/login.dart';
 import 'package:tfsappv1/screens/otp/otp.dart';
 import 'package:tfsappv1/screens/payments/billForm.dart';
@@ -43,5 +44,6 @@ final Map<String, WidgetBuilder> routes = {
   UpdateApp.routeName: (context) => UpdateApp(),
   BillManagement.routeName: (context) => BillManagement(""),
   ForestInventoryScreen.routeName: (context) => ForestInventoryScreen(),
-  ListSystems.routeName: (context) => ListSystems()
+  ListSystems.routeName: (context) => ListSystems(),
+  IllegalProductScreen.routeName: (context) => IllegalProductScreen()
 };

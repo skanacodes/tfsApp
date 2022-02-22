@@ -129,10 +129,10 @@ void callbackDispatcher() {
         var deviceId = prefs.getString("deviceId").toString();
         var lat = prefs.getString("latitude").toString();
         var long = prefs.getString("longitude").toString();
-        print("nsdjdsf.......");
-        print(lat + " dtyyfuuy");
-        print(long + "  guhyguu");
-        print(deviceId);
+        // print("nsdjdsf.......");
+        // print(lat + " dtyyfuuy");
+        // print(long + "  guhyguu");
+        // print(deviceId);
         print(DateTime.now().toString());
         var url = Uri.parse(
           'http://41.59.82.189:5555/api/v1/pos-management',

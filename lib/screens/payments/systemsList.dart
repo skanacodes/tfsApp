@@ -30,7 +30,7 @@ class _ListSystemsState extends State<ListSystems> {
         children: [
           Container(
             width: double.infinity,
-            height: 50.h,
+            height: 60.h,
             // color: kPrimaryColor,
             child: Stack(
               children: [
@@ -48,7 +48,7 @@ class _ListSystemsState extends State<ListSystems> {
                       child: AnimationLimiter(
                         child: ListView.builder(
                           shrinkWrap: true,
-                          itemCount: 4,
+                          itemCount: 5,
                           itemBuilder: (BuildContext context, int index) {
                             return AnimationConfiguration.staggeredList(
                               position: index,
@@ -79,10 +79,13 @@ class _ListSystemsState extends State<ListSystems> {
                                                           .createConnection("3"))
                                                   : index == 2
                                                       ? Navigator.push(context, MaterialPageRoute(builder: (context) => BillsDashBoard("HoneyTraceability"))).then((_) => RealTimeCommunication().createConnection("3"))
-                                                      : Navigator.pushNamed(
-                                                          context,
-                                                          PaymentList.routeName,
-                                                        ).then((_) => RealTimeCommunication().createConnection("3"));
+                                                      : index == 3
+                                                          ? Navigator.push(context, MaterialPageRoute(builder: (context) => BillsDashBoard("E-Auction"))).then((_) => RealTimeCommunication().createConnection("3"))
+                                                          : Navigator.pushNamed(
+                                                              context,
+                                                              PaymentList
+                                                                  .routeName,
+                                                            ).then((_) => RealTimeCommunication().createConnection("3"));
                                         },
                                         trailing: Icon(
                                           Icons.arrow_right,
@@ -96,7 +99,9 @@ class _ListSystemsState extends State<ListSystems> {
                                                 ? "SeedMIS Bills"
                                                 : index == 2
                                                     ? "HoneyTraceability"
-                                                    : "PMIS"),
+                                                    : index == 3
+                                                        ? "E-Auction"
+                                                        : "PMIS"),
                                       ),
                                     ),
                                   ),

@@ -37,7 +37,9 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
               ? ' SeedMIS'
               : widget.system == "HoneyTraceability"
                   ? "Honey-TraceAbility"
-                  : "Fremis",
+                  : widget.system == "E-Auction"
+                      ? "E-Auction"
+                      : "Fremis",
           style: GoogleFonts.portLligatSlab(
             textStyle: Theme.of(context).textTheme.bodyText1,
             fontSize: 13.sp,
@@ -82,7 +84,9 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
         ? this.getUserDetails()
         : widget.system == "HoneyTraceability"
             ? this.getUserDetails()
-            : this.getStats();
+            : widget.system == "E-Auction"
+                ? ""
+                : this.getStats();
 
     super.initState();
   }
@@ -168,7 +172,8 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                 children: <Widget>[
                                   InkWell(
                                     onTap: () {
-                                      widget.system == "Fremis"
+                                      widget.system == "Fremis" ||
+                                              widget.system == "E-Auction"
                                           ? ""
                                           : Navigator.push(
                                               context,
@@ -271,7 +276,10 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                       : widget.system ==
                                                               "HoneyTraceability"
                                                           ? "HoneyTraceability"
-                                                          : "Fremis"))).then(
+                                                          : widget.system ==
+                                                                  "E-Auction"
+                                                              ? "E-Auction"
+                                                              : "Fremis"))).then(
                                           (_) => RealTimeCommunication()
                                               .createConnection("3"));
                                     },
@@ -357,7 +365,10 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                       : widget.system ==
                                                               "HoneyTraceability"
                                                           ? "HoneyTraceability"
-                                                          : "Fremis"))).then(
+                                                          : widget.system ==
+                                                                  "E-Auction"
+                                                              ? "E-Auction"
+                                                              : "Fremis"))).then(
                                           (_) => RealTimeCommunication()
                                               .createConnection("3"));
                                     },
@@ -444,7 +455,10 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                       : widget.system ==
                                                               "HoneyTraceability"
                                                           ? "HoneyTraceability"
-                                                          : "Fremis"))).then(
+                                                          : widget.system ==
+                                                                  "E-Auction"
+                                                              ? "E-Auction"
+                                                              : "Fremis"))).then(
                                           (_) => RealTimeCommunication()
                                               .createConnection("3"));
                                     },
@@ -546,6 +560,51 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
           : Uri.parse(
               'https://mis.tfs.go.tz/honey-traceability/api/v1/bill-statistics/30');
       final response = await http.get(url, headers: headers);
+      var res;
+      //final sharedP prefs=await
+      print(response.statusCode);
+      switch (response.statusCode) {
+        case 200:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            dataStats = res['data'];
+          });
+
+          break;
+
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            isLoading = false;
+          });
+
+          break;
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        print(e);
+        //messages('Server Or Connectivity Error', 'error');
+      });
+    }
+    // _refreshController.refreshCompleted();
+  }
+
+  Future getDataEauction() async {
+    setState(() {
+      // isLoading = true;
+    });
+    try {
+      // var tokens = await SharedPreferences.getInstance()
+      //     .then((prefs) => prefs.getString('token'));
+      // print(tokens);
+      var url =
+          Uri.parse('https://mis.tfs.go.tz/e-auction-v2/api/bill/GetPaidBills');
+      final response = await http.get(
+        url,
+      );
       var res;
       //final sharedP prefs=await
       print(response.statusCode);

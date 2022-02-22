@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -205,45 +205,45 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
 
   Future _scanQR() async {
     try {
-      String? barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          "GREEN", "Cancel", true, ScanMode.QR);
-      print(barcodeScanRes.toString() + "huushfuiewiu");
+      // String? barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+      //     "GREEN", "Cancel", true, ScanMode.QR);
+      // print(barcodeScanRes.toString() + "huushfuiewiu");
 
-      // ignore: unnecessary_null_comparison
-      var x = barcodeScanRes.toString() == "-1" ? null : barcodeScanRes;
-      print(barcodeScanRes);
-      // String tokens = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getString('token').toString());
-      // print(x.toString() + "hfdhg");
-      if (x != null) {
-        setState(() {
-          isVerify = true;
-          quantity = 1;
-        });
-        await computeQuantity();
-        var res = jsonDecode(barcodeScanRes);
-        Map billElements = {
-          "price": res["price"],
-          "station_name": res["station_id"]["name"],
-          "quantity": quantity
-        };
-        print(billElements);
-        honeyId.add(res["honey_id"]);
-        quantities.add(billElements["quantity"]);
-        billData.add(billElements);
-        print(billData);
-        print(honeyId);
-        cardC.currentState?.expand();
-        setState(() {
-          isVerify = false;
-        });
-      } else {
-        //enterTpNoPrompt(tokens);
-      }
+      // // ignore: unnecessary_null_comparison
+      // var x = barcodeScanRes.toString() == "-1" ? null : barcodeScanRes;
+      // print(barcodeScanRes);
+      // // String tokens = await SharedPreferences.getInstance()
+      // //     .then((prefs) => prefs.getString('token').toString());
+      // // print(x.toString() + "hfdhg");
+      // if (x != null) {
+      //   setState(() {
+      //     isVerify = true;
+      //     quantity = 1;
+      //   });
+      //   await computeQuantity();
+      //   var res = jsonDecode(barcodeScanRes);
+      //   Map billElements = {
+      //     "price": res["price"],
+      //     "station_name": res["station_id"]["name"],
+      //     "quantity": quantity
+      //   };
+      //   print(billElements);
+      //   honeyId.add(res["honey_id"]);
+      //   quantities.add(billElements["quantity"]);
+      //   billData.add(billElements);
+      //   print(billData);
+      //   print(honeyId);
+      //   cardC.currentState?.expand();
+      //   setState(() {
+      //     isVerify = false;
+      //   });
+      // } else {
+      //   //enterTpNoPrompt(tokens);
+      // }
 
-      setState(() {
-        result = barcodeScanRes.toString();
-      });
+      // setState(() {
+      //   result = barcodeScanRes.toString();
+      // });
     } on PlatformException catch (ex) {
       setState(() {
         result = "Unknown Error $ex";

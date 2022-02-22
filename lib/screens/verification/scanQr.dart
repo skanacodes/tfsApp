@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:qrscan/qrscan.dart' as scanner;
+
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:http/http.dart' as http;
@@ -218,22 +219,32 @@ class _ScanQrState extends State<ScanQr> {
 
   Future _scanQR() async {
     try {
-      String? barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          "GREEN", "Cancel", true, ScanMode.QR);
-      // ignore: unnecessary_null_comparison
-      var x = barcodeScanRes == null ? null : barcodeScanRes.substring(11, 19);
-      String tokens = await SharedPreferences.getInstance()
-          .then((prefs) => prefs.getString('token').toString());
-      print(x);
-      if (x != null) {
-        await verifyTp(x, tokens);
-      } else {
-        enterTpNoPrompt(tokens);
+      String? barcodeScanRes = await scanner.scan();
+      // var x = barcodeScanRes == null ? null : barcodeScanRes.substring(11, 19);
+
+      // barcodeScanRes
+      if (barcodeScanRes != null) {
+        setState(() {
+          result = barcodeScanRes.toString();
+        });
       }
 
-      setState(() {
-        result = barcodeScanRes.toString();
-      });
+      // String? barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+      //     "GREEN", "Cancel", true, ScanMode.QR);
+      // // ignore: unnecessary_null_comparison
+      // var x = barcodeScanRes == null ? null : barcodeScanRes.substring(11, 19);
+      // String tokens = await SharedPreferences.getInstance()
+      //     .then((prefs) => prefs.getString('token').toString());
+      // print(x);
+      // if (x != null) {
+      //   await verifyTp(x, tokens);
+      // } else {
+      //   enterTpNoPrompt(tokens);
+      // }
+
+      // setState(() {
+      //   result = barcodeScanRes.toString();
+      // });
     } on PlatformException catch (ex) {
       setState(() {
         result = "Unknown Error $ex";
@@ -262,6 +273,7 @@ class _ScanQrState extends State<ScanQr> {
             },
             child: Container(
               width: MediaQuery.of(context).size.width,
+              height: getProportionateScreenHeight(70),
               padding: EdgeInsets.symmetric(vertical: 10),
               alignment: Alignment.center,
               decoration: BoxDecoration(

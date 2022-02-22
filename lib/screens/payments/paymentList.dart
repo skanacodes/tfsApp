@@ -40,6 +40,7 @@ class _PaymentListState extends State<PaymentList> {
       .format(DateTime.now().subtract(Duration(days: 7)));
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+
   Future getData() async {
     setState(() {
       isLoading = true;
@@ -62,6 +63,54 @@ class _PaymentListState extends State<PaymentList> {
       print(response.statusCode);
       switch (response.statusCode) {
         case 201:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            data = res['data'];
+            isLoading = false;
+          });
+
+          break;
+
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            isLoading = false;
+            messages('Ohps! Something Went Wrong', 'error');
+          });
+
+          break;
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        print(e);
+        messages('Server Or Connectivity Error', 'error');
+      });
+    }
+    _refreshController.refreshCompleted();
+  }
+
+  Future getDataEAuction() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      // var tokens = await SharedPreferences.getInstance()
+      //     .then((prefs) => prefs.getString('token'));
+      // var headers = {"Authorization": "Bearer " + tokens!};
+      var url = Uri.parse(
+          "https://mis.tfs.go.tz/e-auction/api/Bill/AccountsPayments");
+      final response = await http.get(
+        url,
+      );
+      var res;
+      //final sharedP prefs=await
+      print(response.statusCode);
+
+      switch (response.statusCode) {
+        case 200:
           setState(() {
             res = json.decode(response.body);
             print(res);
@@ -348,7 +397,9 @@ class _PaymentListState extends State<PaymentList> {
         ? this.getUserDetails()
         : widget.system == "HoneyTraceability"
             ? this.getUserDetails()
-            : this.getData();
+            : widget.system == "E-Auction"
+                ? this.getDataEAuction()
+                : this.getData();
 
     // ignore: todo
     // TODO: implement initState
@@ -399,7 +450,9 @@ class _PaymentListState extends State<PaymentList> {
                   ? this.getUserDetails()
                   : widget.system == "HoneyTraceability"
                       ? this.getUserDetails()
-                      : this.getData();
+                      : widget.system == "E-Auction"
+                          ? this.getDataEAuction()
+                          : this.getData();
             },
             onLoading: _onLoading,
             child: Column(
@@ -484,24 +537,35 @@ class _PaymentListState extends State<PaymentList> {
                                                               Payments
                                                                   .routeName,
                                                               arguments: ReceiptScreenArguments(
-                                                                  data[index]["payer_name"].toString(),
-                                                                  data[index]["control_number"].toString(),
-                                                                  widget.system == "seedMIS"
-                                                                      ? data[index]["PspReceiptNumber"]
-                                                                      : widget.system == "HoneyTraceability"
-                                                                          ? data[index]["psp_receipt_number"]
-                                                                          : data[index]["receipt_no"].toString(),
-                                                                  data[index]["bill_amount"].toString(),
+                                                                  widget.system == "E-Auction" ? data[index]["DealerName"].toString() : data[index]["payer_name"].toString(),
+                                                                  widget.system == "E-Auction" ? data[index]["ControlNumber"].toString() : data[index]["control_number"].toString(),
+                                                                  widget.system == "E-Auction"
+                                                                      ? data[index]["ReceiptNumber"].toString()
+                                                                      : widget.system == "seedMIS"
+                                                                          ? data[index]["PspReceiptNumber"]
+                                                                          : widget.system == "HoneyTraceability"
+                                                                              ? data[index]["psp_receipt_number"]
+                                                                              : data[index]["receipt_no"].toString(),
+                                                                  widget.system == "E-Auction" ? data[index]["BillAmount"] : data[index]["bill_amount"],
                                                                   false,
-                                                                  data[index]["bill_desc"].toString(),
-                                                                  widget.system == "seedMIS"
-                                                                      ? data[index]["payer_name"]
-                                                                      : widget.system == "HoneyTraceability"
+                                                                  widget.system == "E-Auction" ? data[index]["BillDesc"].toString() : data[index]["bill_desc"].toString(),
+                                                                  widget.system == "E-Auction"
+                                                                      ? data[index]["issuer"].toString()
+                                                                      : widget.system == "seedMIS"
                                                                           ? data[index]["payer_name"]
-                                                                          : data[index]["payer_name"].toString(),
+                                                                          : widget.system == "HoneyTraceability"
+                                                                              ? data[index]["payer_name"]
+                                                                              : data[index]["payer_name"].toString(),
                                                                   bankReceipt: data[index]["bank_receipt_no"],
-                                                                  payedDate: widget.system == "Fremis" ? data[index]["receipt_date"].toString() : "",
-                                                                  isPrinted: data[index]["is_printed"] == 0 ? false : true))
+                                                                  payedDate: widget.system == "E-Auction"
+                                                                      ? data[index]["TrasDateTime"].toString()
+                                                                      : widget.system == "Fremis"
+                                                                          ? data[index]["receipt_date"].toString()
+                                                                          : "",
+                                                                  plotname: widget.system == "E-Auction" ? data[index]["PlotName"].toString() : null,
+                                                                  station: widget.system == "E-Auction" ? data[index]["Station"].toString() : null,
+                                                                  isPrinted: data[index]["is_printed"] == 0 ? false : true,
+                                                                  billId: widget.system == "E-Auction" ? data[index]["BillId"].toString() : null))
                                                           .then((value) async {
                                                           setState(() {
                                                             isLoading = true;
@@ -514,8 +578,12 @@ class _PaymentListState extends State<PaymentList> {
                                                                       "HoneyTraceability"
                                                                   ? this
                                                                       .getUserDetails()
-                                                                  : this
-                                                                      .getData();
+                                                                  : widget.system ==
+                                                                          "E-Auction"
+                                                                      ? this
+                                                                          .getDataEAuction()
+                                                                      : this
+                                                                          .getData();
 
                                                           setState(() {
                                                             isLoading = false;
@@ -539,14 +607,20 @@ class _PaymentListState extends State<PaymentList> {
                                                         Colors.grey,
                                                     child:
                                                         Text('${index + 1}')),
-                                                title: Text("Name: " +
-                                                    data[index]["payer_name"]
-                                                        .toString()),
+                                                title: Text(widget.system ==
+                                                        "E-Auction"
+                                                    ? "Name: " +
+                                                        data[index]
+                                                            ["DealerName"]
+                                                    : "Name: " +
+                                                        data[index]
+                                                                ["payer_name"]
+                                                            .toString()),
                                                 subtitle: Text(widget.system ==
-                                                        "seedMIS"
+                                                        "E-Auction"
                                                     ? 'Control #: ' +
                                                         data[index][
-                                                                "control_number"]
+                                                                "ControlNumber"]
                                                             .toString()
                                                     : 'Control #: ' +
                                                         data[index][

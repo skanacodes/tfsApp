@@ -4,11 +4,13 @@ class TextFieldConstant extends StatelessWidget {
   final TextEditingController? textName;
   final String? hintText;
   final String? suffixIcons;
+  final String? textValue;
   final bool enabled;
   TextFieldConstant(
       {required this.textName,
       this.hintText,
       this.suffixIcons,
+      this.textValue,
       required this.enabled});
 
   @override
@@ -46,7 +48,8 @@ class TextFieldConstant extends StatelessWidget {
             padding: const EdgeInsets.only(top: 10, right: 16, left: 16),
             child: Container(
               child: TextFormField(
-                controller: textName,
+                // controller: textName,
+                initialValue: textValue,
                 keyboardType: TextInputType.text,
                 decoration: InputDecoration(
                   focusedBorder: OutlineInputBorder(
@@ -58,9 +61,10 @@ class TextFieldConstant extends StatelessWidget {
                   fillColor: Color(0xfff3f3f4),
                   filled: true,
                   labelText: hintText,
+                  labelStyle: TextStyle(color: Colors.black),
                   border: InputBorder.none,
                   isDense: true,
-                  enabled: enabled == true ? true : false,
+                  enabled: false,
                   contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                 ),
               ),

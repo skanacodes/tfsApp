@@ -32,36 +32,46 @@ class PaymentWidget extends StatefulWidget {
 class _PaymentWidgetState extends State<PaymentWidget> {
   var data;
   var brand;
+  String? billId;
   bool isLoading = false;
+  bool isItems = false;
   bool isEmail = false;
   bool isSms = false;
   bool isPrinting = false;
   bool isReceiptGenerated = false;
-  var printingFont = 20.0;
+  var printingFont = 17.0;
   static const platform = MethodChannel(
     'samples.flutter.dev/printing',
   );
+  List dataItems = [];
   Uint8List? _imageFile;
+  Uint8List? _imageFile1;
   String? payerMail;
   final _formKey = GlobalKey<FormState>();
   //Create an instance of ScreenshotController
   ScreenshotController screenshotController = ScreenshotController();
+  ScreenshotController screenshotController1 = ScreenshotController();
   Future updatePrinterStatus(controlNumber) async {
     setState(() {
       isLoading = true;
     });
     try {
-      // String stationId = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getInt('station_id').toString());
+      String email = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('email').toString());
+      //       String id = await SharedPreferences.getInstance()
+      // .then((prefs) => prefs.getInt('email').toString());
 
-      //print(stationId);
+      print(email);
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
       // var headers = {"Authorization": "Bearer " + tokens!};
+      // var url =
+      //     Uri.parse('http://mis.tfs.go.tz/fremis-test/api/v1/print_status');
+      print(billId);
       var url =
-          Uri.parse('http://mis.tfs.go.tz/fremis-test/api/v1/print_status');
-      final response =
-          await http.post(url, body: {"control_number": "$controlNumber"});
+          Uri.parse('http://mis.tfs.go.tz/e-auction/api/v1/Bill/PrintReceipt');
+      final response = await http
+          .post(url, body: {"Email": "$email", "Id": billId.toString()});
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
@@ -71,6 +81,56 @@ class _PaymentWidgetState extends State<PaymentWidget> {
             res = json.decode(response.body);
             print(res);
             data = res['message'].toString();
+          });
+
+          break;
+
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+
+            messages('Ohps! Something Went Wrong', 'error');
+          });
+
+          break;
+      }
+    } catch (e) {
+      setState(() {
+        print(e);
+        messages('Server Or Connectivity Error', 'error');
+      });
+    }
+  }
+
+  Future itemsReceipt(bill_Id) async {
+    setState(() {
+      isLoading = true;
+      billId = bill_Id;
+    });
+    try {
+      // String stationId = await SharedPreferences.getInstance()
+      //     .then((prefs) => prefs.getInt('station_id').toString());
+
+      //print(stationId);
+      // var tokens = await SharedPreferences.getInstance()
+      //     .then((prefs) => prefs.getString('token'));
+      // var headers = {"Authorization": "Bearer " + tokens!};
+      var url = Uri.parse(
+          'https://mis.tfs.go.tz/e-auction/api/Bill/GetPriceDistribution/$bill_Id');
+      final response = await http.get(
+        url,
+      );
+      var res;
+      //final sharedP prefs=await
+      print(response.statusCode);
+      switch (response.statusCode) {
+        case 200:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            isItems = true;
+            dataItems = res['data'];
           });
 
           break;
@@ -107,15 +167,41 @@ class _PaymentWidgetState extends State<PaymentWidget> {
     );
   }
 
-  Future<void> _getPrinter(controlNumber) async {
+  Future<void> _getPrinter(
+      {String? name,
+      String? controlNo,
+      String? receiptNo,
+      String? amount,
+      String? issuer,
+      String? paymentDate,
+      String? description,
+      String? plotname,
+      String? station,
+      List? items}) async {
     setState(() {
       isPrinting = true;
     });
+    List desc = [];
+    List amounts = [];
 
+    for (var i = 0; i < dataItems.length; i++) {
+      desc.add(dataItems[i]["ItemDescr"]);
+      amounts.add(formatNumber.format(dataItems[i]["BillItemEqvAmt"]));
+    }
+    // print(desc);
+    // print(amounts);
     await screenshotController.capture().then((Uint8List? image) {
       //Capture Done
       setState(() {
         _imageFile = image!;
+      });
+    }).catchError((onError) {
+      print(onError);
+    });
+    await screenshotController1.capture().then((Uint8List? image) {
+      //Capture Done
+      setState(() {
+        _imageFile1 = image!;
       });
     }).catchError((onError) {
       print(onError);
@@ -127,9 +213,23 @@ class _PaymentWidgetState extends State<PaymentWidget> {
           content: Text("Starting Printer"),
         ),
       );
-
-      final String result = await platform.invokeMethod('getBatteryLevel',
-          {"imageData": base64Encode(_imageFile!), "brand": brand});
+      // print(_imageFile1);
+      final String result = await platform.invokeMethod('getBatteryLevel', {
+        "imageData": base64Encode(_imageFile!),
+        "brand": brand,
+        "name": name,
+        "controlNo": controlNo,
+        "receiptNo": receiptNo,
+        "amount": amount,
+        "issuer": issuer,
+        "paymentDate": paymentDate,
+        "desc": description,
+        "itemsAmount": amounts,
+        "itemsDesc": desc,
+        "qrcode": base64Encode(_imageFile1!),
+        "plotname": plotname,
+        "station": station
+      });
 
       print(result);
       if (result == "Successfully Printed") {
@@ -142,7 +242,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
           setState(() {
             isReceiptGenerated = true;
           });
-        await updatePrinterStatus(controlNumber);
+        await updatePrinterStatus(controlNo);
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -263,47 +363,58 @@ class _PaymentWidgetState extends State<PaymentWidget> {
     });
     final args =
         ModalRoute.of(context)!.settings.arguments as ReceiptScreenArguments;
+    isItems
+        ? null
+        : args.billId == null
+            ? null
+            : itemsReceipt(args.billId);
 
     return Column(
       children: [
         isReceiptGenerated
             ? Container()
-            : Padding(
-                padding: const EdgeInsets.fromLTRB(13, 8, 13, 0),
-                child: Card(
-                    elevation: 10,
-                    child: Container(
-                        width: double.infinity,
-                        height: getProportionateScreenHeight(100),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: Icon(
-                                Icons.select_all,
-                                color: kPrimaryColor,
+            : dataItems.isEmpty
+                ? Container()
+                : Padding(
+                    padding: const EdgeInsets.fromLTRB(13, 8, 13, 0),
+                    child: Card(
+                        elevation: 10,
+                        child: Container(
+                            width: double.infinity,
+                            //  height: getProportionateScreenHeight(100),
+                            child: Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Icon(
+                                      Icons.select_all,
+                                      color: kPrimaryColor,
+                                    ),
+                                  ),
+                                  Expanded(
+                                      flex: 6,
+                                      child: Text(args.isBill
+                                          ? "How Do You Want To Receive Bill"
+                                          : "How Do You Want To Receive Receipt")),
+                                  Expanded(
+                                    flex: 1,
+                                    child: popBar(args),
+                                  )
+                                ],
                               ),
-                            ),
-                            Expanded(
-                                flex: 6,
-                                child: Text(args.isBill
-                                    ? "How Do You Want To Receive Bill"
-                                    : "How Do You Want To Receive Receipt")),
-                            Expanded(
-                              flex: 1,
-                              child: popBar(args),
-                            )
-                          ],
-                        ))),
-              ),
+                            ))),
+                  ),
         isReceiptGenerated ? Container() : userMail(args),
         Padding(
           padding: const EdgeInsets.all(20.0),
           child: Container(
             // height: isNotFpund
             //     ? getProportionateScreenHeight(100)
-            //     : getProportionateScreenHeight(300),
+            //     : getPropoPartionateScreenHeight(300),
             decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -316,312 +427,379 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20))),
-            child: Screenshot(
-              controller: screenshotController,
-              child: Container(
-                  color: Colors.white,
-                  child: Stack(children: [
-                    Column(
-                      children: [
-                        const SizedBox(
-                          height: 100,
-                        ),
-                        // Align(
-                        //     alignment: Alignment.topCenter, child: transform()),
-                        // Align(alignment: Alignment.center, child: transform()),
-                        // Align(
-                        //     alignment: Alignment.bottomCenter,
-                        //     child: transform()),
-                        // Align(
-                        //     alignment: Alignment.bottomCenter,
-                        //     child: transform()),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(1.0),
-                          child: Center(
-                            child: Container(
-                                height: isPrinting
-                                    ? getProportionateScreenHeight(350)
-                                    : getProportionateScreenHeight(300),
-                                width: isPrinting
-                                    ? getProportionateScreenHeight(400)
-                                    : getProportionateScreenHeight(350),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  // border: Border.all(
-                                  //     color: Colors.cyan,
-                                  //     style: BorderStyle.solid,
-                                  //     width: 1)
-                                ),
-                                child: Image.asset('assets/images/logo.png')),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Column(
-                            children: [
-                              Text('---------------------------',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: isPrinting ? printingFont : 20,
-                                      fontWeight: FontWeight.bold)),
-                              Text('TFSApp',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: isPrinting ? printingFont : 20,
-                                      fontWeight: FontWeight.bold)),
-                              Text(
-                                'Tanzania Forest Service Agency',
+            child: Container(
+                color: Colors.white,
+                child: Stack(children: [
+                  Column(
+                    children: [
+                      const SizedBox(
+                        height: 50,
+                      ),
+                      // Align(
+                      //     alignment: Alignment.topCenter, child: transform()),
+                      // Align(alignment: Alignment.center, child: transform()),
+                      // Align(
+                      //     alignment: Alignment.bottomCenter,
+                      //     child: transform()),
+                      // Align(
+                      //     alignment: Alignment.bottomCenter,
+                      //     child: transform()),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Screenshot(
+                          controller: screenshotController,
+                          child: Container(
+                            color: Colors.white,
+                            child: Padding(
+                                padding: const EdgeInsets.all(1.0),
+                                child: Center(
+                                  child: Container(
+                                      height: getProportionateScreenHeight(300),
+                                      width: getProportionateScreenHeight(300),
+                                      color: Colors.white,
+                                      child: Image.asset(
+                                        'assets/images/logo.png',
+                                      )),
+                                )),
+                          )),
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Column(
+                          children: [
+                            Text('---------------------------',
                                 style: TextStyle(
                                     color: Colors.black,
-                                    fontSize: isPrinting ? printingFont : 20,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text('(TFS).',
-                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold)),
+                            Text(
+                              ' Tanzania Forest Service Agency (TFS).',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text('---------------------------',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 10, right: 10, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                child: Text('Client: ',
+                                    style: TextStyle(
                                       color: Colors.black,
-                                      fontSize: isPrinting ? printingFont : 20,
-                                      fontWeight: FontWeight.bold)),
-                              Text('---------------------------',
+                                    ))),
+                            Expanded(
+                              child: Text(args.payerName.toString(),
                                   style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: isPrinting ? printingFont : 20,
-                                      fontWeight: FontWeight.bold)),
-                            ],
-                          ),
+                                    color: Colors.black,
+                                  )),
+                            )
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10, right: 10, bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                  child: Text('Name: ',
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize:
-                                              isPrinting ? printingFont : 20,
-                                          fontWeight: FontWeight.bold))),
-                              Expanded(
-                                child: Text(args.payerName.toString(),
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize:
-                                            isPrinting ? printingFont : 20,
-                                        fontWeight: FontWeight.bold)),
-                              )
-                            ],
-                          ),
-                        ),
-                        args.isBill
-                            ? Container()
-                            : Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 10, right: 10, bottom: 10),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                        child: Text('Receipt No: ',
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: isPrinting
-                                                    ? printingFont
-                                                    : 20,
-                                                fontWeight: FontWeight.bold))),
-                                    Expanded(
-                                      child: Text(args.receiptNo.toString(),
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: isPrinting
-                                                  ? printingFont
-                                                  : 20,
-                                              fontWeight: FontWeight.bold)),
-                                    )
-                                  ],
-                                ),
-                              ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10, right: 10, bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                  child: Text('Control No: ',
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize:
-                                              isPrinting ? printingFont : 20,
-                                          fontWeight: FontWeight.bold))),
-                              Expanded(
-                                child: Text(args.controlNumber.toString(),
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize:
-                                            isPrinting ? printingFont : 20,
-                                        fontWeight: FontWeight.bold)),
-                              )
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10, right: 10, bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                  child: Text('Desc: ',
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize:
-                                              isPrinting ? printingFont : 20,
-                                          fontWeight: FontWeight.bold))),
-                              Expanded(
-                                child: Text(args.desc.toString(),
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize:
-                                            isPrinting ? printingFont : 20,
-                                        fontWeight: FontWeight.bold)),
-                              )
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10, right: 10, bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                  child: Text(
-                                      args.isBill ? 'Fee' : 'Paid Fee: ',
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize:
-                                              isPrinting ? printingFont : 20,
-                                          fontWeight: FontWeight.bold))),
-                              Expanded(
-                                child: Text(args.amount.toString(),
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize:
-                                            isPrinting ? printingFont : 20,
-                                        fontWeight: FontWeight.bold)),
-                              )
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10, right: 10, bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                  child: Text('Payer: ',
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize:
-                                              isPrinting ? printingFont : 20,
-                                          fontWeight: FontWeight.bold))),
-                              Expanded(
-                                child: Text(args.issuer.toString(),
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize:
-                                            isPrinting ? printingFont : 20,
-                                        fontWeight: FontWeight.bold)),
-                              )
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10, right: 10, bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                  child: Text('Date: ',
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize:
-                                              isPrinting ? printingFont : 20,
-                                          fontWeight: FontWeight.bold))),
-                              Expanded(
-                                child: Text(args.payedDate.toString(),
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize:
-                                            isPrinting ? printingFont : 20,
-                                        fontWeight: FontWeight.bold)),
-                              )
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 2),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('---------------------------',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: isPrinting ? printingFont : 20,
-                                      fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              QrImage(
-                                data: args.isBill
-                                    ? args.controlNumber
-                                    : args.receiptNo.toString(),
-                                version: QrVersions.auto,
-                                size: 200,
-                                gapless: false,
-                              ),
-                            ],
-                          ),
-                        ),
-                        args.isBill
-                            ? Container()
-                            : Padding(
-                                padding: const EdgeInsets.all(5),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                          'Genuine Receipt for cash Received',
+                      ),
+                      args.isBill
+                          ? Container()
+                          : Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10, right: 10, bottom: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                      child: Text('Receipt No: ',
                                           style: TextStyle(
                                             color: Colors.black,
-                                            fontSize:
-                                                isPrinting ? printingFont : 20,
-                                          )),
-                                    ),
-                                  ],
-                                ),
+                                          ))),
+                                  Expanded(
+                                    child: Text(args.receiptNo.toString(),
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        )),
+                                  )
+                                ],
                               ),
-                      ],
-                    ),
-                  ])),
-            ),
+                            ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 10, right: 10, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                child: Text('Control No: ',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ))),
+                            Expanded(
+                              child: Text(args.controlNumber.toString(),
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  )),
+                            )
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 10, right: 10, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                child: Text('Desc: ',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ))),
+                            Expanded(
+                              child: Text(args.desc.toString(),
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  )),
+                            )
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 10, right: 10, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                child: Text('Plot Name: ',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ))),
+                            Expanded(
+                              child: Text(args.plotname.toString(),
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  )),
+                            )
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 10, right: 10, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                child: Text('Station: ',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ))),
+                            Expanded(
+                              child: Text(args.station!,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  )),
+                            )
+                          ],
+                        ),
+                      ),
+                      args.isBill
+                          ? Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10, right: 10, bottom: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                      child: Text('Fee',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ))),
+                                  Expanded(
+                                    child:
+                                        Text(formatNumber.format(args.amount),
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                            )),
+                                  )
+                                ],
+                              ),
+                            )
+                          : Container(),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 10, right: 10, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                child: Text('Issuer: ',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ))),
+                            Expanded(
+                              child: Text(args.issuer,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  )),
+                            )
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 10, right: 10, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                child: Text('Paid On: ',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ))),
+                            Expanded(
+                              child: Text(args.payedDate.toString(),
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  )),
+                            )
+                          ],
+                        ),
+                      ),
+                      Divider(
+                        color: Colors.grey[400],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 10, right: 10, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                flex: 6,
+                                child: Text('Description ',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ))),
+                            Expanded(
+                              flex: 3,
+                              child: Text('Amount',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  )),
+                            )
+                          ],
+                        ),
+                      ),
+                      Divider(
+                        color: Colors.grey[400],
+                      ),
+                      for (var i = 0; i < dataItems.length; i++)
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 10, right: 10, bottom: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                  flex: 6,
+                                  child: Text(dataItems[i]['ItemDescr'],
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                      ))),
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                    ": " +
+                                        formatNumber.format(
+                                            dataItems[i]['BillItemAmt']),
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    )),
+                              )
+                            ],
+                          ),
+                        ),
+                      Divider(
+                        color: Colors.grey[400],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 10, right: 10, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                flex: 6,
+                                child: Text('Total Amount: ',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold))),
+                            Expanded(
+                              flex: 3,
+                              child: Text(formatNumber.format(args.amount),
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold)),
+                            )
+                          ],
+                        ),
+                      ),
+                      Divider(
+                        color: Colors.grey[400],
+                      ),
+                      Screenshot(
+                          controller: screenshotController1,
+                          child: Container(
+                            color: Colors.white,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  QrImage(
+                                    data: args.isBill
+                                        ? args.controlNumber
+                                        : args.receiptNo.toString(),
+                                    version: QrVersions.auto,
+                                    size: 200,
+                                    gapless: false,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )),
+                      args.isBill
+                          ? Container()
+                          : Padding(
+                              padding: const EdgeInsets.all(5),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Center(
+                                      child: Text(
+                                        'Genuine Receipt for cash Received',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                    ],
+                  ),
+                ])),
           ),
-        )
+        ),
       ],
     );
   }
@@ -1028,7 +1206,17 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         itemBuilder: (context) => [
           PopupMenuItem(
             onTap: () async {
-              await _getPrinter(args.controlNumber);
+              await _getPrinter(
+                  amount: formatNumber.format(args.amount),
+                  controlNo: args.controlNumber,
+                  issuer: args.issuer,
+                  name: args.payerName,
+                  paymentDate: args.payedDate,
+                  receiptNo: args.receiptNo,
+                  items: dataItems,
+                  description: args.desc,
+                  plotname: args.plotname,
+                  station: args.station);
             },
             child: Row(
               children: [

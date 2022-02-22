@@ -39,6 +39,55 @@ class _ExpiredBillsState extends State<ExpiredBills> {
       .format(DateTime.now().subtract(Duration(days: 7)));
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+
+  Future getDataEAuction() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      // var tokens = await SharedPreferences.getInstance()
+      //     .then((prefs) => prefs.getString('token'));
+      // print(tokens);
+      // var headers = {"Authorization": "Bearer " + tokens!};
+      var url = Uri.parse(
+          'https://mis.tfs.go.tz/e-auction/api/Bill/AccountsExpiredBill');
+      final response = await http.get(
+        url,
+      );
+      var res;
+      //final sharedP prefs=await
+      print(response.statusCode);
+      switch (response.statusCode) {
+        case 200:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            data = res['data'];
+            isLoading = false;
+          });
+
+          break;
+
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            isLoading = false;
+            messages('Ohps! Something Went Wrong', 'error');
+          });
+
+          break;
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        print(e);
+        messages('Server Or Connectivity Error', 'error');
+      });
+    }
+    _refreshController.refreshCompleted();
+  }
+
   Future getData() async {
     setState(() {
       isLoading = true;
@@ -277,7 +326,9 @@ class _ExpiredBillsState extends State<ExpiredBills> {
         ? this.getUserDetails()
         : widget.system == "HoneyTraceability"
             ? this.getUserDetails()
-            : this.getData();
+            : widget.system == "E-Auction"
+                ? this.getDataEAuction()
+                : this.getData();
 
     // ignore: todo
     // TODO: implement initState
@@ -328,7 +379,9 @@ class _ExpiredBillsState extends State<ExpiredBills> {
                   ? this.getUserDetails()
                   : widget.system == "HoneyTraceability"
                       ? this.getUserDetails()
-                      : this.getData();
+                      : widget.system == "E-Auction"
+                          ? this.getDataEAuction()
+                          : this.getData();
             },
             onLoading: _onLoading,
             child: Column(
@@ -403,30 +456,33 @@ class _ExpiredBillsState extends State<ExpiredBills> {
                                             child: Container(
                                               child: ListTile(
                                                 onTap: () {
-                                                  Navigator.pushNamed(context,
-                                                      Payments.routeName,
-                                                      arguments:
-                                                          ReceiptScreenArguments(
-                                                        data[index]
-                                                                ["payer_name"]
-                                                            .toString(),
-                                                        data[index][
-                                                                "control_number"]
-                                                            .toString(),
-                                                        widget.system ==
-                                                                "seedMIS"
-                                                            ? ""
-                                                            : data[index][
+                                                  widget.system == "E-Auction"
+                                                      ? null
+                                                      : Navigator.pushNamed(
+                                                          context,
+                                                          Payments.routeName,
+                                                          arguments:
+                                                              ReceiptScreenArguments(
+                                                            data[index][
+                                                                    "payer_name"]
+                                                                .toString(),
+                                                            data[index][
                                                                     "control_number"]
                                                                 .toString(),
-                                                        data[index]
-                                                                ["bill_amount"]
-                                                            .toString(),
-                                                        true,
-                                                        data[index]["bill_desc"]
-                                                            .toString(),
-                                                        "",
-                                                      ));
+                                                            widget.system ==
+                                                                    "seedMIS"
+                                                                ? ""
+                                                                : data[index][
+                                                                        "control_number"]
+                                                                    .toString(),
+                                                            data[index]
+                                                                ["bill_amount"],
+                                                            true,
+                                                            data[index][
+                                                                    "bill_desc"]
+                                                                .toString(),
+                                                            "",
+                                                          ));
                                                 },
                                                 trailing: Column(
                                                   mainAxisAlignment:
@@ -444,14 +500,21 @@ class _ExpiredBillsState extends State<ExpiredBills> {
                                                         Colors.grey,
                                                     child:
                                                         Text('${index + 1}')),
-                                                title: Text("Name: " +
-                                                    data[index]["payer_name"]
-                                                        .toString()),
+                                                title: Text(widget.system ==
+                                                        "E-Auction"
+                                                    ? "Name: " +
+                                                        data[index]
+                                                                ["DealerName"]
+                                                            .toString()
+                                                    : "Name: " +
+                                                        data[index]
+                                                                ["payer_name"]
+                                                            .toString()),
                                                 subtitle: Text(widget.system ==
-                                                        "seedMIS"
+                                                        "E-Auction"
                                                     ? 'Control #: ' +
                                                         data[index][
-                                                                "control_number"]
+                                                                "ControlNumber"]
                                                             .toString()
                                                     : 'Control #: ' +
                                                         data[index][

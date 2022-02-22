@@ -67,8 +67,8 @@ class _LoginScreenState extends State<LoginScreen> {
       // print(password);
 
       var url = Uri.parse('$baseUrl/api/v1/login');
-      var username = "barakasikana@gmail.com";
-      var password = "baraka540";
+      // var username = "barakasikana@gmail.com";
+      // var password = "baraka540";
       final response = await http.post(
         url,
         body: {'email': username, 'password': password, 'android_id': devId!},
@@ -201,8 +201,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                     return null;
                   },
-                  // validator: (value) =>
-                  //     value == '' ? 'This  Field Is Required' : null,
+                  validator: (value) =>
+                      value == '' ? 'This  Field Is Required' : null,
                   onSaved: (value) {
                     setState(() {
                       isPassword ? password = value! : username = value!;
