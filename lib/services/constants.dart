@@ -47,7 +47,8 @@ const kSecondaryColor = Color(0xFF979797);
 const kTextColor = Color(0xFF757575);
 
 const kAnimationDuration = Duration(milliseconds: 200);
-var baseUrl = "https://mis.tfs.go.tz/fremis";
+var baseUrl = "https://mis.tfs.go.tz/fremis-test";
+var baseUrlTest = "https://mis.tfs.go.tz/fremis-test";
 var baseUrlSeed = "http://41.59.227.103:9092";
 final headingStyle = TextStyle(
   fontSize: getProportionateScreenWidth(28),

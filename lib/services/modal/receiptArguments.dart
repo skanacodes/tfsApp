@@ -10,6 +10,7 @@ class ReceiptScreenArguments {
   final String? payedDate;
   final String? plotname;
   final String? station;
+  final String? system;
   bool? isPrinted;
   final String? billId;
 
@@ -18,6 +19,7 @@ class ReceiptScreenArguments {
       {this.bankReceipt,
       this.isPrinted,
       this.payedDate,
+      this.system,
       this.billId,
       this.station,
       this.plotname});

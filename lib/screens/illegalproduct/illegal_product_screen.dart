@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: unused_field
 
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/material.dart';
 
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
-import 'package:sizer/sizer.dart';
 
 class IllegalProductScreen extends StatefulWidget {
   static String routeName = "/illigalProductBills";
@@ -234,6 +233,7 @@ class _IllegalProductScreenState extends State<IllegalProductScreen> {
                             if (value == null) {
                               return "This Field is required";
                             }
+                            return null;
                           },
                           onChanged: (value) {
                             setState(() {
@@ -338,40 +338,6 @@ class _IllegalProductScreenState extends State<IllegalProductScreen> {
     setState(() => stepperType == StepperType.horizontal
         ? stepperType = StepperType.vertical
         : stepperType = StepperType.horizontal);
-  }
-
-  Widget _title() {
-    return RichText(
-      textAlign: TextAlign.center,
-      text: TextSpan(
-          text: type == 'Internal Market'
-              ? 'Internal Market'
-              : type == 'Export'
-                  ? 'Export'
-                  : 'Import',
-          style: GoogleFonts.portLligatSans(
-            textStyle: Theme.of(context).textTheme.bodyText1,
-            fontSize: 15.0.sp,
-            fontWeight: FontWeight.w700,
-            color: kPrimaryColor,
-          ),
-          children: [
-            TextSpan(
-              text: ' Inspection ',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 15.0.sp,
-              ),
-            ),
-            TextSpan(
-              text: ' Form',
-              style: TextStyle(
-                color: Colors.green[200],
-                fontSize: 15.0.sp,
-              ),
-            ),
-          ]),
-    );
   }
 
   @override

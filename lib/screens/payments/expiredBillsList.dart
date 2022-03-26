@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:intl/intl.dart';
 import 'package:tfsappv1/screens/payments/payments.dart';
@@ -97,7 +98,12 @@ class _ExpiredBillsState extends State<ExpiredBills> {
       //     .then((prefs) => prefs.getString('token'));
       // print(tokens);
       // var headers = {"Authorization": "Bearer " + tokens!};
-      var url = Uri.parse('http://mis.tfs.go.tz/fremis-test/api/v1/paid-bills');
+      String stationId = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getInt('station_id').toString());
+
+      print(stationId);
+      var url = Uri.parse(
+          'http://mis.tfs.go.tz/fremis-test/api/v1/expired-bills/$stationId');
       final response = await http.get(
         url,
       );
@@ -105,7 +111,7 @@ class _ExpiredBillsState extends State<ExpiredBills> {
       //final sharedP prefs=await
       print(response.statusCode);
       switch (response.statusCode) {
-        case 201:
+        case 200:
           setState(() {
             res = json.decode(response.body);
             print(res);
@@ -495,11 +501,25 @@ class _ExpiredBillsState extends State<ExpiredBills> {
                                                     ),
                                                   ],
                                                 ),
-                                                leading: CircleAvatar(
-                                                    backgroundColor:
-                                                        Colors.grey,
-                                                    child:
-                                                        Text('${index + 1}')),
+                                                leading: IntrinsicHeight(
+                                                    child: SizedBox(
+                                                        height:
+                                                            double.maxFinite,
+                                                        width:
+                                                            getProportionateScreenHeight(
+                                                                50),
+                                                        child: Row(
+                                                          children: [
+                                                            VerticalDivider(
+                                                              color: index
+                                                                      .isEven
+                                                                  ? kPrimaryColor
+                                                                  : Colors.green[
+                                                                      200],
+                                                              thickness: 5,
+                                                            )
+                                                          ],
+                                                        ))),
                                                 title: Text(widget.system ==
                                                         "E-Auction"
                                                     ? "Name: " +

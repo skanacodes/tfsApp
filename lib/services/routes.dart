@@ -3,6 +3,10 @@ import 'package:tfsappv1/screens/ExportImport/grading.dart';
 import 'package:tfsappv1/screens/ExportImport/permitList.dart';
 import 'package:tfsappv1/screens/ExportImport/sealScreen.dart';
 import 'package:tfsappv1/screens/Inventory/forestInventoryScreen.dart';
+import 'package:tfsappv1/screens/NfrScreen/createTourism.dart';
+import 'package:tfsappv1/screens/NfrScreen/generateQr.dart';
+import 'package:tfsappv1/screens/NfrScreen/nfrScreen.dart';
+import 'package:tfsappv1/screens/NfrScreen/toursList.dart';
 import 'package:tfsappv1/screens/POSmanagement/posRegistration.dart';
 import 'package:tfsappv1/screens/dashboard/dashboardScreen.dart';
 import 'package:tfsappv1/screens/illegalproduct/illegal_product_screen.dart';
@@ -20,6 +24,8 @@ import 'package:tfsappv1/screens/payments/systemsList.dart';
 import 'package:tfsappv1/screens/splash/splashscreen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tfsappv1/screens/updates/updates.dart';
+import 'package:tfsappv1/screens/verification/expectedTpHistory.dart';
+import 'package:tfsappv1/screens/verification/tpTimeline.dart';
 import 'package:tfsappv1/screens/verification/verificationScreen.dart';
 
 // We use name route
@@ -45,5 +51,13 @@ final Map<String, WidgetBuilder> routes = {
   BillManagement.routeName: (context) => BillManagement(""),
   ForestInventoryScreen.routeName: (context) => ForestInventoryScreen(),
   ListSystems.routeName: (context) => ListSystems(),
-  IllegalProductScreen.routeName: (context) => IllegalProductScreen()
+  IllegalProductScreen.routeName: (context) => IllegalProductScreen(),
+  NFRScreen.routeName: (context) => NFRScreen(),
+  CreateTourism.routeName: (context) => CreateTourism(),
+  TPtimeline.routeName: ((context) => TPtimeline()),
+  GenerateQrCode.routeName: (context) => GenerateQrCode(
+        id: "",
+      ),
+  VisitorsList.routeName: ((context) => VisitorsList()),
+  ExpectedTP.routeName: ((context) => ExpectedTP())
 };

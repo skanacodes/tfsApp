@@ -5,6 +5,7 @@ import 'package:tfsappv1/screens/payments/billsDashboard.dart';
 import 'package:tfsappv1/screens/payments/paymentList.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:sizer/sizer.dart';
+import 'package:tfsappv1/services/size_config.dart';
 
 class ListSystems extends StatefulWidget {
   static String routeName = "/listsystems";
@@ -91,8 +92,22 @@ class _ListSystemsState extends State<ListSystems> {
                                           Icons.arrow_right,
                                           color: Colors.cyan,
                                         ),
-                                        leading: CircleAvatar(
-                                            child: Icon(Icons.list)),
+                                        leading: IntrinsicHeight(
+                                            child: SizedBox(
+                                                height: double.maxFinite,
+                                                width:
+                                                    getProportionateScreenHeight(
+                                                        50),
+                                                child: Row(
+                                                  children: [
+                                                    VerticalDivider(
+                                                      color: index.isEven
+                                                          ? kPrimaryColor
+                                                          : Colors.green[200],
+                                                      thickness: 5,
+                                                    )
+                                                  ],
+                                                ))),
                                         title: Text(index == 0
                                             ? "FreMIS Bills"
                                             : index == 1

@@ -14,7 +14,6 @@ class SystemsList extends StatefulWidget {
 }
 
 class _SystemsListState extends State<SystemsList> {
-  int _currentIndex = 0;
   List cardList = [Item1(), Item2(), Item3(), Item4()];
   List<T> map<T>(List list, Function handler) {
     List<T> result = [];
@@ -109,9 +108,7 @@ class _SystemsListState extends State<SystemsList> {
                 autoPlayCurve: Curves.fastLinearToSlowEaseIn,
                 pauseAutoPlayOnTouch: true,
                 onPageChanged: (index, reason) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
+                  setState(() {});
                 },
               ),
               items: cardList.map((card) {

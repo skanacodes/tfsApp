@@ -372,6 +372,7 @@ class _SeedsState extends State<Seeds> {
                         if (value == null) {
                           return "This Field is required";
                         }
+                        return null;
                       },
                       onChanged: (value) {
                         setState(() {
@@ -798,6 +799,7 @@ class _SeedsState extends State<Seeds> {
                                   if (value == null) {
                                     return "This Field is required";
                                   }
+                                  return null;
                                 },
                                 onChanged: (value) {
                                   setState(() {

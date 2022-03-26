@@ -1,35 +1,28 @@
 import 'dart:convert';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:intl/intl.dart';
-import 'package:tfsappv1/screens/payments/payments.dart';
-
-import 'package:tfsappv1/services/constants.dart';
-import 'package:tfsappv1/services/modal/receiptArguments.dart';
-
-import 'package:tfsappv1/services/size_config.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:http/http.dart' as http;
+import 'package:tfsappv1/screens/NfrScreen/generateQr.dart';
+import 'package:tfsappv1/services/constants.dart';
+import 'package:tfsappv1/services/size_config.dart';
 
-class PaymentList extends StatefulWidget {
-  static String routeName = "/paymentList";
-  final String system;
-  PaymentList(this.system);
+class VisitorsList extends StatefulWidget {
+  static String routeName = "/Visitors";
+  VisitorsList({Key? key}) : super(key: key);
 
   @override
-  _PaymentListState createState() => _PaymentListState();
+  State<VisitorsList> createState() => _VisitorsListState();
 }
 
-class _PaymentListState extends State<PaymentList> {
+class _VisitorsListState extends State<VisitorsList> {
   String? type;
-  String? controlNo;
   List data = [];
+  var groupNo = "USR_";
   var seedToken;
   bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
@@ -41,57 +34,6 @@ class _PaymentListState extends State<PaymentList> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  Future getData() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      String stationId = await SharedPreferences.getInstance()
-          .then((prefs) => prefs.getInt('station_id').toString());
-
-      print(stationId);
-      // var tokens = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getString('token'));
-      // var headers = {"Authorization": "Bearer " + tokens!};
-      var url = Uri.parse(
-          'http://mis.tfs.go.tz/fremis-test/api/v1/paid-bills/$stationId');
-      final response = await http.get(
-        url,
-      );
-      var res;
-      //final sharedP prefs=await
-      print(response.statusCode);
-      switch (response.statusCode) {
-        case 201:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            data = res['data'];
-            isLoading = false;
-          });
-
-          break;
-
-        default:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            isLoading = false;
-            messages('Ohps! Something Went Wrong', 'error');
-          });
-
-          break;
-      }
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-        print(e);
-        messages('Server Or Connectivity Error', 'error');
-      });
-    }
-    _refreshController.refreshCompleted();
-  }
-
   Future getDataEAuction() async {
     setState(() {
       isLoading = true;
@@ -99,16 +41,16 @@ class _PaymentListState extends State<PaymentList> {
     try {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
+      // print(tokens);
       // var headers = {"Authorization": "Bearer " + tokens!};
       var url = Uri.parse(
-          "https://mis.tfs.go.tz/e-auction/api/Bill/AccountsPayments");
+          'https://mis.tfs.go.tz/e-auction/api/Bill/AccountsExpiredBill');
       final response = await http.get(
         url,
       );
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
-
       switch (response.statusCode) {
         case 200:
           setState(() {
@@ -140,7 +82,7 @@ class _PaymentListState extends State<PaymentList> {
     _refreshController.refreshCompleted();
   }
 
-  Future getDataSeed() async {
+  Future getData() async {
     setState(() {
       isLoading = true;
     });
@@ -148,64 +90,11 @@ class _PaymentListState extends State<PaymentList> {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
       // print(tokens);
-      var url = widget.system == "seedMIS"
-          ? Uri.parse('http://41.59.227.103:9092/api/v1/paid-bills')
-          : Uri.parse(
-              'https://mis.tfs.go.tz/honey-traceability/api/v1/paid-bills');
-      var headers = {"Authorization": "Bearer " + seedToken};
-
-      final response = await http.get(url, headers: headers);
-      var res;
-
-      print(response.statusCode);
-      switch (response.statusCode) {
-        case 200:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            data = res['data'];
-            isLoading = false;
-          });
-
-          break;
-
-        default:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            isLoading = false;
-            messages('Ohps! Something Went Wrong', 'error');
-          });
-
-          break;
-      }
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-        print(e);
-        messages('Server Or Connectivity Error', 'error');
-      });
-    }
-    _refreshController.refreshCompleted();
-  }
-
-  Future sortData(String duration) async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      print(duration);
-      // var tokens = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
-      var headers = {"Authorization": "Bearer " + seedToken};
-      var url = widget.system == "seedMIS"
-          ? Uri.parse(
-              'http://41.59.227.103:9092/api/v1/search-payment-history/$duration/$formattedDate')
-          : Uri.parse(
-              'https://mis.tfs.go.tz/honey-traceability/api/v1/search-payment-history/$duration/$formattedDate');
-
-      final response = await http.get(url, headers: headers);
+      // var headers = {"Authorization": "Bearer " + tokens!};
+      var url = Uri.parse('$baseUrlTest/api/v1/user_groups');
+      final response = await http.get(
+        url,
+      );
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
@@ -214,7 +103,7 @@ class _PaymentListState extends State<PaymentList> {
           setState(() {
             res = json.decode(response.body);
             print(res);
-            data = res['data'];
+            data = res['groups'];
             isLoading = false;
           });
 
@@ -248,14 +137,12 @@ class _PaymentListState extends State<PaymentList> {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
       // print(tokens);
-      var headers = {"Authorization": "Bearer " + seedToken};
-      var url = widget.system == "seedMIS"
-          ? Uri.parse(
-              'http://41.59.227.103:9092/api/v1/bill-by-controlnumber/$controlNo/1')
-          : Uri.parse(
-              'https://mis.tfs.go.tz/honey-traceability/api/v1/bill-by-controlnumber/$controlNo/1');
+      // var headers = {"Authorization": "Bearer " + seedToken};
+      var url = Uri.parse('$baseUrlTest/api/v1/user_groups/$groupNo');
 
-      final response = await http.get(url, headers: headers);
+      final response = await http.get(
+        url,
+      );
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
@@ -264,7 +151,7 @@ class _PaymentListState extends State<PaymentList> {
           setState(() {
             res = json.decode(response.body);
             print(res);
-            data = res['data'];
+            data = res['groups'];
             isLoading = false;
           });
 
@@ -303,14 +190,9 @@ class _PaymentListState extends State<PaymentList> {
     String desc,
   ) {
     return Alert(
-      style: AlertStyle(descStyle: TextStyle(fontSize: 17)),
       context: context,
-      type: type == 'success'
-          ? AlertType.success
-          : type == "info"
-              ? AlertType.info
-              : AlertType.error,
-      // title: 'Information',
+      type: type == 'success' ? AlertType.success : AlertType.error,
+      title: 'Information',
       desc: desc,
       buttons: [
         DialogButton(
@@ -332,42 +214,51 @@ class _PaymentListState extends State<PaymentList> {
   }
 
   searchBar() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(
-          Radius.circular(20),
+    return Form(
+      key: _formKey,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(
+            Radius.circular(20),
+          ),
         ),
-      ),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-              flex: 4,
-              child: Form(
-                key: _formKey,
+        child: Row(
+          children: <Widget>[
+            Expanded(
+                flex: 4,
                 child: Container(
                   child: TextFormField(
-                      onChanged: (value) {
-                        return null;
-                      },
                       validator: (value) =>
                           value == '' ? 'This  Field Is Required' : null,
                       onSaved: (value) {
-                        controlNo = value;
+                        setState(() {
+                          groupNo = "USR_";
+                        });
+                        groupNo = groupNo + value!;
+                      },
+                      onFieldSubmitted: (value) async {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          print(groupNo);
+                          await searchData();
+                        }
+                        //print('Pressed via keypad');
                       },
                       keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.search,
                       cursorColor: kPrimaryColor,
                       decoration: InputDecoration(
                           suffixIcon: InkWell(
                             onTap: () async {
                               if (_formKey.currentState!.validate()) {
                                 _formKey.currentState!.save();
-                                print(controlNo);
+                                print(groupNo);
                                 await searchData();
                               }
                             },
                             child: Icon(
                               Icons.search,
-                              size: 23,
+                              size: 20,
                               color: Colors.black,
                             ),
                           ),
@@ -376,30 +267,20 @@ class _PaymentListState extends State<PaymentList> {
                           border: InputBorder.none,
                           fillColor: Color(0xfff3f3f4),
                           label: Text(
-                            "Control Number",
+                            "Search By Group Id",
                             style: TextStyle(fontSize: 15, color: Colors.black),
                           ),
                           filled: true)),
-                ),
-              )),
-          Expanded(
-            flex: 2,
-            child: popBar(),
-          )
-        ],
+                )),
+          ],
+        ),
       ),
     );
   }
 
   @override
   void initState() {
-    widget.system == "seedMIS"
-        ? this.getUserDetails()
-        : widget.system == "HoneyTraceability"
-            ? this.getUserDetails()
-            : widget.system == "E-Auction"
-                ? this.getDataEAuction()
-                : this.getData();
+    this.getData();
 
     // ignore: todo
     // TODO: implement initState
@@ -411,7 +292,7 @@ class _PaymentListState extends State<PaymentList> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          ' List Of Paid Bills',
+          ' List Of Visitors',
           style: TextStyle(
               color: Colors.black, fontFamily: 'ubuntu', fontSize: 17),
         ),
@@ -446,13 +327,7 @@ class _PaymentListState extends State<PaymentList> {
             ),
             controller: _refreshController,
             onRefresh: () {
-              widget.system == "seedMIS"
-                  ? this.getUserDetails()
-                  : widget.system == "HoneyTraceability"
-                      ? this.getUserDetails()
-                      : widget.system == "E-Auction"
-                          ? this.getDataEAuction()
-                          : this.getData();
+              getData();
             },
             onLoading: _onLoading,
             child: Column(
@@ -469,7 +344,7 @@ class _PaymentListState extends State<PaymentList> {
                       decoration: BoxDecoration(color: kPrimaryColor),
                     ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
+                      padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
                       child: Align(
                         alignment: Alignment.bottomCenter,
                         child: Card(elevation: 10, child: searchBar()),
@@ -527,55 +402,15 @@ class _PaymentListState extends State<PaymentList> {
                                             child: Container(
                                               child: ListTile(
                                                 onTap: () {
-                                                  data[index]["IsPrinted"]
-                                                              .toString() ==
-                                                          "1"
-                                                      ? messages("info",
-                                                          "control No:  ${data[index]["ControlNumber"]} \nReceipt No:  ${data[index]["ReceiptNumber"]} \nPayer Name:  ${data[index]["DealerName"]} \nBill Amount:  ${data[index]["BillAmount"]} \nBill Desc:  ${data[index]["BillDesc"]} \n")
-                                                      : Navigator.pushNamed(context,
-                                                              Payments.routeName,
-                                                              arguments: ReceiptScreenArguments(
-                                                                  data[index]["DealerName"]
-                                                                      .toString(),
-                                                                  data[index]["ControlNumber"]
-                                                                      .toString(),
-                                                                  data[index]
-                                                                          ["ReceiptNumber"]
-                                                                      .toString(),
-                                                                  double.parse(data[index]["BillAmount"]),
-                                                                  false,
-                                                                  data[index]["BillDesc"].toString(),
-                                                                  data[index]["issuer"].toString(),
-                                                                  bankReceipt: data[index]["bank_receipt_no"].toString(),
-                                                                  payedDate: data[index]["TrasDateTime"].toString(),
-                                                                  plotname: widget.system == "E-Auction" ? data[index]["PlotName"].toString() : "null",
-                                                                  station: widget.system == "E-Auction" ? data[index]["Station"].toString() : "null",
-                                                                  isPrinted: data[index]["IsPrinted"] == 0 ? false : true,
-                                                                  system: widget.system,
-                                                                  billId: data[index]["BillId"].toString()))
-                                                          .then((value) async {
-                                                          setState(() {
-                                                            isLoading = true;
-                                                          });
-                                                          widget.system ==
-                                                                  "seedMIS"
-                                                              ? this
-                                                                  .getUserDetails()
-                                                              : widget.system ==
-                                                                      "HoneyTraceability"
-                                                                  ? this
-                                                                      .getUserDetails()
-                                                                  : widget.system ==
-                                                                          "E-Auction"
-                                                                      ? this
-                                                                          .getDataEAuction()
-                                                                      : this
-                                                                          .getData();
-
-                                                          setState(() {
-                                                            isLoading = false;
-                                                          });
-                                                        });
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            GenerateQrCode(
+                                                                id: data[index][
+                                                                        "ref_id"]
+                                                                    .toString())),
+                                                  );
                                                 },
                                                 trailing: Column(
                                                   mainAxisAlignment:
@@ -583,8 +418,8 @@ class _PaymentListState extends State<PaymentList> {
                                                   children: [
                                                     Icon(
                                                       Icons
-                                                          .arrow_forward_ios_sharp,
-                                                      color: kPrimaryColor,
+                                                          .arrow_forward_ios_outlined,
+                                                      color: Colors.purple,
                                                       size: 15,
                                                     ),
                                                   ],
@@ -608,17 +443,11 @@ class _PaymentListState extends State<PaymentList> {
                                                             )
                                                           ],
                                                         ))),
-                                                title: Text(
-                                                  "Name: " +
-                                                      data[index]["DealerName"]
-                                                          .toString(),
-                                                ),
-                                                subtitle: Text(
-                                                  "Control #: " +
-                                                      data[index]
-                                                              ["ControlNumber"]
-                                                          .toString(),
-                                                ),
+                                                title: Text("ID: " +
+                                                    data[index]["user_id"]),
+                                                subtitle: Text("Member(s): " +
+                                                    data[index]["members"]
+                                                        .toString()),
                                               ),
                                             ),
                                           ),
@@ -636,82 +465,6 @@ class _PaymentListState extends State<PaymentList> {
         ),
       ),
     );
-  }
-
-  Future<String> getUserDetails() async {
-    try {
-      setState(() {
-        isLoading = true;
-      });
-      var url = Uri.parse(widget.system == "HoneyTraceability"
-          ? "https://mis.tfs.go.tz/honey-traceability/api/v1/login"
-          : '$baseUrlSeed/api/v1/login');
-      String email = widget.system == "HoneyTraceability"
-          ? 'onestpaul8@gmail.com'
-          : 'admin@localhost';
-      String password =
-          widget.system == "HoneyTraceability" ? '12345678' : 'muyenjwa';
-      print(email);
-      print(password);
-      final response = await http.post(
-        url,
-        body: {'email': email, 'password': password},
-      );
-      var res;
-      //final sharedP prefs=await
-      print(response.statusCode);
-      switch (response.statusCode) {
-        case 200:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            seedToken = res["token"];
-          });
-          await getDataSeed();
-          return 'success';
-          // ignore: dead_code
-          break;
-        case 403:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-          });
-          return 'fail';
-          // ignore: dead_code
-          break;
-
-        case 1200:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            // addError(
-            //     error:
-            //         'Your Device Is Locked Please Contact User Support Team');
-          });
-          return 'fail';
-          // ignore: dead_code
-          break;
-
-        default:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            // addError(error: 'Something Went Wrong');
-            // isLoading = false;
-          });
-          return 'fail';
-          // ignore: dead_code
-          break;
-      }
-    } catch (e) {
-      setState(() {
-        print(e);
-
-        // addError(error: 'Server Or Network Connectivity Error');
-        // isLoading = false;
-      });
-      return 'fail';
-    }
   }
 
   popBar() {
@@ -735,7 +488,7 @@ class _PaymentListState extends State<PaymentList> {
         itemBuilder: (context) => [
           PopupMenuItem(
             onTap: () {
-              sortData(pastMonth);
+              // sortData(pastMonth);
             },
             child: Row(
               children: [
@@ -760,7 +513,7 @@ class _PaymentListState extends State<PaymentList> {
           ),
           PopupMenuItem(
             onTap: () {
-              sortData(pastWeek);
+              // sortData(pastWeek);
             },
             child: Row(
               children: [
@@ -785,7 +538,7 @@ class _PaymentListState extends State<PaymentList> {
           ),
           PopupMenuItem(
             onTap: () {
-              sortData(formattedDate);
+              //  sortData(formattedDate);
             },
             child: Row(
               children: [

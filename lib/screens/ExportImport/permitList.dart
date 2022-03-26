@@ -586,12 +586,21 @@ class _PermittListState extends State<PermittList> {
                                                               color:
                                                                   Colors.cyan,
                                                             ),
-                                                            leading: CircleAvatar(
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .purple,
-                                                                child: Text(
-                                                                    '${index + 1}')),
+                                                            leading: IntrinsicHeight(
+                                                                child: SizedBox(
+                                                                    height: double.maxFinite,
+                                                                    width: getProportionateScreenHeight(50),
+                                                                    child: Row(
+                                                                      children: [
+                                                                        VerticalDivider(
+                                                                          color: index.isEven
+                                                                              ? kPrimaryColor
+                                                                              : Colors.green[200],
+                                                                          thickness:
+                                                                              5,
+                                                                        )
+                                                                      ],
+                                                                    ))),
                                                             title: Text(type! ==
                                                                     'Grading'
                                                                 ? data[index]['export_ref']

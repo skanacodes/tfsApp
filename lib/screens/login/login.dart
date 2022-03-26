@@ -47,7 +47,8 @@ class _LoginScreenState extends State<LoginScreen> {
       String lname,
       String email,
       String phoneNumber,
-      String stationName) async {
+      String stationName,
+      String checkpointName) async {
     await SharedPreferences.getInstance().then((prefs) {
       prefs.setInt('user_id', userId);
       prefs.setString('token', token);
@@ -58,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
       prefs.setString('email', email);
       prefs.setString('phoneNumber', phoneNumber);
       prefs.setString('checkpointId', checkpointId);
+      prefs.setString('checkpointName', checkpointName);
     });
   }
 
@@ -66,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // print(username);
       // print(password);
 
-      var url = Uri.parse('$baseUrl/api/v1/login');
+      var url = Uri.parse('$baseUrlTest/api/v1/login');
       // var username = "barakasikana@gmail.com";
       // var password = "baraka540";
       final response = await http.post(
@@ -93,6 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
             res['user']['email'].toString(),
             res['user']['phone'].toString(),
             res['user']['station'].toString(),
+            res['user']['checkpoint_name'].toString(),
           );
           return 'success';
           // ignore: dead_code

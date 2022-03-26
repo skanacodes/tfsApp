@@ -3,6 +3,7 @@ package com.example.tfsappv1;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+
 import com.example.demoprinter.TelephonyInfo;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
@@ -13,12 +14,8 @@ import com.mobiwire.CSAndroidGoLib.AndroidGoCSApi;
 import com.mobiwire.CSAndroidGoLib.CsPrinter;
 
 import android.Manifest;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -30,27 +27,19 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 // we Import the mobiwire api
-import com.mobiwire.CSAndroidGoLib.Utils.PrinterServiceUtil;
-import com.mobiwire.CSAndroidGoLib.Utils.ServiceUtil;
 import com.sagereal.api.Printer;
 
-import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import static android.content.ServiceConnection.*;
 
 
 public class WelcomeActivity extends FlutterActivity {
     private static final String CHANNEL = "samples.flutter.dev/printing";
     private static final String CHANNEL1 = "samples.flutter.dev/deviceInfo";
+    private static final String CHANNEL2 = "samples.flutter.dev/printBill";
     private Printer printer = null;
 
     TextView textError;
@@ -149,54 +138,93 @@ public class WelcomeActivity extends FlutterActivity {
                             // Note: this method is invoked on the main thread.
                             if (call.method.equals("getBatteryLevel")) {
 
-                                String parameter = call.argument("imageData");
-                                String parameter2 = call.argument("brand");
-                                String name = call.argument("name");
-                                String controlNo = call.argument("controlNo");
-                                String receiptNo = call.argument("receiptNo");
-                                String amount = call.argument("amount");
-                                String issuer = call.argument("issuer");
-                                String paidDate = call.argument("paymentDate");
-                                String desc = call.argument("desc");
-                                List<String> itemsAmount  = call.argument("itemsAmount");
-                                List itemsDesc  = call.argument("itemsDesc");
-                                String qrcode = call.argument("qrcode");
-                                String plotname= call.argument("plotname");
-                                String station = call.argument("station");
+
+                              String activity = call.argument("activity");
 
 
 
 
 
 
-//                                System.out.println(name);
-//                                System.out.println(amount);
-//                                System.out.println(controlNo);
-//                                System.out.println(receiptNo);
-//                                System.out.println(issuer);
-                             //   System.out.println(itemsAmount.toArray());
-                            //    System.out.println(paidDate);
-                              //System.out.println(qrcode);
+      if (activity.equals("printing")){
+          String parameter = call.argument("imageData");
+          String parameter2 = call.argument("brand");
+          String name = call.argument("name");
+          String controlNo = call.argument("controlNo");
+          String receiptNo = call.argument("receiptNo");
+          String amount = call.argument("amount");
+          String issuer = call.argument("issuer");
+          String paidDate = call.argument("paymentDate");
+          String desc = call.argument("desc");
+          List<String> itemsAmount  = call.argument("itemsAmount");
+          List itemsDesc  = call.argument("itemsDesc");
+          String qrcode = call.argument("qrcode");
+          String plotname= call.argument("plotname");
+          String station = call.argument("station");
+
+          byte[] image = Base64.decode(parameter, Base64.DEFAULT);
+          byte[] qr = Base64.decode(qrcode, Base64.DEFAULT);
+
+
+          if (parameter2.equals("MobiWire")) {
+
+              String res = testClick(image,name,controlNo,receiptNo,amount,issuer,itemsAmount,itemsDesc,desc,paidDate,qr,plotname,station);
+              result.success(res);
+          } else if (parameter2.equals("MobiIoT")) {
+
+              String res = print(image);
+              System.out.println(res);
+              result.success(res);
+
+          } else {
+              result.success("Your Device Doesn't Have Printer Capability");
+          }
+      }
+      else if (activity.equals("printBill")){
+          String parameter2 = call.argument("brand");
+          List  controlNumbers = call.argument("controlNumberList");
+          List names=call.argument("dealername");
+          List fines=call.argument("fineList");
+          List amountList=call.argument("amountList");
+          String total = call.argument("totalFines");
 
 
 
-                                byte[] image = Base64.decode(parameter, Base64.DEFAULT);
-                                byte[] qr = Base64.decode(qrcode, Base64.DEFAULT);
+          if (parameter2.equals("MobiWire")) {
+
+              String res = printBillData(controlNumbers,amountList,fines,names,total);
+              result.success(res);
+          } else if (parameter2.equals("MobiIoT")) {
+
+//              String res = printQrIot(qrList,names);
+//              System.out.println("");
+//             result.success(res);
+
+          } else {
+              result.success("Your Device Doesn't Have Printer Capability");
+          }
+      }
+      else {
+          String parameter2 = call.argument("brand");
+          List qrList = call.argument("qrList");
+          List names=call.argument("client_name");
+          //System.out.println(qrList);
+          if (parameter2.equals("MobiWire")) {
+
+              String res = printQr(qrList,names);
+              result.success(res);
+          } else if (parameter2.equals("MobiIoT")) {
+
+              String res = printQrIot(qrList,names);
+              System.out.println("");
+              result.success(res);
+
+          } else {
+              result.success("Your Device Doesn't Have Printer Capability");
+          }
+      }
 
 
-                                if (parameter2.equals("MobiWire")) {
-
-                                    String res = testClick(image,name,controlNo,receiptNo,amount,issuer,itemsAmount,itemsDesc,desc,paidDate,qr,plotname,station);
-                                    result.success(res);
-                                } else if (parameter2.equals("MobiIoT")) {
-
-                                    String res = print(image);
-                                    System.out.println(res);
-                                    result.success(res);
-
-                                } else {
-                                    result.success("Your Device Doesn't Have Printer Capability");
-                                }
 
 
                             } else {
@@ -235,7 +263,10 @@ public class WelcomeActivity extends FlutterActivity {
                             }
                         }
 
+
+
                 );
+
 
     }
 
@@ -300,7 +331,82 @@ public class WelcomeActivity extends FlutterActivity {
 
     }
 
+    public String printQrIot(List qrList,List names) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String currentDateandTime = sdf.format(new Date());
 
+        try {
+
+            if (CsPrinter.getPrinterStatus()==0){
+                return "Printer Out Of Paper";
+            }else if(CsPrinter.getPrinterStatus()==1){
+
+                Log.e("click","click");
+                System.out.println("am Here");
+                // printContent(decodedByte);
+                CsPrinter printer=new CsPrinter();
+                printer.printText("Printed On: " + currentDateandTime);
+
+                for (int i = 0; i < qrList.toArray().length; i++) {
+                    byte[] image = Base64.decode(qrList.get(i).toString(), Base64.DEFAULT);
+
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(image, 0, image.length);
+                    printer.printText("-----------------------------");
+                    printer.printText("Name: " + names.get(i));
+
+                    printer.printText("-----------------------------");
+
+                    printer.printBitmap(getContext(), decodedByte);
+                    printer.printEndLine();
+                    //printer.printText("-----------------------------");
+                    //Thread.sleep(4000);
+
+                }
+
+
+
+
+                    printer.print(this);
+                    return "Successfully Printed";
+
+            }
+            else if(CsPrinter.getPrinterStatus()==-1){
+
+                CsPrinter printer=new CsPrinter();
+
+
+                for (int i = 0; i < qrList.toArray().length; i++) {
+                    byte[] image = Base64.decode(qrList.get(i).toString(), Base64.DEFAULT);
+
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(image, 0, image.length);
+                    printer.printText("-----------------------------");
+                    printer.printText("Name: " + names.get(i));
+
+                    printer.printText("-----------------------------");
+
+                    printer.printBitmap(getContext(), decodedByte);
+                    printer.printText("-----------------------------");
+                    Thread.sleep(4000);
+
+                }
+
+
+
+                printer.print(this);
+                return "Successfully Printed";
+
+            }
+
+            else{
+                return "Printer Failed To Print";
+            }
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return "Failed To Print";
+        }
+
+    }
 
 
 
@@ -349,10 +455,95 @@ public class WelcomeActivity extends FlutterActivity {
         return  null;
     }
 
+    public String printQr(List qrList,List names) {
+        //        Bitmap decodedByte = BitmapFactory.decodeByteArray(image, 0, image.length);
+//        Bitmap decodedByte = BitmapFactory.decodeByteArray(image, 0, image.length);
+//        Bitmap decodedQr = BitmapFactory.decodeByteArray(qr, 0, qr.length);
+
+
+        //printContent(decodedByte);
+
+        CurrentPrinterStatusEnum statusPrinter=CurrentPrinterStatusEnum.fromCode(printer.getCurrentPrinterStatus());
+        switch (statusPrinter){
+            case PRINTER_STATUS_OK:
+
+                if(!printer.isPrinterOperation()) {
+
+                    if (printer.voltageCheck()){
+                        printQrContent(qrList,names);
+                        return "Successfully Printed";
+                    }
+
+                    else{
+                        return "Voltage Error";
+                    }
+                }else{
+                    return  "Another Operation Is Running";
+                }
+
+            case PRINTER_STATUS_NO_PAPER:
+                return "Printer Out Of Paper";
+
+            case PRINTER_STATUS_NO_REACTION:
+
+                return "PRINTER_STATUS_NO_REACTION";
+
+            case PRINTER_STATUS_GET_FAILE:
+                return "Printer Status";
+
+            case PRINTER_STATUS_LOW_POWER:
+                return "PRINTER_STATUS_LOW_POWER";
+
+        }
+        return  null;
+    }
+
+
+    public String printBillData(List controlNumber,List amounts,List fines,List dealers,String total) {
+
+
+        CurrentPrinterStatusEnum statusPrinter=CurrentPrinterStatusEnum.fromCode(printer.getCurrentPrinterStatus());
+        switch (statusPrinter){
+            case PRINTER_STATUS_OK:
+
+                if(!printer.isPrinterOperation()) {
+
+                    if (printer.voltageCheck()){
+                        printBillContent( controlNumber, amounts, fines, dealers, total);
+                        return "Successfully Printed";
+                    }
+
+                    else{
+                        return "Voltage Error";
+                    }
+                }else{
+                    return  "Another Operation Is Running";
+                }
+
+            case PRINTER_STATUS_NO_PAPER:
+                return "Printer Out Of Paper";
+
+            case PRINTER_STATUS_NO_REACTION:
+
+                return "PRINTER_STATUS_NO_REACTION";
+
+            case PRINTER_STATUS_GET_FAILE:
+                return "Printer Status";
+
+            case PRINTER_STATUS_LOW_POWER:
+                return "PRINTER_STATUS_LOW_POWER";
+
+        }
+        return  null;
+    }
+
+
+
+
 
     int clt=0;
     boolean showSuccess=true;
-    public void printContent(Bitmap decodeBitmap,String name,String controlNo,String receiptNo,String amount,String issuer,List itemsAmount,List itemsDesc,String paidDate,String desc,Bitmap qr,String plotname,String station){
+      public void printContent(Bitmap decodeBitmap,String name,String controlNo,String receiptNo,String amount,String issuer,List itemsAmount,List itemsDesc,String paidDate,String desc,Bitmap qr,String plotname,String station){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         String currentDateandTime = sdf.format(new Date());
 
@@ -421,6 +612,8 @@ public class WelcomeActivity extends FlutterActivity {
                         });
                     }
 
+
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -443,6 +636,184 @@ public class WelcomeActivity extends FlutterActivity {
             }
         }).start();
     }
+
+    public void printQrContent(List qrList,List names ){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String currentDateandTime = sdf.format(new Date());
+
+        new Thread(new Runnable() {
+            @Override
+            public void run()
+            {
+
+                try {
+
+
+
+                    //    printer.printText("---------------",2,false);
+
+
+
+                    for (int i = 0; i < qrList.toArray().length; i++) {
+                      byte[] image=   Base64.decode(qrList.get(i).toString(), Base64.DEFAULT);
+
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(image, 0, image.length);
+                        printer.printText("Entrance Ticket: ",1,false);
+                        printer.printText("Printed On: "+ currentDateandTime,1,false);
+                        printer.printText("---------------",2,false);
+                        printer.printText("Name: "+ names.get(i),1,false);
+                        printer.printText("---------------",2,false);
+
+                        printer.printBitmap(decodedByte,1);
+                        printer.printEndLine();
+                        Thread.sleep(4000);
+                    }
+
+
+
+
+
+
+
+//                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.and3);
+//                    printer.print32Bitmap(bmp);
+                    printer.printEndLine();
+
+
+
+
+
+                    while(printer.isPrinterOperation()){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //showOnProgress();
+                                /*if(printer.getPaperStatus()!=1){
+                                    showError("RINTER_STATUS_NO_PAPER");
+                                    showSuccess=false;
+                                }*/
+
+                            }
+                        });
+                    }
+
+
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //if(showSuccess==true)
+                            //showSuccess();
+                        }
+                    });
+                }
+                catch (Exception e)
+                {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //showError(getString(R.string.text_unknown_error));
+                        }
+                    });
+
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    public void printBillContent(List controlNumber,List amounts,List fines,List dealers,String total){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String currentDateandTime = sdf.format(new Date());
+System.out.println(controlNumber);
+        new Thread(new Runnable() {
+            @Override
+            public void run()
+            {
+
+                try {
+
+
+
+                    //    printer.printText("---------------",2,false);
+                    printer.printText("---------------",2,false);
+                    printer.printText("Tanzania Forest Service Agency          (TFS).",1,false);
+                    printer.printText("---------------",2,false);
+                    printer.printText("Bill Details: ",1,false);
+                   printer.printText("Name: "+ dealers.get(0),1,false);
+
+                    for (int i = 0; i < controlNumber.toArray().length; i++) {
+
+
+
+
+                        printer.printText("---------------",2,false);
+                        printer.printText(""+ fines.get(i),1,false);
+                        printer.printText("Control No: "+ controlNumber.get(i),1,false);
+                        printer.printText("Amount: "+ amounts.get(i),1,false);
+                        printer.printText("---------------",2,false);
+
+
+
+
+                    }
+                    printer.printText("Total Bill: "+ total,1,false);
+
+
+
+
+
+
+
+//                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.and3);
+//                    printer.print32Bitmap(bmp);
+                    printer.printEndLine();
+
+
+
+
+
+                    while(printer.isPrinterOperation()){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //showOnProgress();
+                                /*if(printer.getPaperStatus()!=1){
+                                    showError("RINTER_STATUS_NO_PAPER");
+                                    showSuccess=false;
+                                }*/
+
+                            }
+                        });
+                    }
+
+
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //if(showSuccess==true)
+                            //showSuccess();
+                        }
+                    });
+                }
+                catch (Exception e)
+                {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //showError(getString(R.string.text_unknown_error));
+                        }
+                    });
+
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
 
 
     public void showError(String error){

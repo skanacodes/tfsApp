@@ -1,7 +1,6 @@
 // ignore_for_file: unused_import
 
 import 'package:badges/badges.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,6 +9,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tfsappv1/screens/ExportImport/permitList.dart';
 import 'package:tfsappv1/screens/Inventory/forestInventoryScreen.dart';
+import 'package:tfsappv1/screens/NfrScreen/nfrScreen.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/screens/dashboard/drawer.dart';
 import 'package:tfsappv1/screens/illegalproduct/illegal_product_screen.dart';
@@ -30,6 +30,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   String? usernames;
   String? stationName;
+  String? checkpoint;
   var userId;
   var devId;
 
@@ -81,6 +82,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         .then((prefs) => prefs.getString('lname'));
     stationName = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('StationName'));
+    checkpoint = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getString('checkpointName'));
     setState(() {
       usernames = "$fname  $lname";
     });
@@ -200,14 +203,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               child: Icon(Icons.verified_user_rounded),
                             ),
                             title: _title(),
-                            subtitle: Text(
-                              "Station: ${stationName}",
-                              style: TextStyle(fontWeight: FontWeight.w400),
+                            subtitle: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Divider(
+                                  color: Colors.purple,
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Station: ${stationName}",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                    Spacer()
+                                  ],
+                                ),
+                                checkpoint == "null"
+                                    ? Container()
+                                    : Row(
+                                        children: [
+                                          Text("CheckPoint: ${checkpoint}"),
+                                          Spacer()
+                                        ],
+                                      )
+                              ],
                             ),
-                            trailing: Icon(
-                              Icons.person,
-                              color: Colors.black,
-                            ),
+                            // trailing: Icon(
+                            //   Icons.person,
+                            //   color: Colors.black,
+                            // ),
                             tileColor: Colors.white,
                           ),
                         ),
@@ -235,7 +260,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                           children: <Widget>[
                             Container(
-                                height: getProportionateScreenHeight(522),
+                                height: getProportionateScreenHeight(514),
                                 color: Colors.transparent,
                                 child: GridView.extent(
                                   padding: const EdgeInsets.all(16),
@@ -360,37 +385,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                             ],
                                           )),
                                     ),
-                                    Container(
-                                        decoration: BoxDecoration(
-                                            color: Color(0xfff3f3f4),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  color: Colors.grey,
-                                                  offset: Offset.zero,
-                                                  blurRadius: 2)
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                          context,
+                                          NFRScreen.routeName,
+                                        ).then((_) => RealTimeCommunication()
+                                            .createConnection("3"));
+                                      },
+                                      child: Container(
+                                          decoration: BoxDecoration(
+                                              color: Color(0xfff3f3f4),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    color: Colors.grey,
+                                                    offset: Offset.zero,
+                                                    blurRadius: 2)
+                                              ],
+                                              // border:
+                                              //     Border.all(color: Colors.grey),
+                                              borderRadius:
+                                                  BorderRadius.circular(20)),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.animation_outlined,
+                                                size: 40.sp,
+                                                color: Colors.pink,
+                                              ),
+                                              Text(
+                                                " Tourism",
+                                                style: TextStyle(
+                                                    fontSize: 10.sp,
+                                                    color: Colors.black87,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              )
                                             ],
-                                            // border:
-                                            //     Border.all(color: Colors.grey),
-                                            borderRadius:
-                                                BorderRadius.circular(20)),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.animation_outlined,
-                                              size: 40.sp,
-                                              color: Colors.pink,
-                                            ),
-                                            Text(
-                                              " NFR",
-                                              style: TextStyle(
-                                                  fontSize: 10.sp,
-                                                  color: Colors.black87,
-                                                  fontWeight: FontWeight.bold),
-                                            )
-                                          ],
-                                        )),
+                                          )),
+                                    ),
                                     InkWell(
                                       onTap: () {
                                         Navigator.pushNamed(
@@ -434,11 +469,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                     InkWell(
                                       onTap: () {
-                                        Navigator.pushNamed(
-                                          context,
-                                          ForestInventoryScreen.routeName,
-                                        ).then((_) => RealTimeCommunication()
-                                            .createConnection("3"));
+                                        // Navigator.pushNamed(
+                                        //   context,
+                                        //   ForestInventoryScreen.routeName,
+                                        // ).then((_) => RealTimeCommunication()
+                                        //     .createConnection("3"));
                                       },
                                       child: Container(
                                           decoration: BoxDecoration(

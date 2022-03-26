@@ -65,13 +65,13 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
       // var headers = {"Authorization": "Bearer " + tokens!};
-      // var url =
-      //     Uri.parse('http://mis.tfs.go.tz/fremis-test/api/v1/print_status');
-      print(billId);
       var url =
-          Uri.parse('http://mis.tfs.go.tz/e-auction/api/v1/Bill/PrintReceipt');
+          Uri.parse('http://mis.tfs.go.tz/fremis-test/api/v1/print_status');
+      print(billId);
+      // var url =
+      //     Uri.parse('http://mis.tfs.go.tz/e-auction/api/v1/Bill/PrintReceipt');
       final response = await http
-          .post(url, body: {"Email": "$email", "Id": billId.toString()});
+          .post(url, body: {"control_number":controlNumber});
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
@@ -103,7 +103,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
     }
   }
 
-  Future itemsReceipt(bill_Id) async {
+  Future itemsReceipt(bill_Id, system) async {
     setState(() {
       isLoading = true;
       billId = bill_Id;
@@ -116,8 +116,12 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
       // var headers = {"Authorization": "Bearer " + tokens!};
-      var url = Uri.parse(
-          'https://mis.tfs.go.tz/e-auction/api/Bill/GetPriceDistribution/$bill_Id');
+      print(bill_Id);
+      print(system);
+      var url = system == "E-Auction"
+          ? Uri.parse(
+              'https://mis.tfs.go.tz/e-auction/api/Bill/GetPriceDistribution/$bill_Id')
+          : Uri.parse('$baseUrlTest/api/v1/bill-items/$bill_Id');
       final response = await http.get(
         url,
       );
@@ -137,6 +141,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
 
         default:
           setState(() {
+            isItems = true;
             res = json.decode(response.body);
             print(res);
 
@@ -148,6 +153,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
     } catch (e) {
       setState(() {
         print(e);
+        isItems = true;
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -186,10 +192,12 @@ class _PaymentWidgetState extends State<PaymentWidget> {
 
     for (var i = 0; i < dataItems.length; i++) {
       desc.add(dataItems[i]["ItemDescr"]);
-      amounts.add(formatNumber.format(dataItems[i]["BillItemEqvAmt"]));
+      print(dataItems[i]["BillItemAmt"]);
+      print(dataItems[i]["BillItemAmt"].runtimeType);
+      amounts.add(formatNumber.format(dataItems[i]["BillItemAmt"]));
     }
-    // print(desc);
-    // print(amounts);
+    print(desc);
+    print(amounts);
     await screenshotController.capture().then((Uint8List? image) {
       //Capture Done
       setState(() {
@@ -228,7 +236,8 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         "itemsDesc": desc,
         "qrcode": base64Encode(_imageFile1!),
         "plotname": plotname,
-        "station": station
+        "station": station,
+        "activity": "printing"
       });
 
       print(result);
@@ -367,7 +376,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         ? null
         : args.billId == null
             ? null
-            : itemsReceipt(args.billId);
+            : itemsReceipt(args.billId, args.system);
 
     return Column(
       children: [
@@ -568,46 +577,52 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10, right: 10, bottom: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                                child: Text('Plot Name: ',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                    ))),
-                            Expanded(
-                              child: Text(args.plotname.toString(),
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                  )),
-                            )
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10, right: 10, bottom: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                                child: Text('Station: ',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                    ))),
-                            Expanded(
-                              child: Text(args.station!,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                  )),
-                            )
-                          ],
-                        ),
-                      ),
+                      args.plotname.toString() == "null"
+                          ? Container()
+                          : Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10, right: 10, bottom: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                      child: Text('Plot Name: ',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ))),
+                                  Expanded(
+                                    child: Text(args.plotname.toString(),
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        )),
+                                  )
+                                ],
+                              ),
+                            ),
+                      args.station.toString() == "null"
+                          ? Container()
+                          : Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10, right: 10, bottom: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                      child: Text('Station: ',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ))),
+                                  Expanded(
+                                    child: Text(args.station!,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        )),
+                                  )
+                                ],
+                              ),
+                            ),
                       args.isBill
                           ? Padding(
                               padding: const EdgeInsets.only(
@@ -1208,15 +1223,15 @@ class _PaymentWidgetState extends State<PaymentWidget> {
             onTap: () async {
               await _getPrinter(
                   amount: formatNumber.format(args.amount),
-                  controlNo: args.controlNumber,
-                  issuer: args.issuer,
-                  name: args.payerName,
-                  paymentDate: args.payedDate,
-                  receiptNo: args.receiptNo,
+                  controlNo: args.controlNumber.toString(),
+                  issuer: args.issuer.toString(),
+                  name: args.payerName.toString(),
+                  paymentDate: args.payedDate.toString(),
+                  receiptNo: args.receiptNo.toString(),
                   items: dataItems,
-                  description: args.desc,
-                  plotname: args.plotname,
-                  station: args.station);
+                  description: args.desc.toString(),
+                  plotname: args.plotname.toString(),
+                  station: args.station.toString());
             },
             child: Row(
               children: [

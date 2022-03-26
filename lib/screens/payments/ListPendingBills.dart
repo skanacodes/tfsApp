@@ -6,7 +6,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tfsappv1/screens/payments/payments.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/modal/receiptArguments.dart';
@@ -35,11 +35,16 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       isLoading = true;
     });
     try {
+      String stationId = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getInt('station_id').toString());
+
+      print(stationId);
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
       // print(tokens);
       // var headers = {"Authorization": "Bearer " + tokens!};
-      var url = Uri.parse('http://mis.tfs.go.tz/fremis-test/api/v1/paid-bills');
+      var url = Uri.parse(
+          'http://mis.tfs.go.tz/fremis-test/api/v1/unpaid-bills/$stationId');
       final response = await http.get(
         url,
       );
@@ -47,7 +52,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       //final sharedP prefs=await
       print(response.statusCode);
       switch (response.statusCode) {
-        case 201:
+        case 200:
           setState(() {
             res = json.decode(response.body);
             print(res);
@@ -464,7 +469,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
                                                                   "seedMIS"
                                                               ? ""
                                                               : data[index][
-                                                                      "control_number"]
+                                                                      "ControlNumber"]
                                                                   .toString(),
                                                           data[index]
                                                               ["bill_amount"],
@@ -487,9 +492,23 @@ class _ListPendingBillsState extends State<ListPendingBills> {
                                                   ),
                                                 ],
                                               ),
-                                              leading: CircleAvatar(
-                                                  backgroundColor: Colors.grey,
-                                                  child: Text('${index + 1}')),
+                                              leading: IntrinsicHeight(
+                                                  child: SizedBox(
+                                                      height: double.maxFinite,
+                                                      width:
+                                                          getProportionateScreenHeight(
+                                                              50),
+                                                      child: Row(
+                                                        children: [
+                                                          VerticalDivider(
+                                                            color: index.isEven
+                                                                ? kPrimaryColor
+                                                                : Colors
+                                                                    .green[200],
+                                                            thickness: 5,
+                                                          )
+                                                        ],
+                                                      ))),
                                               title: Text(widget.system ==
                                                       "E-Auction"
                                                   ? "Name: " +

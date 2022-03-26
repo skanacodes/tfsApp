@@ -1,0 +1,11 @@
+  data[index]["DealerName"].toString() ,
+     data[index]["ControlNumber"].toString(),
+    data[index]["ReceiptNumber"].toString(),
+ data[index]["BillAmount"],
+data[index]["BillDesc"].toString(),
+ data[index]["issuer"].toString(),
+  data[index]["bank_receipt_no"].toString(),
+ data[index]["TrasDateTime"].toString()
+ station:  data[index]["Station"].toString() ,
+ data[index]["IsPrinted"],
+ billId: data[index]["BillId"].toString() 
