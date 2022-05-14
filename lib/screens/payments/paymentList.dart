@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -20,7 +22,7 @@ import 'package:http/http.dart' as http;
 class PaymentList extends StatefulWidget {
   static String routeName = "/paymentList";
   final String system;
-  PaymentList(this.system);
+  const PaymentList(this.system, {Key? key}) : super(key: key);
 
   @override
   _PaymentListState createState() => _PaymentListState();
@@ -35,10 +37,10 @@ class _PaymentListState extends State<PaymentList> {
   final _formKey = GlobalKey<FormState>();
   String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
   String pastMonth = DateFormat('yyyy-MM-dd')
-      .format(DateTime.now().subtract(Duration(days: 30)));
+      .format(DateTime.now().subtract(const Duration(days: 30)));
   String pastWeek = DateFormat('yyyy-MM-dd')
-      .format(DateTime.now().subtract(Duration(days: 7)));
-  RefreshController _refreshController =
+      .format(DateTime.now().subtract(const Duration(days: 7)));
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   Future getData() async {
@@ -50,14 +52,12 @@ class _PaymentListState extends State<PaymentList> {
           .then((prefs) => prefs.getInt('station_id').toString());
 
       print(stationId);
-      // var tokens = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getString('token'));
-      // var headers = {"Authorization": "Bearer " + tokens!};
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      var headers = {"Authorization": "Bearer " + tokens!};
       var url = Uri.parse(
           'http://mis.tfs.go.tz/fremis-test/api/v1/paid-bills/$stationId');
-      final response = await http.get(
-        url,
-      );
+      final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
@@ -290,9 +290,55 @@ class _PaymentListState extends State<PaymentList> {
     _refreshController.refreshCompleted();
   }
 
+  Future searchDataFremis() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      var headers = {"Authorization": "Bearer " + tokens!};
+
+      var url = Uri.parse('$baseUrlTest/api/v1/search-bills/$controlNo');
+
+      final response = await http.get(url, headers: headers);
+      var res;
+      //final sharedP prefs=await
+      print(response.statusCode);
+      switch (response.statusCode) {
+        case 200:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            data = res['data'];
+            isLoading = false;
+          });
+
+          break;
+
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            isLoading = false;
+            messages('Ohps! Something Went Wrong', 'error');
+          });
+
+          break;
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        print(e);
+        messages('Server Or Connectivity Error', 'error');
+      });
+    }
+    _refreshController.refreshCompleted();
+  }
+
   void _onLoading() async {
     // monitor network fetch
-    await Future.delayed(Duration(milliseconds: 1000));
+    await Future.delayed(const Duration(milliseconds: 1000));
     // if failed,use loadFailed(),if no data return,use LoadNodata()
 
     _refreshController.loadComplete();
@@ -303,7 +349,7 @@ class _PaymentListState extends State<PaymentList> {
     String desc,
   ) {
     return Alert(
-      style: AlertStyle(descStyle: TextStyle(fontSize: 17)),
+      style: const AlertStyle(descStyle: TextStyle(fontSize: 17)),
       context: context,
       type: type == 'success'
           ? AlertType.success
@@ -314,7 +360,7 @@ class _PaymentListState extends State<PaymentList> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -333,7 +379,7 @@ class _PaymentListState extends State<PaymentList> {
 
   searchBar() {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(
           Radius.circular(20),
         ),
@@ -344,43 +390,43 @@ class _PaymentListState extends State<PaymentList> {
               flex: 4,
               child: Form(
                 key: _formKey,
-                child: Container(
-                  child: TextFormField(
-                      onChanged: (value) {
-                        return null;
-                      },
-                      validator: (value) =>
-                          value == '' ? 'This  Field Is Required' : null,
-                      onSaved: (value) {
-                        controlNo = value;
-                      },
-                      keyboardType: TextInputType.number,
-                      cursorColor: kPrimaryColor,
-                      decoration: InputDecoration(
-                          suffixIcon: InkWell(
-                            onTap: () async {
-                              if (_formKey.currentState!.validate()) {
-                                _formKey.currentState!.save();
-                                print(controlNo);
-                                await searchData();
-                              }
-                            },
-                            child: Icon(
-                              Icons.search,
-                              size: 23,
-                              color: Colors.black,
-                            ),
+                child: TextFormField(
+                    onChanged: (value) {
+                      return;
+                    },
+                    validator: (value) =>
+                        value == '' ? 'This  Field Is Required' : null,
+                    onSaved: (value) {
+                      controlNo = value;
+                    },
+                    keyboardType: TextInputType.number,
+                    cursorColor: kPrimaryColor,
+                    decoration: InputDecoration(
+                        suffixIcon: InkWell(
+                          onTap: () async {
+                            if (_formKey.currentState!.validate()) {
+                              _formKey.currentState!.save();
+                              //print(controlNo);
+                              widget.system == "Fremis"
+                                  ? await searchDataFremis()
+                                  : await searchData();
+                            }
+                          },
+                          child: const Icon(
+                            Icons.search,
+                            size: 23,
+                            color: Colors.black,
                           ),
-                          isDense: true,
-                          contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                          border: InputBorder.none,
-                          fillColor: Color(0xfff3f3f4),
-                          label: Text(
-                            "Control Number",
-                            style: TextStyle(fontSize: 15, color: Colors.black),
-                          ),
-                          filled: true)),
-                ),
+                        ),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                        border: InputBorder.none,
+                        fillColor: const Color(0xfff3f3f4),
+                        label: const Text(
+                          "Control Number",
+                          style: TextStyle(fontSize: 15, color: Colors.black),
+                        ),
+                        filled: true)),
               )),
           Expanded(
             flex: 2,
@@ -394,12 +440,12 @@ class _PaymentListState extends State<PaymentList> {
   @override
   void initState() {
     widget.system == "seedMIS"
-        ? this.getUserDetails()
+        ? getUserDetails()
         : widget.system == "HoneyTraceability"
-            ? this.getUserDetails()
+            ? getUserDetails()
             : widget.system == "E-Auction"
-                ? this.getDataEAuction()
-                : this.getData();
+                ? getDataEAuction()
+                : getData();
 
     // ignore: todo
     // TODO: implement initState
@@ -410,7 +456,7 @@ class _PaymentListState extends State<PaymentList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           ' List Of Paid Bills',
           style: TextStyle(
               color: Colors.black, fontFamily: 'ubuntu', fontSize: 17),
@@ -418,27 +464,27 @@ class _PaymentListState extends State<PaymentList> {
         backgroundColor: kPrimaryColor,
       ),
       body: SingleChildScrollView(
-        child: Container(
+        child: SizedBox(
           height: getProportionateScreenHeight(700),
           child: SmartRefresher(
             enablePullDown: true,
             enablePullUp: true,
-            header: WaterDropHeader(),
+            header: const WaterDropHeader(),
             footer: CustomFooter(
               builder: (BuildContext context, LoadStatus? mode) {
                 Widget body;
                 if (mode == LoadStatus.idle) {
-                  body = Text("pull up load");
+                  body = const Text("pull up load");
                 } else if (mode == LoadStatus.loading) {
-                  body = CupertinoActivityIndicator();
+                  body = const CupertinoActivityIndicator();
                 } else if (mode == LoadStatus.failed) {
-                  body = Text("Load Failed!Click retry!");
+                  body = const Text("Load Failed!Click retry!");
                 } else if (mode == LoadStatus.canLoading) {
-                  body = Text("release to load more");
+                  body = const Text("release to load more");
                 } else {
-                  body = Text("No more Data");
+                  body = const Text("No more Data");
                 }
-                return Container(
+                return SizedBox(
                   height: 55.0,
                   child: Center(child: body),
                 );
@@ -447,12 +493,12 @@ class _PaymentListState extends State<PaymentList> {
             controller: _refreshController,
             onRefresh: () {
               widget.system == "seedMIS"
-                  ? this.getUserDetails()
+                  ? getUserDetails()
                   : widget.system == "HoneyTraceability"
-                      ? this.getUserDetails()
+                      ? getUserDetails()
                       : widget.system == "E-Auction"
-                          ? this.getDataEAuction()
-                          : this.getData();
+                          ? getDataEAuction()
+                          : getData();
             },
             onLoading: _onLoading,
             child: Column(
@@ -466,7 +512,7 @@ class _PaymentListState extends State<PaymentList> {
                     ),
                     Container(
                       height: getProportionateScreenHeight(50),
-                      decoration: BoxDecoration(color: kPrimaryColor),
+                      decoration: const BoxDecoration(color: kPrimaryColor),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
@@ -479,18 +525,18 @@ class _PaymentListState extends State<PaymentList> {
                 ),
                 // _divider
                 Padding(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: isLoading
-                      ? SpinKitCircle(
+                      ? const SpinKitCircle(
                           color: kPrimaryColor,
                         )
                       : data.isEmpty
                           ? Center(
-                              child: Container(
+                              child: SizedBox(
                                 height: getProportionateScreenHeight(400),
-                                child: Center(
+                                child: const Center(
                                   child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
+                                    padding: EdgeInsets.all(10.0),
                                     child: Card(
                                       elevation: 10,
                                       child: ListTile(
@@ -524,101 +570,104 @@ class _PaymentListState extends State<PaymentList> {
                                           child: Card(
                                             elevation: 10,
                                             shadowColor: Colors.grey,
-                                            child: Container(
-                                              child: ListTile(
-                                                onTap: () {
-                                                  data[index]["IsPrinted"]
-                                                              .toString() ==
-                                                          "1"
-                                                      ? messages("info",
-                                                          "control No:  ${data[index]["ControlNumber"]} \nReceipt No:  ${data[index]["ReceiptNumber"]} \nPayer Name:  ${data[index]["DealerName"]} \nBill Amount:  ${data[index]["BillAmount"]} \nBill Desc:  ${data[index]["BillDesc"]} \n")
-                                                      : Navigator.pushNamed(context,
-                                                              Payments.routeName,
-                                                              arguments: ReceiptScreenArguments(
-                                                                  data[index]["DealerName"]
-                                                                      .toString(),
-                                                                  data[index]["ControlNumber"]
-                                                                      .toString(),
-                                                                  data[index]
-                                                                          ["ReceiptNumber"]
-                                                                      .toString(),
-                                                                  double.parse(data[index]["BillAmount"]),
-                                                                  false,
-                                                                  data[index]["BillDesc"].toString(),
-                                                                  data[index]["issuer"].toString(),
-                                                                  bankReceipt: data[index]["bank_receipt_no"].toString(),
-                                                                  payedDate: data[index]["TrasDateTime"].toString(),
-                                                                  plotname: widget.system == "E-Auction" ? data[index]["PlotName"].toString() : "null",
-                                                                  station: widget.system == "E-Auction" ? data[index]["Station"].toString() : "null",
-                                                                  isPrinted: data[index]["IsPrinted"] == 0 ? false : true,
-                                                                  system: widget.system,
-                                                                  billId: data[index]["BillId"].toString()))
-                                                          .then((value) async {
-                                                          setState(() {
-                                                            isLoading = true;
-                                                          });
-                                                          widget.system ==
-                                                                  "seedMIS"
-                                                              ? this
-                                                                  .getUserDetails()
-                                                              : widget.system ==
-                                                                      "HoneyTraceability"
-                                                                  ? this
-                                                                      .getUserDetails()
-                                                                  : widget.system ==
-                                                                          "E-Auction"
-                                                                      ? this
-                                                                          .getDataEAuction()
-                                                                      : this
-                                                                          .getData();
+                                            child: ListTile(
+                                              onTap: () async {
+                                                var station =
+                                                    await SharedPreferences
+                                                            .getInstance()
+                                                        .then((prefs) =>
+                                                            prefs.getString(
+                                                                'StationName'));
 
-                                                          setState(() {
-                                                            isLoading = false;
-                                                          });
+                                                data[index]["IsPrinted"]
+                                                            .toString() ==
+                                                        "1"
+                                                    ? messages("info",
+                                                        "control No:  ${data[index]["ControlNumber"]} \nReceipt No:  ${data[index]["ReceiptNumber"]} \nPayer Name:  ${data[index]["DealerName"]} \nBill Amount:  ${data[index]["BillAmount"]} \nBill Desc:  ${data[index]["BillDesc"]} \n ${data[index]["Status: Printed"]}")
+                                                    : Navigator.pushNamed(
+                                                            context, Payments.routeName,
+                                                            arguments: ReceiptScreenArguments(
+                                                                data[index]["DealerName"]
+                                                                    .toString(),
+                                                                data[index]["ControlNumber"]
+                                                                    .toString(),
+                                                                data[index]["ReceiptNumber"]
+                                                                    .toString(),
+                                                                widget.system == "E-Auction"
+                                                                    ? data[index]
+                                                                        ["BillAmount"]
+                                                                    : double.parse(data[index]["BillAmount"]),
+                                                                false,
+                                                                data[index]["BillDesc"].toString(),
+                                                                data[index]["issuer"].toString(),
+                                                                bankReceipt: data[index]["bank_receipt_no"].toString(),
+                                                                payedDate: data[index]["TrasDateTime"].toString(),
+                                                                plotname: widget.system == "E-Auction" ? data[index]["PlotName"].toString() : "null",
+                                                                station: widget.system == "E-Auction" ? data[index]["Station"].toString() : station,
+                                                                isPrinted: data[index]["IsPrinted"] == 0 ? false : true,
+                                                                system: widget.system,
+                                                                billId: data[index]["BillId"].toString()))
+                                                        .then((value) async {
+                                                        setState(() {
+                                                          isLoading = true;
                                                         });
-                                                },
-                                                trailing: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(
-                                                      Icons
-                                                          .arrow_forward_ios_sharp,
-                                                      color: kPrimaryColor,
-                                                      size: 15,
-                                                    ),
-                                                  ],
-                                                ),
-                                                leading: IntrinsicHeight(
-                                                    child: SizedBox(
-                                                        height:
-                                                            double.maxFinite,
-                                                        width:
-                                                            getProportionateScreenHeight(
-                                                                50),
-                                                        child: Row(
-                                                          children: [
-                                                            VerticalDivider(
-                                                              color: index
-                                                                      .isEven
-                                                                  ? kPrimaryColor
-                                                                  : Colors.green[
-                                                                      200],
-                                                              thickness: 5,
-                                                            )
-                                                          ],
-                                                        ))),
-                                                title: Text(
-                                                  "Name: " +
-                                                      data[index]["DealerName"]
-                                                          .toString(),
-                                                ),
-                                                subtitle: Text(
-                                                  "Control #: " +
-                                                      data[index]
-                                                              ["ControlNumber"]
-                                                          .toString(),
-                                                ),
+                                                        widget.system ==
+                                                                "seedMIS"
+                                                            ? getUserDetails()
+                                                            : widget.system ==
+                                                                    "HoneyTraceability"
+                                                                ? getUserDetails()
+                                                                : widget.system ==
+                                                                        "E-Auction"
+                                                                    ? getDataEAuction()
+                                                                    : getData();
+
+                                                        setState(() {
+                                                          isLoading = false;
+                                                        });
+                                                      });
+                                              },
+                                              trailing: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: const [
+                                                  Icon(
+                                                    Icons
+                                                        .arrow_forward_ios_sharp,
+                                                    color: kPrimaryColor,
+                                                    size: 15,
+                                                  ),
+                                                ],
+                                              ),
+                                              leading: IntrinsicHeight(
+                                                  child: SizedBox(
+                                                      height:
+                                                          double.maxFinite,
+                                                      width:
+                                                          getProportionateScreenHeight(
+                                                              50),
+                                                      child: Row(
+                                                        children: [
+                                                          VerticalDivider(
+                                                            color: index
+                                                                    .isEven
+                                                                ? kPrimaryColor
+                                                                : Colors.green[
+                                                                    200],
+                                                            thickness: 5,
+                                                          )
+                                                        ],
+                                                      ))),
+                                              title: Text(
+                                                "Name: " +
+                                                    data[index]["DealerName"]
+                                                        .toString(),
+                                              ),
+                                              subtitle: Text(
+                                                "Control #: " +
+                                                    data[index]
+                                                            ["ControlNumber"]
+                                                        .toString(),
                                               ),
                                             ),
                                           ),
@@ -716,13 +765,13 @@ class _PaymentListState extends State<PaymentList> {
 
   popBar() {
     return Padding(
-      padding: EdgeInsets.only(right: 10.0),
+      padding: const EdgeInsets.only(right: 10.0),
       child: PopupMenuButton(
         tooltip: 'Sort',
-        color: Color(0xfff3f3f4),
+        color: const Color(0xfff3f3f4),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: const [
             Text("Sort"),
             Icon(
               Icons.sort_outlined,
@@ -731,7 +780,7 @@ class _PaymentListState extends State<PaymentList> {
             ),
           ],
         ),
-        offset: Offset(20, 40),
+        offset: const Offset(20, 40),
         itemBuilder: (context) => [
           PopupMenuItem(
             onTap: () {
@@ -744,7 +793,7 @@ class _PaymentListState extends State<PaymentList> {
                   color: kPrimaryColor,
                   size: getProportionateScreenHeight(22),
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(
                     left: 5.0,
                   ),
@@ -769,7 +818,7 @@ class _PaymentListState extends State<PaymentList> {
                   color: kPrimaryColor,
                   size: getProportionateScreenHeight(22),
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(
                     left: 5.0,
                   ),
@@ -794,7 +843,7 @@ class _PaymentListState extends State<PaymentList> {
                   color: kPrimaryColor,
                   size: getProportionateScreenHeight(22),
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(
                     left: 5.0,
                   ),
@@ -816,7 +865,7 @@ class _PaymentListState extends State<PaymentList> {
                   color: kPrimaryColor,
                   size: getProportionateScreenHeight(22),
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(
                     left: 5.0,
                   ),

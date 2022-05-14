@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'constants.dart';
 
@@ -19,7 +20,7 @@ InputDecorationTheme inputDecorationTheme() {
   //   // borderSide: BorderSide(color: kTextColor),
   //   gapPadding: 10,
   // );
-  return InputDecorationTheme(
+  return const InputDecorationTheme(
     contentPadding: EdgeInsets.symmetric(horizontal: 32, vertical: 20),
     // enabledBorder: outlineInputBorder,
     // focusedBorder: outlineInputBorder,
@@ -28,20 +29,20 @@ InputDecorationTheme inputDecorationTheme() {
 }
 
 TextTheme textTheme() {
-  return TextTheme(
+  return const TextTheme(
     bodyText1: TextStyle(color: kTextColor),
     bodyText2: TextStyle(color: kTextColor),
   );
 }
 
 AppBarTheme appBarTheme() {
-  return AppBarTheme(
+  return  AppBarTheme(
     color: Colors.white,
     elevation: 0,
-    brightness: Brightness.light,
-    iconTheme: IconThemeData(color: Colors.black),
-    textTheme: TextTheme(
+    iconTheme: const IconThemeData(color: Colors.black), systemOverlayStyle: SystemUiOverlayStyle.dark, toolbarTextStyle: const TextTheme(
       headline6: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
-    ),
+    ).bodyText2, titleTextStyle: const TextTheme(
+      headline6: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
+    ).headline6,
   );
 }

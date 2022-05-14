@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, avoid_print, prefer_typing_uninitialized_variables
+
 import 'dart:convert';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
@@ -12,7 +14,7 @@ import 'package:timelines/timelines.dart';
 class TPtimeline extends StatefulWidget {
   static String routeName = "/Timeline";
   final String? tpNumber;
-  TPtimeline({Key? key, this.tpNumber}) : super(key: key);
+  const TPtimeline({Key? key, this.tpNumber}) : super(key: key);
 
   @override
   State<TPtimeline> createState() => _TPtimelineState();
@@ -27,10 +29,10 @@ class _TPtimelineState extends State<TPtimeline> {
 
   String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
   String pastMonth = DateFormat('yyyy-MM-dd')
-      .format(DateTime.now().subtract(Duration(days: 30)));
+      .format(DateTime.now().subtract(const Duration(days: 30)));
   String pastWeek = DateFormat('yyyy-MM-dd')
-      .format(DateTime.now().subtract(Duration(days: 7)));
-  RefreshController _refreshController =
+      .format(DateTime.now().subtract(const Duration(days: 7)));
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   Future getData() async {
@@ -45,7 +47,7 @@ class _TPtimelineState extends State<TPtimeline> {
           .then((prefs) => prefs.getString('checkpointId'));
       var headers = {"Authorization": "Bearer " + tokens!};
       var url = Uri.parse(
-          'https://mis.tfs.go.tz/fremis-test/api/v1/expected-tp/routes/${widget.tpNumber}/${checkpoint}');
+          'https://mis.tfs.go.tz/fremis-test/api/v1/expected-tp/routes/${widget.tpNumber}/$checkpoint');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
@@ -88,7 +90,7 @@ class _TPtimelineState extends State<TPtimeline> {
     String desc,
   ) {
     return Alert(
-      style: AlertStyle(descStyle: TextStyle(fontSize: 17)),
+      style: const AlertStyle(descStyle: TextStyle(fontSize: 17)),
       context: context,
       type: type == 'success'
           ? AlertType.success
@@ -99,7 +101,7 @@ class _TPtimelineState extends State<TPtimeline> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -129,13 +131,13 @@ class _TPtimelineState extends State<TPtimeline> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
-        title: Text(
+        title: const Text(
           'TP Timeline ',
           style: TextStyle(color: Colors.white, fontFamily: "Ubuntu"),
         ),
       ),
       body: isLoading
-          ? SpinKitCircle(
+          ? const SpinKitCircle(
               color: kPrimaryColor,
             )
           : ListView.builder(
@@ -143,10 +145,10 @@ class _TPtimelineState extends State<TPtimeline> {
               itemBuilder: (context, index) {
                 final tpdata = data.reversed.toList();
                 return Center(
-                  child: Container(
+                  child: SizedBox(
                     width: 360.0,
                     child: Card(
-                      margin: EdgeInsets.all(20.0),
+                      margin: const EdgeInsets.all(20.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -160,9 +162,9 @@ class _TPtimelineState extends State<TPtimeline> {
                                   .toString(),
                             ),
                           ),
-                          Divider(height: 1.0),
+                          const Divider(height: 1.0),
                           _DeliveryProcesses(processes: tpdata),
-                          Divider(height: 1.0),
+                          const Divider(height: 1.0),
                           tpdata[index]["checkpoint"] != null
                               ? Padding(
                                   padding: const EdgeInsets.all(20.0),
@@ -196,7 +198,7 @@ class _OrderTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [
+      children: const [
         Expanded(
           child: Text(
             'TP Details: ',
@@ -233,7 +235,7 @@ class _InnerTimeline extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Card(
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20), topRight: Radius.circular(20)),
         ),
@@ -263,7 +265,7 @@ class _InnerTimeline extends StatelessWidget {
                 }
 
                 return Padding(
-                  padding: EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsets.only(left: 8.0),
                   child: Text(messages[index - 1].toString()),
                 );
               },
@@ -287,7 +289,7 @@ class _DeliveryProcesses extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTextStyle(
-      style: TextStyle(
+      style: const TextStyle(
         color: Color(0xff9b9b9b),
         fontSize: 12.5,
       ),
@@ -296,12 +298,12 @@ class _DeliveryProcesses extends StatelessWidget {
         child: FixedTimeline.tileBuilder(
           theme: TimelineThemeData(
             nodePosition: 0,
-            color: Color(0xff989898),
-            indicatorTheme: IndicatorThemeData(
+            color: const Color(0xff989898),
+            indicatorTheme: const IndicatorThemeData(
               position: 0,
               size: 20.0,
             ),
-            connectorTheme: ConnectorThemeData(
+            connectorTheme: const ConnectorThemeData(
               thickness: 2.5,
             ),
           ),
@@ -312,7 +314,7 @@ class _DeliveryProcesses extends StatelessWidget {
                 //if (processes[index].isCompleted) return null;
 
                 return Padding(
-                  padding: EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsets.only(left: 8.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -360,7 +362,7 @@ class _DeliveryProcesses extends StatelessWidget {
               indicatorBuilder: (_, index) {
                 if (processes[index]["checkpoint"]["remarks"].toString() ==
                     "Verified") {
-                  return DotIndicator(
+                  return const DotIndicator(
                     color: Color(0xff66c97f),
                     child: Icon(
                       Icons.check,
@@ -371,7 +373,7 @@ class _DeliveryProcesses extends StatelessWidget {
                 }
                 if (processes[index]["checkpoint"]["remarks"].toString() ==
                     "Compounded For Skipping Checkpoint") {
-                  return DotIndicator(
+                  return const DotIndicator(
                     color: Color.fromARGB(255, 223, 109, 16),
                     child: Icon(
                       Icons.check,
@@ -382,7 +384,7 @@ class _DeliveryProcesses extends StatelessWidget {
                 }
                 if (processes[index]["checkpoint"]["remarks"].toString() ==
                     "Scheduled") {
-                  return DotIndicator(
+                  return const DotIndicator(
                     color: Color.fromARGB(255, 180, 181, 182),
                     child: Icon(
                       Icons.pending_actions,
@@ -398,19 +400,19 @@ class _DeliveryProcesses extends StatelessWidget {
 
                 if (processes[index]["checkpoint"]["remarks"].toString() ==
                     "Verified") {
-                  return SolidLineConnector(
+                  return const SolidLineConnector(
                     color: Color(0xff66c97f),
                   );
                 }
                 if (processes[index]["checkpoint"]["remarks"].toString() ==
                     "Compounded For Skipping Checkpoint") {
-                  return SolidLineConnector(
+                  return const SolidLineConnector(
                     color: Color.fromARGB(255, 223, 109, 16),
                   );
                 }
                 if (processes[index]["checkpoint"]["remarks"].toString() ==
                     "Scheduled") {
-                  return SolidLineConnector(
+                  return const SolidLineConnector(
                     color: Color.fromARGB(255, 180, 181, 182),
                   );
                 }
@@ -434,23 +436,23 @@ class _OnTimeBar extends StatelessWidget {
         MaterialButton(
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
+              const SnackBar(
                 content: Text('Route!'),
               ),
             );
           },
           elevation: 0,
-          shape: StadiumBorder(),
-          color: Color(0xff66c97f),
+          shape: const StadiumBorder(),
+          color: const Color(0xff66c97f),
           textColor: Colors.white,
-          child: Text('Route Map Of TP'),
+          child: const Text('Route Map Of TP'),
         ),
-        Spacer(),
-        Text(
+        const Spacer(),
+        const Text(
           '',
           textAlign: TextAlign.center,
         ),
-        SizedBox(width: 12.0),
+        const SizedBox(width: 12.0),
         // Container(
         //   width: 40.0,
         //   height: 40.0,

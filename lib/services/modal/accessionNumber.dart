@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 class AccessionNumberModel {
   final String id;
   final String assesmentNumber;
@@ -21,17 +23,17 @@ class AccessionNumberModel {
 
   ///this method will prevent the override of toString
   String userAsString() {
-    return '#${this.accessionNumber} ${this.id}';
+    return '#$accessionNumber $id';
   }
 
   ///this method will prevent the override of toString
   bool? userFilterByCreationDate(String filter) {
-    return this.accessionNumber.toString().contains(filter);
+    return accessionNumber.toString().contains(filter);
   }
 
   ///custom comparing function to check if two users are equal
   bool isEqual(AccessionNumberModel? model) {
-    return this.accessionNumber == model?.accessionNumber;
+    return accessionNumber == model?.accessionNumber;
   }
 
   @override

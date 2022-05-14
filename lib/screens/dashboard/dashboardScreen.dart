@@ -1,4 +1,4 @@
-// ignore_for_file: unused_import
+// ignore_for_file: unused_import, file_names, prefer_typing_uninitialized_variables
 
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +23,8 @@ import 'package:sizer/sizer.dart';
 
 class DashboardScreen extends StatefulWidget {
   static String routeName = "/dashboard";
+
+  const DashboardScreen({Key? key}) : super(key: key);
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
 }
@@ -61,7 +63,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       elevation: 10,
       shadowColor: kPrimaryColor,
       child: ListTile(
-        leading: CircleAvatar(
+        leading: const CircleAvatar(
           backgroundColor: kPrimaryColor,
           child: Icon(
             Icons.file_present,
@@ -70,7 +72,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         title: Text(title),
         subtitle: Text(subtitle),
-        trailing: Icon(Icons.arrow_forward_ios_outlined),
+        trailing: const Icon(Icons.arrow_forward_ios_outlined),
       ),
     );
   }
@@ -108,8 +110,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       buttons: [
         DialogButton(
           color: Colors.red,
-          radius: BorderRadius.all(Radius.circular(10)),
-          child: Text(
+          radius: const BorderRadius.all(Radius.circular(10)),
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -122,8 +124,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         DialogButton(
           color: Colors.green,
-          radius: BorderRadius.all(Radius.circular(10)),
-          child: Text(
+          radius: const BorderRadius.all(Radius.circular(10)),
+          child: const Text(
             "Cancel",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -152,7 +154,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Scaffold(
           appBar: AppBar(
             backgroundColor: kPrimaryColor,
-            title: Text(
+            title: const Text(
               '',
               style: TextStyle(color: Colors.black, fontFamily: 'Ubuntu'),
             ),
@@ -162,20 +164,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Badge(
                     badgeColor: Colors.white,
                     animationType: BadgeAnimationType.scale,
-                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                    badgeContent: Padding(
-                      padding: const EdgeInsets.all(1.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    badgeContent: const Padding(
+                      padding: EdgeInsets.all(1.0),
                       child: Text(
                         "1",
                         style: TextStyle(color: Colors.red, fontSize: 15),
                       ),
                     ),
-                    child: Icon(Icons.notifications)),
+                    child: const Icon(Icons.notifications)),
               )
             ],
           ),
-          drawer: CustomDrawer(),
-          body: Container(
+          drawer: const CustomDrawer(),
+          body: SizedBox(
             height: height,
             child: Column(
               children: <Widget>[
@@ -188,7 +190,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     Container(
                       height: getProportionateScreenHeight(50),
-                      decoration: BoxDecoration(color: kPrimaryColor),
+                      decoration: const BoxDecoration(color: kPrimaryColor),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
@@ -197,7 +199,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: Card(
                           elevation: 10,
                           child: ListTile(
-                            leading: CircleAvatar(
+                            leading: const CircleAvatar(
                               foregroundColor: kPrimaryColor,
                               backgroundColor: Colors.black12,
                               child: Icon(Icons.verified_user_rounded),
@@ -206,25 +208,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             subtitle: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Divider(
+                                const Divider(
                                   color: Colors.purple,
                                 ),
                                 Row(
                                   children: [
                                     Text(
-                                      "Station: ${stationName}",
-                                      style: TextStyle(
+                                      "Station: $stationName",
+                                      style: const TextStyle(
                                           fontWeight: FontWeight.w400),
                                     ),
-                                    Spacer()
+                                    const Spacer()
                                   ],
                                 ),
                                 checkpoint == "null"
                                     ? Container()
                                     : Row(
                                         children: [
-                                          Text("CheckPoint: ${checkpoint}"),
-                                          Spacer()
+                                          Text("CheckPoint: $checkpoint"),
+                                          const Spacer()
                                         ],
                                       )
                               ],
@@ -245,7 +247,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   padding: const EdgeInsets.all(0.0),
                   child: Container(
                     color: Colors.transparent,
-                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: AnimationLimiter(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -278,8 +280,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       },
                                       child: Container(
                                           decoration: BoxDecoration(
-                                              color: Color(0xfff3f3f4),
-                                              boxShadow: [
+                                              color: const Color(0xfff3f3f4),
+                                              boxShadow: const [
                                                 BoxShadow(
                                                     color: Colors.grey,
                                                     offset: Offset.zero,
@@ -317,8 +319,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       },
                                       child: Container(
                                           decoration: BoxDecoration(
-                                              color: Color(0xfff3f3f4),
-                                              boxShadow: [
+                                              color: const Color(0xfff3f3f4),
+                                              boxShadow: const [
                                                 BoxShadow(
                                                     color: Colors.grey,
                                                     offset: Offset.zero,
@@ -356,8 +358,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       },
                                       child: Container(
                                           decoration: BoxDecoration(
-                                              color: Color(0xfff3f3f4),
-                                              boxShadow: [
+                                              color: const Color(0xfff3f3f4),
+                                              boxShadow: const [
                                                 BoxShadow(
                                                     color: Colors.grey,
                                                     offset: Offset.zero,
@@ -395,8 +397,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       },
                                       child: Container(
                                           decoration: BoxDecoration(
-                                              color: Color(0xfff3f3f4),
-                                              boxShadow: [
+                                              color: const Color(0xfff3f3f4),
+                                              boxShadow: const [
                                                 BoxShadow(
                                                     color: Colors.grey,
                                                     offset: Offset.zero,
@@ -436,8 +438,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       },
                                       child: Container(
                                           decoration: BoxDecoration(
-                                              color: Color(0xfff3f3f4),
-                                              boxShadow: [
+                                              color: const Color(0xfff3f3f4),
+                                              boxShadow: const [
                                                 BoxShadow(
                                                     color: Colors.grey,
                                                     offset: Offset.zero,
@@ -477,8 +479,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       },
                                       child: Container(
                                           decoration: BoxDecoration(
-                                              color: Color(0xfff3f3f4),
-                                              boxShadow: [
+                                              color: const Color(0xfff3f3f4),
+                                              boxShadow: const [
                                                 BoxShadow(
                                                     color: Colors.grey,
                                                     offset: Offset.zero,
@@ -522,15 +524,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   popBar(String email) {
     return Padding(
-      padding: EdgeInsets.only(right: 10.0),
+      padding: const EdgeInsets.only(right: 10.0),
       child: PopupMenuButton(
         tooltip: 'Menu',
-        child: Icon(
+        child: const Icon(
           Icons.more_vert,
           size: 28.0,
           color: Colors.black,
         ),
-        offset: Offset(20, 40),
+        offset: const Offset(20, 40),
         itemBuilder: (context) => [
           PopupMenuItem(
             child: Row(
@@ -541,12 +543,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   size: getProportionateScreenHeight(22),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                     left: 5.0,
                   ),
                   child: Text(
                     email.toString(),
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                     ),
                   ),
@@ -563,12 +565,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   size: getProportionateScreenHeight(22),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                     left: 5.0,
                   ),
                   child: Text(
                     stationName.toString(),
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                     ),
                   ),

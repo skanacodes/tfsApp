@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import, prefer_typing_uninitialized_variables, avoid_print
+
 import 'dart:convert';
 
 //import 'package:tfsappv1/screens/dashboard/dashboardScreen.dart';
@@ -6,6 +8,7 @@ import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/screens/dashboard/dashboardScreen.dart';
 
 import 'package:tfsappv1/screens/login/Widget/bezierContainer.dart';
+import 'package:tfsappv1/screens/otp/otp.dart';
 
 import 'package:tfsappv1/services/size_config.dart';
 
@@ -22,6 +25,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   static String routeName = "/login";
+
+  const LoginScreen({Key? key}) : super(key: key);
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -65,8 +70,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<String> getUserDetails() async {
     try {
-      // print(username);
-      // print(password);
+      print(username);
+      print(devId);
 
       var url = Uri.parse('$baseUrlTest/api/v1/login');
       // var username = "barakasikana@gmail.com";
@@ -154,73 +159,85 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void addError({required String error}) {
-    if (!errors.contains(error))
+    if (!errors.contains(error)) {
       setState(() {
         errors.add(error);
       });
+    }
   }
 
   void removeError({required String error}) {
-    if (errors.contains(error))
+    if (errors.contains(error)) {
       setState(() {
         errors.remove(error);
       });
+    }
   }
 
   Widget _entryField(String title, {bool isPassword = false}) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 5),
+        margin: const EdgeInsets.symmetric(vertical: 5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Container(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                child: Text(
-                  title,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.black),
-                ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+              child: Text(
+                title,
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.black),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
-            Container(
-              child: TextFormField(
-                  onChanged: (value) {
-                    if (value.isNotEmpty) {
-                      errors.contains('Network Problem')
-                          ? removeError(
-                              error: 'Server Or Network Connectivity Error')
-                          : errors.contains('Incorrect Password or Email')
-                              ? removeError(
-                                  error: 'Incorrect Password or Email')
-                              : removeError(
-                                  error:
-                                      'Your Not Authourized To Use This App');
+            TextFormField(
+                onChanged: (value) {
+                  if (value.isNotEmpty) {
+                    errors.contains('Network Problem')
+                        ? removeError(
+                            error: 'Server Or Network Connectivity Error')
+                        : errors.contains('Incorrect Password or Email')
+                            ? removeError(
+                                error: 'Incorrect Password or Email')
+                            : removeError(
+                                error:
+                                    'Your Not Authourized To Use This App');
+                  }
+                  return;
+                },
+                validator: (value) {
+                  if (!isPassword) {
+                    bool emailValid = RegExp(
+                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                        .hasMatch(value ?? '');
+                    if (value == null || value.isEmpty || !emailValid) {
+                      return 'Please enter Valid email';
                     }
-                    return null;
-                  },
-                  validator: (value) =>
-                      value == '' ? 'This  Field Is Required' : null,
-                  onSaved: (value) {
-                    setState(() {
-                      isPassword ? password = value! : username = value!;
-                    });
-                  },
-                  keyboardType: TextInputType.emailAddress,
-                  cursorColor: kPrimaryColor,
-                  obscureText: isPassword,
-                  decoration: InputDecoration(
-                      isDense: true,
-                      contentPadding: EdgeInsets.fromLTRB(30, 20, 20, 10),
-                      border: InputBorder.none,
-                      fillColor: Color(0xfff3f3f4),
-                      filled: true)),
-            )
+                  }
+                  if (isPassword) {
+                    if (value == '') {
+                      return 'Password  Field Is Required';
+                    }
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  setState(() {
+                    isPassword ? password = value! : username = value!;
+                  });
+                },
+                keyboardType: TextInputType.emailAddress,
+                cursorColor: kPrimaryColor,
+                obscureText: isPassword,
+                decoration: const InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.fromLTRB(30, 20, 20, 10),
+                    border: InputBorder.none,
+                    fillColor: Color(0xfff3f3f4),
+                    filled: true))
           ],
         ),
       ),
@@ -250,6 +267,11 @@ class _LoginScreenState extends State<LoginScreen> {
               DashboardScreen.routeName,
             ).then((_) => RealTimeCommunication().createConnection("1"));
 
+            // Navigator.pushNamed(
+            //   context,
+            //   Otp.routeName,
+            // ).then((_) => RealTimeCommunication().createConnection("1"));
+
             _formKey.currentState!.reset();
           } else {
             print('fail');
@@ -269,14 +291,14 @@ class _LoginScreenState extends State<LoginScreen> {
           : Container(
               height: 50,
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.symmetric(vertical: 15),
+              padding: const EdgeInsets.symmetric(vertical: 15),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
                         color: Colors.grey.shade200,
-                        offset: Offset(2, 4),
+                        offset: const Offset(2, 4),
                         blurRadius: 5,
                         spreadRadius: 2)
                   ],
@@ -297,9 +319,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _divider() {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
-        children: <Widget>[
+        children: const <Widget>[
           SizedBox(
             width: 20,
           ),
@@ -337,9 +359,9 @@ class _LoginScreenState extends State<LoginScreen> {
             // textStyle: Theme.of(context).textTheme.bodyText1,
             fontSize: 20,
             fontWeight: FontWeight.w700,
-            color: Color(0XFF105F01),
+            color: const Color(0XFF105F01),
           ),
-          children: [
+          children: const [
             TextSpan(
               text: 'Forest  ',
               style: TextStyle(color: Color(0XFF105F01), fontSize: 20),
@@ -371,7 +393,7 @@ class _LoginScreenState extends State<LoginScreen> {
             fontWeight: FontWeight.w700,
             color: kPrimaryColor,
           ),
-          children: [
+          children: const [
             TextSpan(
               text: 'A',
               style: TextStyle(color: Color(0XFF105F01), fontSize: 20),
@@ -408,18 +430,18 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-        body: Container(
+        body: SizedBox(
       height: height,
       child: Stack(
         children: <Widget>[
           Positioned(
               top: -height * .16,
               right: -MediaQuery.of(context).size.width * .4,
-              child: BezierContainer()),
+              child: const BezierContainer()),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SingleChildScrollView(
                 child: Form(
                   key: _formKey,
@@ -430,7 +452,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(height: 13.0.h),
                       _title(),
                       Container(
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                             // border: Border.all(
                             //     color: Colors.cyan,
                             //     style: BorderStyle.solid,
@@ -447,7 +469,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       _title2(),
                       SizedBox(height: getProportionateScreenHeight(20)),
                       _emailPasswordWidget(),
-                      Container(child: FormError(errors: errors)),
+                      FormError(errors: errors),
                       SizedBox(height: getProportionateScreenHeight(15)),
                       _submitButton(),
                       SizedBox(height: getProportionateScreenHeight(15)),

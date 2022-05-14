@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, avoid_print, unrelated_type_equality_checks, prefer_typing_uninitialized_variables
+
 import 'dart:convert';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
@@ -22,7 +24,7 @@ class Seeds extends StatefulWidget {
   final String token;
   //final Function(String) callback;
 
-  Seeds(
+  const Seeds(
     this.token,
   );
 
@@ -58,9 +60,9 @@ class _SeedsState extends State<Seeds> {
   List orderData = [];
   List<int> unitPrice = [];
   final _dealerEditTextController = TextEditingController();
-  final GlobalKey<ExpansionTileCardState> cardA = new GlobalKey();
-  final GlobalKey<ExpansionTileCardState> cardB = new GlobalKey();
-  final GlobalKey<ExpansionTileCardState> cardC = new GlobalKey();
+  final GlobalKey<ExpansionTileCardState> cardA = GlobalKey();
+  final GlobalKey<ExpansionTileCardState> cardB = GlobalKey();
+  final GlobalKey<ExpansionTileCardState> cardC = GlobalKey();
   List<String> ask = ['Domestic Customer', 'Non Domestic Customer'];
   List<String> typeseeds = ['Seed', 'Seedling'];
   String? type;
@@ -98,8 +100,8 @@ class _SeedsState extends State<Seeds> {
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE'
       };
-      BaseOptions options = new BaseOptions(
-          baseUrl: "$baseUrlSeed",
+      BaseOptions options = BaseOptions(
+          baseUrl: baseUrlSeed,
           connectTimeout: 50000,
           receiveTimeout: 50000,
           headers: headers);
@@ -316,7 +318,7 @@ class _SeedsState extends State<Seeds> {
           key: _formKey,
           child: Column(
             children: <Widget>[
-              Divider(
+              const Divider(
                 thickness: 1.0,
                 height: 1.0,
                 color: Colors.black26,
@@ -324,175 +326,165 @@ class _SeedsState extends State<Seeds> {
               SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 0, right: 5, left: 5),
-                  child: Container(
-                    // width: getProportionateScreenHeight(
-                    //     320),
-                    child: DropdownButtonFormField<String>(
-                      itemHeight: 50,
-                      decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                            borderSide: BorderSide(
-                              color: Colors.cyan,
-                            ),
+                  child: DropdownButtonFormField<String>(
+                    itemHeight: 50,
+                    decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                          borderSide: const BorderSide(
+                            color: Colors.cyan,
                           ),
-                          fillColor: Color(0xfff3f3f4),
-                          filled: true,
-                          isDense: true,
-                          contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
-                          labelText: "Customer Category",
-                          border: InputBorder.none),
-                      isExpanded: true,
+                        ),
+                        fillColor: const Color(0xfff3f3f4),
+                        filled: true,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                        labelText: "Customer Category",
+                        border: InputBorder.none),
+                    isExpanded: true,
 
-                      value: categoryName,
-                      //elevation: 5,
-                      style:
-                          TextStyle(color: Colors.white, fontFamily: 'Ubuntu'),
-                      iconEnabledColor: Colors.black,
-                      items: ask.map<DropdownMenuItem<String>>((String value) {
-                        return new DropdownMenuItem(
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Color(0xfff3f3f4),
-                              border: Border(
-                                bottom:
-                                    BorderSide(width: 1, color: kPrimaryColor),
-                              ),
-                            ),
-                            child: new Text(
-                              value,
-                              style: TextStyle(color: Colors.black),
+                    value: categoryName,
+                    //elevation: 5,
+                    style:
+                        const TextStyle(color: Colors.white, fontFamily: 'Ubuntu'),
+                    iconEnabledColor: Colors.black,
+                    items: ask.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem(
+                        child: Container(
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                            color: Color(0xfff3f3f4),
+                            border: Border(
+                              bottom:
+                                  BorderSide(width: 1, color: kPrimaryColor),
                             ),
                           ),
-                          value: value,
-                        );
-                      }).toList(),
-                      validator: (value) {
-                        if (value == null) {
-                          return "This Field is required";
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        setState(() {
-                          FocusScope.of(context).requestFocus(new FocusNode());
-                          categoryName = value!;
-                          value == "Domestic Customer"
-                              ? categoryId = "1"
-                              : categoryId = "3";
-                          print(categoryId);
-                        });
-                      },
-                      onSaved: (value) {
-                        setState(() {
-                          FocusScope.of(context).requestFocus(new FocusNode());
-                          // categoryId = value!;
-                          value == "Domestic Customer"
-                              ? categoryId = "1"
-                              : categoryId = "3";
-                          print(categoryId);
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                child: Container(
-                  child: TextFormField(
-                    keyboardType: TextInputType.text,
-                    key: Key(""),
-                    onSaved: (val) => customerName = val!,
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: BorderSide(
-                          color: Colors.cyan,
+                          child: Text(
+                            value,
+                            style: const TextStyle(color: Colors.black),
+                          ),
                         ),
-                      ),
-                      fillColor: Color(0xfff3f3f4),
-                      filled: true,
-                      labelText: "Full Name",
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
-                    ),
-                    // onChanged: (val) {
-                    //   setState(() {});
-                    // },
+                        value: value,
+                      );
+                    }).toList(),
                     validator: (value) {
-                      if (value!.isEmpty) return "This Field Is Required";
+                      if (value == null) {
+                        return "This Field is required";
+                      }
                       return null;
+                    },
+                    onChanged: (value) {
+                      setState(() {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        categoryName = value!;
+                        value == "Domestic Customer"
+                            ? categoryId = "1"
+                            : categoryId = "3";
+                        print(categoryId);
+                      });
+                    },
+                    onSaved: (value) {
+                      setState(() {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        // categoryId = value!;
+                        value == "Domestic Customer"
+                            ? categoryId = "1"
+                            : categoryId = "3";
+                        print(categoryId);
+                      });
                     },
                   ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                child: Container(
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    key: Key(""),
-                    onSaved: (val) => mobileNumber = val!,
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: BorderSide(
-                          color: Colors.cyan,
-                        ),
+                child: TextFormField(
+                  keyboardType: TextInputType.text,
+                  key: const Key(""),
+                  onSaved: (val) => customerName = val!,
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: const BorderSide(
+                        color: Colors.cyan,
                       ),
-                      fillColor: Color(0xfff3f3f4),
-                      filled: true,
-                      labelText: "Phone Number",
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                     ),
-                    // onChanged: (val) {
-                    //   setState(() {});
-                    // },
-                    validator: (value) {
-                      if (value!.isEmpty) return "This Field Is Required";
-                      return null;
-                    },
+                    fillColor: const Color(0xfff3f3f4),
+                    filled: true,
+                    labelText: "Full Name",
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                   ),
+                  // onChanged: (val) {
+                  //   setState(() {});
+                  // },
+                  validator: (value) {
+                    if (value!.isEmpty) return "This Field Is Required";
+                    return null;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
+                child: TextFormField(
+                  keyboardType: TextInputType.number,
+                  key: const Key(""),
+                  onSaved: (val) => mobileNumber = val!,
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: const BorderSide(
+                        color: Colors.cyan,
+                      ),
+                    ),
+                    fillColor: const Color(0xfff3f3f4),
+                    filled: true,
+                    labelText: "Phone Number",
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                  ),
+                  // onChanged: (val) {
+                  //   setState(() {});
+                  // },
+                  validator: (value) {
+                    if (value!.isEmpty) return "This Field Is Required";
+                    return null;
+                  },
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(
                     top: 5, right: 5, left: 5, bottom: 10),
-                child: Container(
-                  child: TextFormField(
-                    keyboardType: TextInputType.text,
-                    key: Key(""),
-                    onSaved: (val) => physicalAdress = val!,
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: BorderSide(
-                          color: Colors.cyan,
-                        ),
+                child: TextFormField(
+                  keyboardType: TextInputType.text,
+                  key: const Key(""),
+                  onSaved: (val) => physicalAdress = val!,
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: const BorderSide(
+                        color: Colors.cyan,
                       ),
-                      fillColor: Color(0xfff3f3f4),
-                      filled: true,
-                      labelText: "Physical Address",
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                     ),
-                    // onChanged: (val) {
-                    //   setState(() {});
-                    // },
-                    // validator: (value) {
-                    //   if (value!.isEmpty) return "This Field Is Required";
-                    //   return null;
-                    // },
+                    fillColor: const Color(0xfff3f3f4),
+                    filled: true,
+                    labelText: "Physical Address",
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                   ),
+                  // onChanged: (val) {
+                  //   setState(() {});
+                  // },
+                  // validator: (value) {
+                  //   if (value!.isEmpty) return "This Field Is Required";
+                  //   return null;
+                  // },
                 ),
               ),
-              Divider(
+              const Divider(
                 thickness: 1.0,
                 height: 1.0,
                 color: Colors.cyan,
@@ -515,7 +507,7 @@ class _SeedsState extends State<Seeds> {
                 Navigator.pop(context);
               }
             },
-            child: Text(
+            child: const Text(
               "Register",
               style: TextStyle(color: Colors.white, fontSize: 17),
             ),
@@ -523,7 +515,7 @@ class _SeedsState extends State<Seeds> {
           DialogButton(
             color: Colors.red,
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: const Text(
               "Cancel",
               style: TextStyle(color: Colors.white, fontSize: 17),
             ),
@@ -546,7 +538,7 @@ class _SeedsState extends State<Seeds> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -573,7 +565,7 @@ class _SeedsState extends State<Seeds> {
 
   forms() {
     return SingleChildScrollView(
-      child: Container(
+      child: SizedBox(
         height: getProportionateScreenHeight(700),
         child: ListView(
           children: <Widget>[
@@ -599,8 +591,8 @@ class _SeedsState extends State<Seeds> {
                               // validator: (v) => v == null
                               //     ? "This Field Is required"
                               //     : null,
-                              popupTitle: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                              popupTitle: const Padding(
+                                padding: EdgeInsets.all(8.0),
                                 child: Center(
                                     child: Text(
                                   'List Of Registered Customers',
@@ -611,19 +603,19 @@ class _SeedsState extends State<Seeds> {
                                 decoration: InputDecoration(
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Colors.cyan,
                                       ),
                                     ),
-                                    fillColor: Color(0xfff3f3f4),
+                                    fillColor: const Color(0xfff3f3f4),
                                     filled: true,
                                     labelText: "Search",
                                     border: InputBorder.none,
                                     isDense: true,
                                     contentPadding:
-                                        EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                        const EdgeInsets.fromLTRB(30, 10, 15, 10),
                                     suffixIcon: IconButton(
-                                      icon: Icon(Icons.clear),
+                                      icon: const Icon(Icons.clear),
                                       color: Colors.red,
                                       onPressed: () {
                                         _dealerEditTextController.clear();
@@ -636,24 +628,24 @@ class _SeedsState extends State<Seeds> {
                               dropdownSearchDecoration: InputDecoration(
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(5.0),
-                                    borderSide: BorderSide(
+                                    borderSide: const BorderSide(
                                       color: Colors.cyan,
                                     ),
                                   ),
                                   icon: isCustomerSelected
-                                      ? Icon(
+                                      ? const Icon(
                                           Icons.verified_user_outlined,
                                           color: Colors.green,
                                         )
-                                      : Icon(
+                                      : const Icon(
                                           Icons.person_add_alt_1_outlined,
                                           color: Colors.red,
                                         ),
-                                  fillColor: Color(0xfff3f3f4),
+                                  fillColor: const Color(0xfff3f3f4),
                                   filled: true,
                                   isDense: true,
                                   contentPadding:
-                                      EdgeInsets.fromLTRB(30, 5, 10, 5),
+                                      const EdgeInsets.fromLTRB(30, 5, 10, 5),
                                   hintText: "Select Customer",
                                   border: InputBorder.none),
                               compareFn: (i, s) => i!.isEqual(s),
@@ -685,7 +677,7 @@ class _SeedsState extends State<Seeds> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                Expanded(
+                                const Expanded(
                                   flex: 4,
                                   child: Center(
                                     child: Text(
@@ -697,9 +689,9 @@ class _SeedsState extends State<Seeds> {
                                 Expanded(
                                   flex: 2,
                                   child: isCustomerRegistered
-                                      ? Icon(Icons.verified_user_outlined,
+                                      ? const Icon(Icons.verified_user_outlined,
                                           color: Colors.green)
-                                      : Icon(
+                                      : const Icon(
                                           Icons.app_registration,
                                           color: Colors.pink,
                                         ),
@@ -723,24 +715,24 @@ class _SeedsState extends State<Seeds> {
                       key: cardB,
                       expandedTextColor: Colors.black,
                       shadowColor: kPrimaryColor,
-                      duration: Duration(milliseconds: 500),
+                      duration: const Duration(milliseconds: 500),
                       animateTrailing: true,
-                      baseColor: Color(0xfff3f3f4),
+                      baseColor: const Color(0xfff3f3f4),
                       elevation: 10,
-                      borderRadius: BorderRadius.only(
+                      borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.zero,
                           bottomRight: Radius.zero,
                           topLeft: Radius.circular(20),
                           topRight: Radius.circular(20)),
-                      leading: CircleAvatar(
+                      leading: const CircleAvatar(
                           backgroundColor: Colors.transparent,
                           child: Icon(
                             Icons.sell_outlined,
                             color: kPrimaryColor,
                           )),
-                      title: Text('Make Order'),
+                      title: const Text('Make Order'),
                       children: <Widget>[
-                        Divider(
+                        const Divider(
                           thickness: 1.0,
                           height: 1.0,
                           color: Colors.cyan,
@@ -749,70 +741,66 @@ class _SeedsState extends State<Seeds> {
                           child: Padding(
                             padding: const EdgeInsets.only(
                                 top: 5, right: 5, left: 5),
-                            child: Container(
-                              // width: getProportionateScreenHeight(
-                              //     320),
-                              child: DropdownButtonFormField<String>(
-                                itemHeight: 50,
-                                decoration: InputDecoration(
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      borderSide: BorderSide(
-                                        color: Colors.cyan,
-                                      ),
+                            child: DropdownButtonFormField<String>(
+                              itemHeight: 50,
+                              decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.cyan,
                                     ),
-                                    fillColor: Color(0xfff3f3f4),
-                                    filled: true,
-                                    isDense: true,
-                                    contentPadding:
-                                        EdgeInsets.fromLTRB(30, 10, 15, 10),
-                                    labelText: "Select Type",
-                                    border: InputBorder.none),
-                                isExpanded: true,
+                                  ),
+                                  fillColor: const Color(0xfff3f3f4),
+                                  filled: true,
+                                  isDense: true,
+                                  contentPadding:
+                                      const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                  labelText: "Select Type",
+                                  border: InputBorder.none),
+                              isExpanded: true,
 
-                                value: typeSeed,
-                                //elevation: 5,
-                                style: TextStyle(
-                                    color: Colors.white, fontFamily: 'Ubuntu'),
-                                iconEnabledColor: Colors.black,
-                                items: typeseeds.map<DropdownMenuItem<String>>(
-                                    (String value) {
-                                  return new DropdownMenuItem(
-                                    child: Container(
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        color: Color(0xfff3f3f4),
-                                        border: Border(
-                                          bottom: BorderSide(
-                                              width: 1, color: kPrimaryColor),
-                                        ),
-                                      ),
-                                      child: new Text(
-                                        value,
-                                        style: TextStyle(color: Colors.black),
+                              value: typeSeed,
+                              //elevation: 5,
+                              style: const TextStyle(
+                                  color: Colors.white, fontFamily: 'Ubuntu'),
+                              iconEnabledColor: Colors.black,
+                              items: typeseeds.map<DropdownMenuItem<String>>(
+                                  (String value) {
+                                return DropdownMenuItem(
+                                  child: Container(
+                                    width: double.infinity,
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xfff3f3f4),
+                                      border: Border(
+                                        bottom: BorderSide(
+                                            width: 1, color: kPrimaryColor),
                                       ),
                                     ),
-                                    value: value,
-                                  );
-                                }).toList(),
-                                validator: (value) {
-                                  if (value == null) {
-                                    return "This Field is required";
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) {
-                                  setState(() {
-                                    FocusScope.of(context)
-                                        .requestFocus(new FocusNode());
-                                    typeSeed = value!;
-                                    typeSeed == "Seed"
-                                        ? isSeed = true
-                                        : isSeed = false;
-                                    print(typeSeed);
-                                  });
-                                },
-                              ),
+                                    child: Text(
+                                      value,
+                                      style: const TextStyle(color: Colors.black),
+                                    ),
+                                  ),
+                                  value: value,
+                                );
+                              }).toList(),
+                              validator: (value) {
+                                if (value == null) {
+                                  return "This Field is required";
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                setState(() {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  typeSeed = value!;
+                                  typeSeed == "Seed"
+                                      ? isSeed = true
+                                      : isSeed = false;
+                                  print(typeSeed);
+                                });
+                              },
                             ),
                           ),
                         ),
@@ -826,8 +814,8 @@ class _SeedsState extends State<Seeds> {
                                   validator: (v) => v == null
                                       ? "This Field Is required"
                                       : null,
-                                  popupTitle: Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                                  popupTitle: const Padding(
+                                    padding: EdgeInsets.all(8.0),
                                     child: Center(
                                         child: Text(
                                       'List Of Seedlings',
@@ -839,19 +827,19 @@ class _SeedsState extends State<Seeds> {
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(10.0),
-                                          borderSide: BorderSide(
+                                          borderSide: const BorderSide(
                                             color: Colors.cyan,
                                           ),
                                         ),
-                                        fillColor: Color(0xfff3f3f4),
+                                        fillColor: const Color(0xfff3f3f4),
                                         filled: true,
                                         labelText: "Search",
                                         border: InputBorder.none,
                                         isDense: true,
                                         contentPadding:
-                                            EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                            const EdgeInsets.fromLTRB(30, 10, 15, 10),
                                         suffixIcon: IconButton(
-                                          icon: Icon(Icons.clear),
+                                          icon: const Icon(Icons.clear),
                                           color: Colors.red,
                                           onPressed: () {
                                             _dealerEditTextController.clear();
@@ -865,15 +853,15 @@ class _SeedsState extends State<Seeds> {
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(5.0),
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color: Colors.cyan,
                                         ),
                                       ),
-                                      fillColor: Color(0xfff3f3f4),
+                                      fillColor: const Color(0xfff3f3f4),
                                       filled: true,
                                       isDense: true,
                                       contentPadding:
-                                          EdgeInsets.fromLTRB(30, 5, 10, 5),
+                                          const EdgeInsets.fromLTRB(30, 5, 10, 5),
                                       hintText: "Select Seed",
                                       border: InputBorder.none),
                                   compareFn: (i, s) => i!.isEqual(s),
@@ -901,8 +889,8 @@ class _SeedsState extends State<Seeds> {
                                   validator: (v) => v == null
                                       ? "This Field Is required"
                                       : null,
-                                  popupTitle: Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                                  popupTitle: const Padding(
+                                    padding: EdgeInsets.all(8.0),
                                     child: Center(
                                         child: Text(
                                       'List Of Seedlings',
@@ -914,19 +902,19 @@ class _SeedsState extends State<Seeds> {
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(10.0),
-                                          borderSide: BorderSide(
+                                          borderSide: const BorderSide(
                                             color: Colors.cyan,
                                           ),
                                         ),
-                                        fillColor: Color(0xfff3f3f4),
+                                        fillColor: const Color(0xfff3f3f4),
                                         filled: true,
                                         labelText: "Search",
                                         border: InputBorder.none,
                                         isDense: true,
                                         contentPadding:
-                                            EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                            const EdgeInsets.fromLTRB(30, 10, 15, 10),
                                         suffixIcon: IconButton(
-                                          icon: Icon(Icons.clear),
+                                          icon: const Icon(Icons.clear),
                                           color: Colors.red,
                                           onPressed: () {
                                             _dealerEditTextController.clear();
@@ -940,15 +928,15 @@ class _SeedsState extends State<Seeds> {
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(5.0),
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color: Colors.cyan,
                                         ),
                                       ),
-                                      fillColor: Color(0xfff3f3f4),
+                                      fillColor: const Color(0xfff3f3f4),
                                       filled: true,
                                       isDense: true,
                                       contentPadding:
-                                          EdgeInsets.fromLTRB(30, 5, 10, 5),
+                                          const EdgeInsets.fromLTRB(30, 5, 10, 5),
                                       hintText: "Select Seedling",
                                       border: InputBorder.none),
                                   compareFn: (i, s) => i!.isEqual(s),
@@ -972,32 +960,31 @@ class _SeedsState extends State<Seeds> {
                         Padding(
                           padding:
                               const EdgeInsets.only(top: 5, right: 5, left: 5),
-                          child: Container(
-                            child: TextFormField(
-                              keyboardType: TextInputType.number,
-                              key: Key(""),
-                              onSaved: (val) => quantity = int.parse(val!),
-                              decoration: InputDecoration(
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                  borderSide: BorderSide(
-                                    color: Colors.cyan,
-                                  ),
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            key: const Key(""),
+                            onSaved: (val) => quantity = int.parse(val!),
+                            decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                                borderSide: const BorderSide(
+                                  color: Colors.cyan,
                                 ),
-                                fillColor: Color(0xfff3f3f4),
-                                filled: true,
-                                labelText: "Quantity(Kg/Pcs)",
-                                border: InputBorder.none,
-                                isDense: true,
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(30, 10, 15, 10),
                               ),
-                              validator: (value) {
-                                if (value!.isEmpty)
-                                  return "This Field Is Required";
-                                return null;
-                              },
+                              fillColor: const Color(0xfff3f3f4),
+                              filled: true,
+                              labelText: "Quantity(Kg/Pcs)",
+                              border: InputBorder.none,
+                              isDense: true,
+                              contentPadding:
+                                  const EdgeInsets.fromLTRB(30, 10, 15, 10),
                             ),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "This Field Is Required";
+                              }
+                              return null;
+                            },
                           ),
                         ),
                         isSeed
@@ -1010,8 +997,8 @@ class _SeedsState extends State<Seeds> {
                                   validator: (v) => v == null
                                       ? "This Field Is required"
                                       : null,
-                                  popupTitle: Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                                  popupTitle: const Padding(
+                                    padding: EdgeInsets.all(8.0),
                                     child: Center(
                                         child: Text(
                                       'List Of Accession Number',
@@ -1023,19 +1010,19 @@ class _SeedsState extends State<Seeds> {
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(10.0),
-                                          borderSide: BorderSide(
+                                          borderSide: const BorderSide(
                                             color: Colors.cyan,
                                           ),
                                         ),
-                                        fillColor: Color(0xfff3f3f4),
+                                        fillColor: const Color(0xfff3f3f4),
                                         filled: true,
                                         labelText: "Search",
                                         border: InputBorder.none,
                                         isDense: true,
                                         contentPadding:
-                                            EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                            const EdgeInsets.fromLTRB(30, 10, 15, 10),
                                         suffixIcon: IconButton(
-                                          icon: Icon(Icons.clear),
+                                          icon: const Icon(Icons.clear),
                                           color: Colors.red,
                                           onPressed: () {
                                             _dealerEditTextController.clear();
@@ -1049,15 +1036,15 @@ class _SeedsState extends State<Seeds> {
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(5.0),
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color: Colors.cyan,
                                         ),
                                       ),
-                                      fillColor: Color(0xfff3f3f4),
+                                      fillColor: const Color(0xfff3f3f4),
                                       filled: true,
                                       isDense: true,
                                       contentPadding:
-                                          EdgeInsets.fromLTRB(30, 5, 10, 5),
+                                          const EdgeInsets.fromLTRB(30, 5, 10, 5),
                                       hintText: "Select Accession Number",
                                       border: InputBorder.none),
                                   compareFn: (i, s) => i!.isEqual(s),
@@ -1095,24 +1082,24 @@ class _SeedsState extends State<Seeds> {
                       key: cardC,
                       expandedTextColor: Colors.black,
                       shadowColor: kPrimaryColor,
-                      duration: Duration(milliseconds: 500),
+                      duration: const Duration(milliseconds: 500),
                       animateTrailing: true,
-                      baseColor: Color(0xfff3f3f4),
+                      baseColor: const Color(0xfff3f3f4),
                       elevation: 10,
-                      borderRadius: BorderRadius.only(
+                      borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.zero,
                           bottomRight: Radius.zero,
                           topLeft: Radius.circular(20),
                           topRight: Radius.circular(20)),
-                      leading: CircleAvatar(
+                      leading: const CircleAvatar(
                           backgroundColor: Colors.transparent,
                           child: Icon(
                             Icons.production_quantity_limits_rounded,
                             color: kPrimaryColor,
                           )),
-                      title: Text('Products List'),
+                      title: const Text('Products List'),
                       children: <Widget>[
-                        Divider(
+                        const Divider(
                           thickness: 1.0,
                           height: 1.0,
                           color: Colors.brown,
@@ -1121,7 +1108,7 @@ class _SeedsState extends State<Seeds> {
                           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
+                            children: const [
                               Expanded(
                                   flex: 1,
                                   child: Center(
@@ -1165,7 +1152,7 @@ class _SeedsState extends State<Seeds> {
                             ],
                           ),
                         ),
-                        Divider(
+                        const Divider(
                           thickness: 1.0,
                           height: 1.0,
                           color: Colors.brown,
@@ -1217,7 +1204,7 @@ class _SeedsState extends State<Seeds> {
                                                             orderData[i]
                                                                 ["quantity"]));
                                                   },
-                                                  icon: Icon(
+                                                  icon: const Icon(
                                                     Icons.edit,
                                                     size: 17,
                                                     color: Colors.blue,
@@ -1231,7 +1218,7 @@ class _SeedsState extends State<Seeds> {
                                                         "info",
                                                         index: i);
                                                   },
-                                                  icon: Icon(
+                                                  icon: const Icon(
                                                     Icons
                                                         .remove_circle_outline_sharp,
                                                     size: 17,
@@ -1245,7 +1232,7 @@ class _SeedsState extends State<Seeds> {
                                 // SizedBox(
                                 //   height: getProportionateScreenHeight(5),
                                 // ),
-                                Divider(
+                                const Divider(
                                   thickness: 1.0,
                                   height: 0.0,
                                   color: Colors.grey,
@@ -1259,8 +1246,8 @@ class _SeedsState extends State<Seeds> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Expanded(flex: 1, child: Center(child: Text(" "))),
-                            Expanded(
+                            const Expanded(flex: 1, child: Center(child: Text(" "))),
+                            const Expanded(
                                 flex: 3,
                                 child: Center(
                                   child: Text(
@@ -1273,12 +1260,12 @@ class _SeedsState extends State<Seeds> {
                                 child: Center(
                                   child: Text(
                                     formatNumber.format(calculateSum()),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold),
                                   ),
                                 )),
-                            Expanded(flex: 2, child: Center(child: Text(" "))),
+                            const Expanded(flex: 2, child: Center(child: Text(" "))),
                           ],
                         ),
                         SizedBox(
@@ -1308,7 +1295,7 @@ class _SeedsState extends State<Seeds> {
 
   message(String desc, String type, {int? index, bool? isBillMessage}) {
     return Alert(
-      style: AlertStyle(descStyle: TextStyle(fontSize: 17)),
+      style: const AlertStyle(descStyle: TextStyle(fontSize: 17)),
       context: context,
       type: type == 'error'
           ? AlertType.warning
@@ -1318,7 +1305,7 @@ class _SeedsState extends State<Seeds> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -1340,7 +1327,7 @@ class _SeedsState extends State<Seeds> {
         ),
         DialogButton(
           color: Colors.red,
-          child: Text(
+          child: const Text(
             "Cancel",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -1374,14 +1361,14 @@ class _SeedsState extends State<Seeds> {
               child: Container(
                 height: 50,
                 width: getProportionateScreenWidth(200),
-                padding: EdgeInsets.symmetric(vertical: 15),
+                padding: const EdgeInsets.symmetric(vertical: 15),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
                     boxShadow: <BoxShadow>[
                       BoxShadow(
                           color: Colors.grey.shade200,
-                          offset: Offset(2, 4),
+                          offset: const Offset(2, 4),
                           blurRadius: 5,
                           spreadRadius: 2)
                     ],
@@ -1403,48 +1390,46 @@ class _SeedsState extends State<Seeds> {
 
   Future computeQuantity({int? index, int? quantit}) {
     return Alert(
-        style: AlertStyle(descStyle: TextStyle(fontSize: 17)),
+        style: const AlertStyle(descStyle: TextStyle(fontSize: 17)),
         context: context,
         title: "Enter Quantity",
         content: Form(
           key: _formKey,
           child: Column(
             children: <Widget>[
-              Divider(
+              const Divider(
                 thickness: 1.0,
                 height: 1.0,
                 color: Colors.black26,
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                child: Container(
-                  child: TextFormField(
-                    initialValue: quantit == null ? "1" : quantit.toString(),
-                    keyboardType: TextInputType.number,
-                    key: Key(""),
-                    onSaved: (val) => quantity = int.parse(val!),
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: BorderSide(
-                          color: Colors.cyan,
-                        ),
+                child: TextFormField(
+                  initialValue: quantit == null ? "1" : quantit.toString(),
+                  keyboardType: TextInputType.number,
+                  key: const Key(""),
+                  onSaved: (val) => quantity = int.parse(val!),
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: const BorderSide(
+                        color: Colors.cyan,
                       ),
-                      fillColor: Color(0xfff3f3f4),
-                      filled: true,
-                      labelText: "Quantity",
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                     ),
-                    // onChanged: (val) {
-                    //   setState(() {});
-                    // },
-                    validator: (value) {
-                      if (value!.isEmpty) return "This Field Is Required";
-                      return null;
-                    },
+                    fillColor: const Color(0xfff3f3f4),
+                    filled: true,
+                    labelText: "Quantity",
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                   ),
+                  // onChanged: (val) {
+                  //   setState(() {});
+                  // },
+                  validator: (value) {
+                    if (value!.isEmpty) return "This Field Is Required";
+                    return null;
+                  },
                 ),
               ),
               SizedBox(
@@ -1468,7 +1453,7 @@ class _SeedsState extends State<Seeds> {
               }
               Navigator.pop(context);
             },
-            child: Text(
+            child: const Text(
               "Ok",
               style: TextStyle(color: Colors.white, fontSize: 17),
             ),
@@ -1476,7 +1461,7 @@ class _SeedsState extends State<Seeds> {
           DialogButton(
             color: Colors.red,
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: const Text(
               "Cancel",
               style: TextStyle(color: Colors.white, fontSize: 17),
             ),
@@ -1529,14 +1514,14 @@ class _SeedsState extends State<Seeds> {
               child: Container(
                 height: 50,
                 width: getProportionateScreenWidth(200),
-                padding: EdgeInsets.symmetric(vertical: 15),
+                padding: const EdgeInsets.symmetric(vertical: 15),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
                     boxShadow: <BoxShadow>[
                       BoxShadow(
                           color: Colors.grey.shade200,
-                          offset: Offset(2, 4),
+                          offset: const Offset(2, 4),
                           blurRadius: 5,
                           spreadRadius: 2)
                     ],
@@ -1559,7 +1544,7 @@ class _SeedsState extends State<Seeds> {
   Widget _customPopupItemBuilderCustomer(
       BuildContext context, CustomerModel item, bool isSelected) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: !isSelected
           ? null
           : BoxDecoration(
@@ -1573,8 +1558,8 @@ class _SeedsState extends State<Seeds> {
           selected: isSelected,
           title: Text(item.name),
           subtitle: Text("Phone#: " + item.phoneNumber),
-          tileColor: Color(0xfff3f3f4),
-          leading: CircleAvatar(
+          tileColor: const Color(0xfff3f3f4),
+          leading: const CircleAvatar(
             backgroundColor: Colors.grey,
             child: Icon(Icons.person_add_alt_1_outlined),
           ),
@@ -1586,7 +1571,7 @@ class _SeedsState extends State<Seeds> {
   Widget _customPopupItemBuilderAccessionNumber(
       BuildContext context, AccessionNumberModel item, bool isSelected) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: !isSelected
           ? null
           : BoxDecoration(
@@ -1600,8 +1585,8 @@ class _SeedsState extends State<Seeds> {
           selected: isSelected,
           title: Text("Accession#: " + item.accessionNumber),
           subtitle: Text("Assesment#: " + item.assesmentNumber),
-          tileColor: Color(0xfff3f3f4),
-          leading: CircleAvatar(
+          tileColor: const Color(0xfff3f3f4),
+          leading: const CircleAvatar(
             backgroundColor: Colors.grey,
             child: Icon(Icons.format_list_numbered_outlined),
           ),
@@ -1613,7 +1598,7 @@ class _SeedsState extends State<Seeds> {
   Widget _customPopupItemBuilderSeedling(
       BuildContext context, SeedlingModel item, bool isSelected) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: !isSelected
           ? null
           : BoxDecoration(
@@ -1630,15 +1615,15 @@ class _SeedsState extends State<Seeds> {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 "Balance",
                 style: TextStyle(color: Colors.blue),
               ),
               Text(item.balance + "Pcs"),
             ],
           ),
-          tileColor: Color(0xfff3f3f4),
-          leading: CircleAvatar(
+          tileColor: const Color(0xfff3f3f4),
+          leading: const CircleAvatar(
               backgroundColor: Colors.grey,
               child: Icon(
                 Icons.nature_outlined,
@@ -1651,7 +1636,7 @@ class _SeedsState extends State<Seeds> {
   Widget _customPopupItemBuilderSeed(
       BuildContext context, SeedModel item, bool isSelected) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: !isSelected
           ? null
           : BoxDecoration(
@@ -1668,15 +1653,15 @@ class _SeedsState extends State<Seeds> {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 "Balance",
                 style: TextStyle(color: Colors.blue),
               ),
               Text(item.balance + "Kg"),
             ],
           ),
-          tileColor: Color(0xfff3f3f4),
-          leading: CircleAvatar(
+          tileColor: const Color(0xfff3f3f4),
+          leading: const CircleAvatar(
             backgroundColor: Colors.grey,
             child: Icon(Icons.ac_unit_outlined),
           ),
@@ -1686,7 +1671,7 @@ class _SeedsState extends State<Seeds> {
   }
 
   Future<List<CustomerModel>> getData(filter, level) async {
-    var url;
+    String url;
     var headers = {"Authorization": "Bearer " + widget.token};
     url = "http://41.59.227.103:9092/api/v1/customers";
     var response = await Dio().get(url,
@@ -1709,7 +1694,7 @@ class _SeedsState extends State<Seeds> {
 
   Future<List<AccessionNumberModel>> getDataAccessionNumber(
       filter, seedId) async {
-    var url;
+    String url;
     var headers = {"Authorization": "Bearer " + widget.token};
     url = "http://41.59.227.103:9092/api/v1/accession-number/$seedId";
     var response = await Dio().get(url,
@@ -1731,7 +1716,7 @@ class _SeedsState extends State<Seeds> {
   }
 
   Future<List<SeedModel>> getDataSeed(filter, level) async {
-    var url;
+    String url;
     var headers = {"Authorization": "Bearer " + widget.token};
     url = "http://41.59.227.103:9092/api/v1/seeds";
     var response = await Dio().get(url,
@@ -1751,7 +1736,7 @@ class _SeedsState extends State<Seeds> {
   }
 
   Future<List<SeedlingModel>> getDataSeedling(filter, level) async {
-    var url;
+    String url;
     var headers = {"Authorization": "Bearer " + widget.token};
     url = "http://41.59.227.103:9092/api/v1/seedlings";
     var response = await Dio().get(url,

@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
@@ -13,7 +15,7 @@ import 'package:tfsappv1/services/size_config.dart';
 
 class VisitorsList extends StatefulWidget {
   static String routeName = "/Visitors";
-  VisitorsList({Key? key}) : super(key: key);
+  const VisitorsList({Key? key}) : super(key: key);
 
   @override
   State<VisitorsList> createState() => _VisitorsListState();
@@ -28,10 +30,10 @@ class _VisitorsListState extends State<VisitorsList> {
   final _formKey = GlobalKey<FormState>();
   String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
   String pastMonth = DateFormat('yyyy-MM-dd')
-      .format(DateTime.now().subtract(Duration(days: 30)));
+      .format(DateTime.now().subtract(const Duration(days: 30)));
   String pastWeek = DateFormat('yyyy-MM-dd')
-      .format(DateTime.now().subtract(Duration(days: 7)));
-  RefreshController _refreshController =
+      .format(DateTime.now().subtract(const Duration(days: 7)));
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   Future getDataEAuction() async {
@@ -179,7 +181,7 @@ class _VisitorsListState extends State<VisitorsList> {
 
   void _onLoading() async {
     // monitor network fetch
-    await Future.delayed(Duration(milliseconds: 1000));
+    await Future.delayed(const Duration(milliseconds: 1000));
     // if failed,use loadFailed(),if no data return,use LoadNodata()
 
     _refreshController.loadComplete();
@@ -196,7 +198,7 @@ class _VisitorsListState extends State<VisitorsList> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -217,7 +219,7 @@ class _VisitorsListState extends State<VisitorsList> {
     return Form(
       key: _formKey,
       child: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(
             Radius.circular(20),
           ),
@@ -226,52 +228,50 @@ class _VisitorsListState extends State<VisitorsList> {
           children: <Widget>[
             Expanded(
                 flex: 4,
-                child: Container(
-                  child: TextFormField(
-                      validator: (value) =>
-                          value == '' ? 'This  Field Is Required' : null,
-                      onSaved: (value) {
-                        setState(() {
-                          groupNo = "USR_";
-                        });
-                        groupNo = groupNo + value!;
-                      },
-                      onFieldSubmitted: (value) async {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          print(groupNo);
-                          await searchData();
-                        }
-                        //print('Pressed via keypad');
-                      },
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.search,
-                      cursorColor: kPrimaryColor,
-                      decoration: InputDecoration(
-                          suffixIcon: InkWell(
-                            onTap: () async {
-                              if (_formKey.currentState!.validate()) {
-                                _formKey.currentState!.save();
-                                print(groupNo);
-                                await searchData();
-                              }
-                            },
-                            child: Icon(
-                              Icons.search,
-                              size: 20,
-                              color: Colors.black,
-                            ),
+                child: TextFormField(
+                    validator: (value) =>
+                        value == '' ? 'This  Field Is Required' : null,
+                    onSaved: (value) {
+                      setState(() {
+                        groupNo = "USR_";
+                      });
+                      groupNo = groupNo + value!;
+                    },
+                    onFieldSubmitted: (value) async {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        print(groupNo);
+                        await searchData();
+                      }
+                      //print('Pressed via keypad');
+                    },
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.search,
+                    cursorColor: kPrimaryColor,
+                    decoration: InputDecoration(
+                        suffixIcon: InkWell(
+                          onTap: () async {
+                            if (_formKey.currentState!.validate()) {
+                              _formKey.currentState!.save();
+                              print(groupNo);
+                              await searchData();
+                            }
+                          },
+                          child: const Icon(
+                            Icons.search,
+                            size: 20,
+                            color: Colors.black,
                           ),
-                          isDense: true,
-                          contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                          border: InputBorder.none,
-                          fillColor: Color(0xfff3f3f4),
-                          label: Text(
-                            "Search By Group Id",
-                            style: TextStyle(fontSize: 15, color: Colors.black),
-                          ),
-                          filled: true)),
-                )),
+                        ),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                        border: InputBorder.none,
+                        fillColor: const Color(0xfff3f3f4),
+                        label: const Text(
+                          "Search By Group Id",
+                          style: TextStyle(fontSize: 15, color: Colors.black),
+                        ),
+                        filled: true))),
           ],
         ),
       ),
@@ -280,7 +280,7 @@ class _VisitorsListState extends State<VisitorsList> {
 
   @override
   void initState() {
-    this.getData();
+    getData();
 
     // ignore: todo
     // TODO: implement initState
@@ -291,7 +291,7 @@ class _VisitorsListState extends State<VisitorsList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           ' List Of Visitors',
           style: TextStyle(
               color: Colors.black, fontFamily: 'ubuntu', fontSize: 17),
@@ -299,27 +299,27 @@ class _VisitorsListState extends State<VisitorsList> {
         backgroundColor: kPrimaryColor,
       ),
       body: SingleChildScrollView(
-        child: Container(
+        child: SizedBox(
           height: getProportionateScreenHeight(700),
           child: SmartRefresher(
             enablePullDown: true,
             enablePullUp: true,
-            header: WaterDropHeader(),
+            header: const WaterDropHeader(),
             footer: CustomFooter(
               builder: (BuildContext context, LoadStatus? mode) {
                 Widget body;
                 if (mode == LoadStatus.idle) {
-                  body = Text("pull up load");
+                  body = const Text("pull up load");
                 } else if (mode == LoadStatus.loading) {
-                  body = CupertinoActivityIndicator();
+                  body = const CupertinoActivityIndicator();
                 } else if (mode == LoadStatus.failed) {
-                  body = Text("Load Failed!Click retry!");
+                  body = const Text("Load Failed!Click retry!");
                 } else if (mode == LoadStatus.canLoading) {
-                  body = Text("release to load more");
+                  body = const Text("release to load more");
                 } else {
-                  body = Text("No more Data");
+                  body = const Text("No more Data");
                 }
-                return Container(
+                return SizedBox(
                   height: 55.0,
                   child: Center(child: body),
                 );
@@ -341,7 +341,7 @@ class _VisitorsListState extends State<VisitorsList> {
                     ),
                     Container(
                       height: getProportionateScreenHeight(50),
-                      decoration: BoxDecoration(color: kPrimaryColor),
+                      decoration: const BoxDecoration(color: kPrimaryColor),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
@@ -354,18 +354,18 @@ class _VisitorsListState extends State<VisitorsList> {
                 ),
                 // _divider
                 Padding(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: isLoading
-                      ? SpinKitCircle(
+                      ? const SpinKitCircle(
                           color: kPrimaryColor,
                         )
                       : data.isEmpty
                           ? Center(
-                              child: Container(
+                              child: SizedBox(
                                 height: getProportionateScreenHeight(400),
-                                child: Center(
+                                child: const Center(
                                   child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
+                                    padding: EdgeInsets.all(10.0),
                                     child: Card(
                                       elevation: 10,
                                       child: ListTile(
@@ -399,56 +399,54 @@ class _VisitorsListState extends State<VisitorsList> {
                                           child: Card(
                                             elevation: 10,
                                             shadowColor: Colors.grey,
-                                            child: Container(
-                                              child: ListTile(
-                                                onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            GenerateQrCode(
-                                                                id: data[index][
-                                                                        "ref_id"]
-                                                                    .toString())),
-                                                  );
-                                                },
-                                                trailing: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(
-                                                      Icons
-                                                          .arrow_forward_ios_outlined,
-                                                      color: Colors.purple,
-                                                      size: 15,
-                                                    ),
-                                                  ],
-                                                ),
-                                                leading: IntrinsicHeight(
-                                                    child: SizedBox(
-                                                        height:
-                                                            double.maxFinite,
-                                                        width:
-                                                            getProportionateScreenHeight(
-                                                                50),
-                                                        child: Row(
-                                                          children: [
-                                                            VerticalDivider(
-                                                              color: index
-                                                                      .isEven
-                                                                  ? kPrimaryColor
-                                                                  : Colors.green[
-                                                                      200],
-                                                              thickness: 5,
-                                                            )
-                                                          ],
-                                                        ))),
-                                                title: Text("ID: " +
-                                                    data[index]["user_id"]),
-                                                subtitle: Text("Member(s): " +
-                                                    data[index]["members"]
-                                                        .toString()),
+                                            child: ListTile(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          GenerateQrCode(
+                                                              id: data[index][
+                                                                      "ref_id"]
+                                                                  .toString())),
+                                                );
+                                              },
+                                              trailing: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: const [
+                                                  Icon(
+                                                    Icons
+                                                        .arrow_forward_ios_outlined,
+                                                    color: Colors.purple,
+                                                    size: 15,
+                                                  ),
+                                                ],
                                               ),
+                                              leading: IntrinsicHeight(
+                                                  child: SizedBox(
+                                                      height:
+                                                          double.maxFinite,
+                                                      width:
+                                                          getProportionateScreenHeight(
+                                                              50),
+                                                      child: Row(
+                                                        children: [
+                                                          VerticalDivider(
+                                                            color: index
+                                                                    .isEven
+                                                                ? kPrimaryColor
+                                                                : Colors.green[
+                                                                    200],
+                                                            thickness: 5,
+                                                          )
+                                                        ],
+                                                      ))),
+                                              title: Text("ID: " +
+                                                  data[index]["user_id"]),
+                                              subtitle: Text("Member(s): " +
+                                                  data[index]["members"]
+                                                      .toString()),
                                             ),
                                           ),
                                         ),
@@ -469,13 +467,13 @@ class _VisitorsListState extends State<VisitorsList> {
 
   popBar() {
     return Padding(
-      padding: EdgeInsets.only(right: 10.0),
+      padding: const EdgeInsets.only(right: 10.0),
       child: PopupMenuButton(
         tooltip: 'Sort',
-        color: Color(0xfff3f3f4),
+        color: const Color(0xfff3f3f4),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: const [
             Text("Sort"),
             Icon(
               Icons.sort_outlined,
@@ -484,7 +482,7 @@ class _VisitorsListState extends State<VisitorsList> {
             ),
           ],
         ),
-        offset: Offset(20, 40),
+        offset: const Offset(20, 40),
         itemBuilder: (context) => [
           PopupMenuItem(
             onTap: () {
@@ -497,7 +495,7 @@ class _VisitorsListState extends State<VisitorsList> {
                   color: kPrimaryColor,
                   size: getProportionateScreenHeight(22),
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(
                     left: 5.0,
                   ),
@@ -522,7 +520,7 @@ class _VisitorsListState extends State<VisitorsList> {
                   color: kPrimaryColor,
                   size: getProportionateScreenHeight(22),
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(
                     left: 5.0,
                   ),
@@ -547,7 +545,7 @@ class _VisitorsListState extends State<VisitorsList> {
                   color: kPrimaryColor,
                   size: getProportionateScreenHeight(22),
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(
                     left: 5.0,
                   ),
@@ -569,7 +567,7 @@ class _VisitorsListState extends State<VisitorsList> {
                   color: kPrimaryColor,
                   size: getProportionateScreenHeight(22),
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(
                     left: 5.0,
                   ),

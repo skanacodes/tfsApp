@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 class SeedlingModel {
   final String name;
   final String balance;
@@ -24,17 +26,17 @@ class SeedlingModel {
 
   ///this method will prevent the override of toString
   String userAsString() {
-    return '#${this.name} ${this.id}';
+    return '#$name $id';
   }
 
   ///this method will prevent the override of toString
   bool? userFilterByCreationDate(String filter) {
-    return this.name.toString().contains(filter);
+    return name.toString().contains(filter);
   }
 
   ///custom comparing function to check if two users are equal
   bool isEqual(SeedlingModel? model) {
-    return this.name == model?.name;
+    return name == model?.name;
   }
 
   @override

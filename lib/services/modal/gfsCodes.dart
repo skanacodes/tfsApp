@@ -1,18 +1,24 @@
+// ignore_for_file: file_names
+
 class GfsModel {
   final String gfsCode;
 
   final String description;
   final String id;
+  final String amount;
 
   GfsModel(
-      {required this.gfsCode, required this.description, required this.id});
+      {required this.gfsCode,
+      required this.description,
+      required this.id,
+      required this.amount});
 
   factory GfsModel.fromJson(Map<String, dynamic> json) {
     return GfsModel(
-      gfsCode: json["code"].toString(),
-      description: json["description"],
-      id: json["id"].toString(),
-    );
+        gfsCode: json["code"].toString(),
+        description: json["description"],
+        id: json["id"].toString(),
+        amount: json["bill_amount"].toString());
   }
 
   static List<GfsModel> fromJsonList(List list) {
@@ -21,17 +27,17 @@ class GfsModel {
 
   ///this method will prevent the override of toString
   String userAsString() {
-    return '#${this.gfsCode} ${this.description}';
+    return '#$gfsCode $description';
   }
 
   ///this method will prevent the override of toString
   bool? userFilterByCreationDate(String filter) {
-    return this.gfsCode.toString().contains(filter);
+    return gfsCode.toString().contains(filter);
   }
 
   ///custom comparing function to check if two users are equal
   bool isEqual(GfsModel? model) {
-    return this.gfsCode == model?.gfsCode;
+    return gfsCode == model?.gfsCode;
   }
 
   @override

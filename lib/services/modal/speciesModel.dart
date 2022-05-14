@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 class SpeciesModel {
   final String id;
 
@@ -18,17 +20,17 @@ class SpeciesModel {
 
   ///this method will prevent the override of toString
   String userAsString() {
-    return '#${this.scientificName} ${this.id}';
+    return '#$scientificName $id';
   }
 
   ///this method will prevent the override of toString
   bool? userFilterByCreationDate(String filter) {
-    return this.scientificName.toString().contains(filter);
+    return scientificName.toString().contains(filter);
   }
 
   ///custom comparing function to check if two users are equal
   bool isEqual(SpeciesModel? model) {
-    return this.scientificName == model?.scientificName;
+    return scientificName == model?.scientificName;
   }
 
   @override

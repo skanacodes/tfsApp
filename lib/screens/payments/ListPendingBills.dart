@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
@@ -15,7 +17,7 @@ import 'package:tfsappv1/services/size_config.dart';
 class ListPendingBills extends StatefulWidget {
   static String routeName = "/pendingBills";
   final String system;
-  ListPendingBills(this.system);
+  const ListPendingBills(this.system, {Key? key}) : super(key: key);
 
   @override
   _ListPendingBillsState createState() => _ListPendingBillsState();
@@ -28,7 +30,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
   var controlNo;
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
-  RefreshController _refreshController =
+  final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   Future getData() async {
     setState(() {
@@ -39,15 +41,13 @@ class _ListPendingBillsState extends State<ListPendingBills> {
           .then((prefs) => prefs.getInt('station_id').toString());
 
       print(stationId);
-      // var tokens = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
-      // var headers = {"Authorization": "Bearer " + tokens!};
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+
+      var headers = {"Authorization": "Bearer " + tokens!};
       var url = Uri.parse(
           'http://mis.tfs.go.tz/fremis-test/api/v1/unpaid-bills/$stationId');
-      final response = await http.get(
-        url,
-      );
+      final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
@@ -96,6 +96,52 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       final response = await http.get(
         url,
       );
+      var res;
+      //final sharedP prefs=await
+      print(response.statusCode);
+      switch (response.statusCode) {
+        case 200:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            data = res['data'];
+            isLoading = false;
+          });
+
+          break;
+
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            isLoading = false;
+            messages('Ohps! Something Went Wrong', 'error');
+          });
+
+          break;
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        print(e);
+        messages('Server Or Connectivity Error', 'error');
+      });
+    }
+    _refreshController.refreshCompleted();
+  }
+
+  Future searchDataFremis() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      // print(tokens);
+      var headers = {"Authorization": "Bearer " + tokens!};
+      var url = Uri.parse('$baseUrlTest/api/v1/search-bills/$controlNo');
+
+      final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
@@ -179,7 +225,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
 
   void _onLoading() async {
     // monitor network fetch
-    await Future.delayed(Duration(milliseconds: 1000));
+    await Future.delayed(const Duration(milliseconds: 1000));
     // if failed,use loadFailed(),if no data return,use LoadNodata()
 
     _refreshController.loadComplete();
@@ -196,7 +242,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -267,7 +313,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     return Form(
       key: _formKey,
       child: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(
             Radius.circular(20),
           ),
@@ -276,40 +322,39 @@ class _ListPendingBillsState extends State<ListPendingBills> {
           children: <Widget>[
             Expanded(
                 flex: 4,
-                child: Container(
-                  child: TextFormField(
-                      validator: (value) =>
-                          value == '' ? 'This  Field Is Required' : null,
-                      onSaved: (value) {
-                        controlNo = value;
-                      },
-                      keyboardType: TextInputType.number,
-                      cursorColor: kPrimaryColor,
-                      decoration: InputDecoration(
-                          suffixIcon: InkWell(
-                            onTap: () async {
-                              if (_formKey.currentState!.validate()) {
-                                _formKey.currentState!.save();
-                                print(controlNo);
-                                await searchData();
-                              }
-                            },
-                            child: Icon(
-                              Icons.search,
-                              size: 20,
-                              color: Colors.black,
-                            ),
+                child: TextFormField(
+                    validator: (value) =>
+                        value == '' ? 'This  Field Is Required' : null,
+                    onSaved: (value) {
+                      controlNo = value;
+                    },
+                    keyboardType: TextInputType.number,
+                    cursorColor: kPrimaryColor,
+                    decoration: InputDecoration(
+                        suffixIcon: InkWell(
+                          onTap: () async {
+                            if (_formKey.currentState!.validate()) {
+                              _formKey.currentState!.save();
+                              widget.system == "Fremis"
+                                  ? await searchDataFremis()
+                                  : await searchData();
+                            }
+                          },
+                          child: const Icon(
+                            Icons.search,
+                            size: 20,
+                            color: Colors.black,
                           ),
-                          isDense: true,
-                          contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                          border: InputBorder.none,
-                          fillColor: Color(0xfff3f3f4),
-                          label: Text(
-                            "Search By Control Number",
-                            style: TextStyle(fontSize: 15, color: Colors.black),
-                          ),
-                          filled: true)),
-                )),
+                        ),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                        border: InputBorder.none,
+                        fillColor: const Color(0xfff3f3f4),
+                        label: const Text(
+                          "Search By Control Number",
+                          style: TextStyle(fontSize: 15, color: Colors.black),
+                        ),
+                        filled: true))),
           ],
         ),
       ),
@@ -319,12 +364,12 @@ class _ListPendingBillsState extends State<ListPendingBills> {
   @override
   void initState() {
     widget.system == "seedMIS"
-        ? this.getUserDetails()
+        ? getUserDetails()
         : widget.system == "HoneyTraceability"
-            ? this.getUserDetails()
+            ? getUserDetails()
             : widget.system == "E-Auction"
-                ? this.getDataEAuction()
-                : this.getData();
+                ? getDataEAuction()
+                : getData();
 
     // ignore: todo
     // TODO: implement initState
@@ -335,7 +380,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           ' List Of Pending Bills',
           style: TextStyle(
               color: Colors.black, fontFamily: 'ubuntu', fontSize: 17),
@@ -344,27 +389,27 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       ),
       body: SingleChildScrollView(
           child: SingleChildScrollView(
-              child: Container(
+              child: SizedBox(
         height: getProportionateScreenHeight(700),
         child: SmartRefresher(
           enablePullDown: true,
           enablePullUp: true,
-          header: WaterDropHeader(),
+          header: const WaterDropHeader(),
           footer: CustomFooter(
             builder: (BuildContext context, LoadStatus? mode) {
               Widget body;
               if (mode == LoadStatus.idle) {
-                body = Text("pull up load");
+                body = const Text("pull up load");
               } else if (mode == LoadStatus.loading) {
-                body = CupertinoActivityIndicator();
+                body = const CupertinoActivityIndicator();
               } else if (mode == LoadStatus.failed) {
-                body = Text("Load Failed!Click retry!");
+                body = const Text("Load Failed!Click retry!");
               } else if (mode == LoadStatus.canLoading) {
-                body = Text("release to load more");
+                body = const Text("release to load more");
               } else {
-                body = Text("No more Data");
+                body = const Text("No more Data");
               }
-              return Container(
+              return SizedBox(
                 height: 55.0,
                 child: Center(child: body),
               );
@@ -373,12 +418,12 @@ class _ListPendingBillsState extends State<ListPendingBills> {
           controller: _refreshController,
           onRefresh: () {
             widget.system == "seedMIS"
-                ? this.getUserDetails()
+                ? getUserDetails()
                 : widget.system == "HoneyTraceability"
-                    ? this.getUserDetails()
+                    ? getUserDetails()
                     : widget.system == "E-Auction"
-                        ? this.getDataEAuction()
-                        : this.getData();
+                        ? getDataEAuction()
+                        : getData();
           },
           onLoading: _onLoading,
           child: Column(
@@ -392,7 +437,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
                   ),
                   Container(
                     height: getProportionateScreenHeight(50),
-                    decoration: BoxDecoration(color: kPrimaryColor),
+                    decoration: const BoxDecoration(color: kPrimaryColor),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
@@ -405,18 +450,18 @@ class _ListPendingBillsState extends State<ListPendingBills> {
               ),
               // _divider
               Padding(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: isLoading
-                    ? SpinKitCircle(
+                    ? const SpinKitCircle(
                         color: kPrimaryColor,
                       )
                     : data.isEmpty
                         ? Center(
-                            child: Container(
+                            child: SizedBox(
                               height: getProportionateScreenHeight(400),
-                              child: Center(
+                              child: const Center(
                                 child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
+                                  padding: EdgeInsets.all(10.0),
                                   child: Card(
                                     elevation: 10,
                                     child: ListTile(
@@ -449,85 +494,95 @@ class _ListPendingBillsState extends State<ListPendingBills> {
                                         child: Card(
                                           elevation: 10,
                                           shadowColor: Colors.grey,
-                                          child: Container(
-                                            child: ListTile(
-                                              onTap: () {
-                                                widget.system == "E-Auction"
-                                                    ? null
-                                                    : Navigator.pushNamed(
-                                                        context,
-                                                        Payments.routeName,
-                                                        arguments:
-                                                            ReceiptScreenArguments(
-                                                          data[index]
-                                                                  ["payer_name"]
-                                                              .toString(),
-                                                          data[index][
-                                                                  "control_number"]
-                                                              .toString(),
-                                                          widget.system ==
-                                                                  "seedMIS"
-                                                              ? ""
-                                                              : data[index][
-                                                                      "ControlNumber"]
-                                                                  .toString(),
-                                                          data[index]
-                                                              ["bill_amount"],
-                                                          true,
-                                                          data[index]
-                                                                  ["bill_desc"]
-                                                              .toString(),
-                                                          "",
-                                                        ));
-                                              },
-                                              trailing: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Icon(
-                                                    Icons
-                                                        .pending_actions_outlined,
-                                                    color: Colors.pink,
-                                                    size: 15,
-                                                  ),
-                                                ],
-                                              ),
-                                              leading: IntrinsicHeight(
-                                                  child: SizedBox(
-                                                      height: double.maxFinite,
-                                                      width:
-                                                          getProportionateScreenHeight(
-                                                              50),
-                                                      child: Row(
-                                                        children: [
-                                                          VerticalDivider(
-                                                            color: index.isEven
-                                                                ? kPrimaryColor
-                                                                : Colors
-                                                                    .green[200],
-                                                            thickness: 5,
-                                                          )
-                                                        ],
-                                                      ))),
-                                              title: Text(widget.system ==
-                                                      "E-Auction"
-                                                  ? "Name: " +
-                                                      data[index]["DealerName"]
-                                                          .toString()
-                                                  : "Name: " +
-                                                      data[index]["payer_name"]
-                                                          .toString()),
-                                              subtitle: Text(widget.system ==
-                                                      "E-Auction"
-                                                  ? 'Control #: ' +
-                                                      data[index]
-                                                              ["ControlNumber"]
-                                                          .toString()
-                                                  : 'Control #: ' +
-                                                      data[index]
-                                                              ["control_number"]
-                                                          .toString()),
+                                          child: ListTile(
+                                            onTap: () async {
+                                              var station =
+                                                  await SharedPreferences
+                                                          .getInstance()
+                                                      .then((prefs) =>
+                                                          prefs.getString(
+                                                              'StationName'));
+                                              var fname =
+                                                  await SharedPreferences
+                                                          .getInstance()
+                                                      .then((prefs) =>
+                                                          prefs.getString(
+                                                              'fname'));
+                                              var lname =
+                                                  await SharedPreferences
+                                                          .getInstance()
+                                                      .then((prefs) =>
+                                                          prefs.getString(
+                                                              'lname'));
+                                              var username =
+                                                  fname! + " " + lname!;
+
+                                              widget.system == "E-Auction"
+                                                  ? null
+                                                  : Navigator.pushNamed(
+                                                      context,
+                                                      Payments.routeName,
+                                                      arguments:
+                                                          ReceiptScreenArguments(
+                                                        data[index]
+                                                                ["DealerName"]
+                                                            .toString(),
+                                                        data[index][
+                                                                "ControlNumber"]
+                                                            .toString(),
+                                                        data[index][
+                                                                "bank_receipt_no"]
+                                                            .toString(),
+                                                        widget.system ==
+                                                                "E-Auction"
+                                                            ? data[index]
+                                                                ["BillAmount"]
+                                                            : double.parse(data[
+                                                                    index][
+                                                                "BillAmount"]),
+                                                        true,
+                                                        data[index]
+                                                                ["BillDesc"]
+                                                            .toString(),
+                                                        username,
+                                                        station: station,
+                                                      ));
+                                            },
+                                            trailing: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: const [
+                                                Icon(
+                                                  Icons
+                                                      .pending_actions_outlined,
+                                                  color: Colors.pink,
+                                                  size: 15,
+                                                ),
+                                              ],
                                             ),
+                                            leading: IntrinsicHeight(
+                                                child: SizedBox(
+                                                    height: double.maxFinite,
+                                                    width:
+                                                        getProportionateScreenHeight(
+                                                            50),
+                                                    child: Row(
+                                                      children: [
+                                                        VerticalDivider(
+                                                          color: index.isEven
+                                                              ? kPrimaryColor
+                                                              : Colors
+                                                                  .green[200],
+                                                          thickness: 5,
+                                                        )
+                                                      ],
+                                                    ))),
+                                            title: Text("Name: " +
+                                                data[index]["DealerName"]
+                                                    .toString()),
+                                            subtitle: Text('Control #: ' +
+                                                data[index]["ControlNumber"]
+                                                    .toString()),
                                           ),
                                         ),
                                       ),

@@ -72,16 +72,19 @@ dependencies:
   intl: ^0.17.0
   item_selector:
   basic_utils: ^4.2.0
-  qrscan: 
+  ticket_widget: ^0.0.1
+  
   flutter_qr_bar_scanner: ^3.0.2
   timelines: ^0.1.0
   mailer: ^5.0.2
+  geocoding: ^2.0.4
+  
 
   
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  
+  flutter_lints:
 
 
 

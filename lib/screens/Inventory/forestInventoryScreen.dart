@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -9,7 +11,7 @@ import 'package:tfsappv1/services/size_config.dart';
 
 class ForestInventoryScreen extends StatefulWidget {
   static String routeName = "/forestInventory";
-  ForestInventoryScreen({Key? key}) : super(key: key);
+  const ForestInventoryScreen({Key? key}) : super(key: key);
 
   @override
   _ForestInventoryScreenState createState() => _ForestInventoryScreenState();
@@ -42,7 +44,7 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
   void initState() {
     super.initState();
 
-    this.initiateDBH();
+    initiateDBH();
   }
 
   @override
@@ -52,13 +54,13 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: kPrimaryColor,
-          title: Text(
+          title: const Text(
             'Mensuration',
             style: TextStyle(color: Colors.black, fontFamily: 'Ubuntu'),
           ),
         ),
         body: SingleChildScrollView(
-          child: Container(
+          child: SizedBox(
               height: height,
               child: Column(children: <Widget>[
                 Stack(
@@ -70,7 +72,7 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
                     ),
                     Container(
                       height: getProportionateScreenHeight(40),
-                      decoration: BoxDecoration(color: kPrimaryColor),
+                      decoration: const BoxDecoration(color: kPrimaryColor),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
@@ -79,7 +81,7 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
                         child: Card(
                           elevation: 10,
                           child: ListTile(
-                            leading: CircleAvatar(
+                            leading: const CircleAvatar(
                               foregroundColor: kPrimaryColor,
                               backgroundColor: Colors.black12,
                               child: Icon(Icons.nature_outlined),
@@ -87,7 +89,7 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
                             title: Text("Total trees Counted:  $count"),
                             subtitle: Text("DBH $dbhnumber : count $dbhQn"),
                             trailing: Column(
-                              children: [
+                              children: const [
                                 Text("undo"),
                                 Icon(
                                   Icons.undo_sharp,
@@ -107,7 +109,7 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
                     padding: const EdgeInsets.all(0.0),
                     child: Container(
                         color: Colors.transparent,
-                        padding: EdgeInsets.symmetric(horizontal: 1),
+                        padding: const EdgeInsets.symmetric(horizontal: 1),
                         child: AnimationLimiter(
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -129,9 +131,9 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
                                       child: ItemSelectionController(
                                         selectionMode: ItemSelectionMode.single,
                                         child: GridView(
-                                          padding: EdgeInsets.all(5),
+                                          padding: const EdgeInsets.all(5),
                                           gridDelegate:
-                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                              const SliverGridDelegateWithFixedCrossAxisCount(
                                                   crossAxisCount: 3),
                                           children:
                                               List.generate(10, (int index) {
@@ -140,7 +142,7 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
                                                   const EdgeInsets.all(5.0),
                                               child: InkWell(
                                                 onTap: () async {
-                                                  if (mounted)
+                                                  if (mounted) {
                                                     setState(() {
                                                       gridIndex = index;
                                                       isSelected = true;
@@ -187,12 +189,14 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
                                                         gridNumbers = [];
                                                       }
                                                     });
+                                                  }
                                                   await Future.delayed(
-                                                      Duration(seconds: 30));
-                                                  if (mounted)
+                                                      const Duration(seconds: 30));
+                                                  if (mounted) {
                                                     setState(() {
                                                       isSelected = false;
                                                     });
+                                                  }
                                                 },
                                                 child: Container(
                                                     decoration: BoxDecoration(
@@ -200,8 +204,8 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
                                                                 gridIndex ==
                                                                     index
                                                             ? Colors.green
-                                                            : Color(0xfff3f3f4),
-                                                        boxShadow: [
+                                                            : const Color(0xfff3f3f4),
+                                                        boxShadow: const [
                                                           BoxShadow(
                                                               color:
                                                                   Colors.grey,
@@ -233,7 +237,7 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
                                                                     animationType:
                                                                         BadgeAnimationType
                                                                             .scale,
-                                                                    padding: EdgeInsets.symmetric(
+                                                                    padding: const EdgeInsets.symmetric(
                                                                         horizontal:
                                                                             5,
                                                                         vertical:

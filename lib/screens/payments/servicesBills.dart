@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -14,7 +16,7 @@ import 'package:http/http.dart' as http;
 
 class ServiceBills extends StatefulWidget {
   static String routeName = "/services";
-  ServiceBills({Key? key}) : super(key: key);
+  const ServiceBills({Key? key}) : super(key: key);
 
   @override
   _ServiceBillsState createState() => _ServiceBillsState();
@@ -82,7 +84,7 @@ class _ServiceBillsState extends State<ServiceBills> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -101,7 +103,7 @@ class _ServiceBillsState extends State<ServiceBills> {
 
   @override
   void initState() {
-    this.getData();
+    getData();
     // ignore: todo
     // TODO: implement initState
     super.initState();
@@ -111,7 +113,7 @@ class _ServiceBillsState extends State<ServiceBills> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           ' Generate Bill',
           style: TextStyle(color: Colors.black, fontFamily: 'ubuntu'),
         ),
@@ -121,9 +123,9 @@ class _ServiceBillsState extends State<ServiceBills> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: isLoading
-                  ? SpinKitCircle(
+                  ? const SpinKitCircle(
                       color: kPrimaryColor,
                     )
                   : Container(
@@ -142,33 +144,31 @@ class _ServiceBillsState extends State<ServiceBills> {
                                   child: Card(
                                     elevation: 10,
                                     shadowColor: Colors.grey,
-                                    child: Container(
-                                      child: ListTile(
-                                        onTap: () {
-                                          Navigator.pushNamed(
-                                              context, BillForm.routeName,
-                                              arguments: ScreenArguments(
-                                                  data[index]["gfs_code"]
-                                                      .toString(),
-                                                  data[index]["description"]
-                                                      .toString(),
-                                                  data[index]["unit_price"]
-                                                      .toString()));
-                                        },
-                                        trailing: Icon(
-                                          Icons.arrow_right,
-                                          color: Colors.cyan,
-                                        ),
-                                        leading: CircleAvatar(
-                                            backgroundColor: kPrimaryColor,
-                                            child: Text('${index + 1}')),
-                                        title: Text("Descriptions: " +
-                                            data[index]["description"]
-                                                .toString()),
-                                        subtitle: Text('Unit Price: ' +
-                                            data[index]["unit_price"]
-                                                .toString()),
+                                    child: ListTile(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context, BillForm.routeName,
+                                            arguments: ScreenArguments(
+                                                data[index]["gfs_code"]
+                                                    .toString(),
+                                                data[index]["description"]
+                                                    .toString(),
+                                                data[index]["unit_price"]
+                                                    .toString()));
+                                      },
+                                      trailing: const Icon(
+                                        Icons.arrow_right,
+                                        color: Colors.cyan,
                                       ),
+                                      leading: CircleAvatar(
+                                          backgroundColor: kPrimaryColor,
+                                          child: Text('${index + 1}')),
+                                      title: Text("Descriptions: " +
+                                          data[index]["description"]
+                                              .toString()),
+                                      subtitle: Text('Unit Price: ' +
+                                          data[index]["unit_price"]
+                                              .toString()),
                                     ),
                                   ),
                                 ),

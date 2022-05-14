@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 class CustomerModel {
   final String name;
   final String address;
@@ -27,17 +29,17 @@ class CustomerModel {
 
   ///this method will prevent the override of toString
   String userAsString() {
-    return '#${this.name} ${this.id}';
+    return '#$name $id';
   }
 
   ///this method will prevent the override of toString
   bool? userFilterByCreationDate(String filter) {
-    return this.name.toString().contains(filter);
+    return name.toString().contains(filter);
   }
 
   ///custom comparing function to check if two users are equal
   bool isEqual(CustomerModel? model) {
-    return this.name == model?.name;
+    return name == model?.name;
   }
 
   @override

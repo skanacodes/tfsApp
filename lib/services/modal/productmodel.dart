@@ -21,17 +21,17 @@ class ProductModel {
 
   ///this method will prevent the override of toString
   String userAsString() {
-    return '#${this.productname} ${this.unit}';
+    return '#$productname $unit';
   }
 
   ///this method will prevent the override of toString
   bool? userFilterByCreationDate(String filter) {
-    return this.productname.toString().contains(filter);
+    return productname.toString().contains(filter);
   }
 
   ///custom comparing function to check if two users are equal
   bool isEqual(ProductModel? model) {
-    return this.productname == model?.productname;
+    return productname == model?.productname;
   }
 
   @override

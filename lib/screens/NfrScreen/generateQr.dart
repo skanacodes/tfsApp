@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -26,7 +28,7 @@ import 'package:printing/printing.dart';
 class GenerateQrCode extends StatefulWidget {
   static String routeName = "/GenerateQrscreen";
   final String id;
-  GenerateQrCode({Key? key, required this.id}) : super(key: key);
+  const GenerateQrCode({Key? key, required this.id}) : super(key: key);
 
   @override
   State<GenerateQrCode> createState() => _GenerateQrCodeState();
@@ -83,7 +85,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
         qrList.add(qr);
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Starting Printer"),
         ),
       );
@@ -97,18 +99,18 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
       if (result == "Successfully Printed") {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("$result"),
+            content: Text(result),
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("$result"),
+            content: Text(result),
           ),
         );
       }
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -177,7 +179,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -213,14 +215,14 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: kPrimaryColor,
-          title: Text(
+          title: const Text(
             'QR Codes For Group',
             style: TextStyle(
                 color: Colors.black, fontFamily: 'Ubuntu', fontSize: 17),
           ),
         ),
         body: SingleChildScrollView(
-          child: Container(
+          child: SizedBox(
               height: height,
               child: Column(children: <Widget>[
                 Stack(
@@ -232,7 +234,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
                     ),
                     Container(
                       height: getProportionateScreenHeight(40),
-                      decoration: BoxDecoration(color: kPrimaryColor),
+                      decoration: const BoxDecoration(color: kPrimaryColor),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
@@ -241,7 +243,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
                         child: Card(
                           elevation: 10,
                           child: ListTile(
-                            leading: CircleAvatar(
+                            leading: const CircleAvatar(
                               foregroundColor: kPrimaryColor,
                               backgroundColor: Colors.black12,
                               child: Icon(Icons.qr_code_outlined),
@@ -253,7 +255,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
                                 toQrImageData(dataItems, clientName);
                               }),
                               child: Column(
-                                children: [
+                                children: const [
                                   Text("Print"),
                                   Icon(
                                     Icons.print_outlined,
@@ -271,16 +273,16 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
                 ),
                 // _divider(),
                 isLoading
-                    ? SpinKitCircle(
+                    ? const SpinKitCircle(
                         color: kPrimaryColor,
                       )
                     : data.isEmpty
                         ? Center(
-                            child: Container(
+                            child: SizedBox(
                               height: getProportionateScreenHeight(400),
-                              child: Center(
+                              child: const Center(
                                 child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
+                                  padding: EdgeInsets.all(10.0),
                                   child: Card(
                                     elevation: 10,
                                     child: ListTile(
@@ -300,7 +302,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
                             padding: const EdgeInsets.all(0.0),
                             child: Container(
                                 color: Colors.transparent,
-                                padding: EdgeInsets.symmetric(horizontal: 1),
+                                padding: const EdgeInsets.symmetric(horizontal: 1),
                                 child: AnimationLimiter(
                                     child: Column(
                                         crossAxisAlignment:
@@ -328,9 +330,9 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
                                                 selectionMode:
                                                     ItemSelectionMode.single,
                                                 child: GridView(
-                                                  padding: EdgeInsets.all(5),
+                                                  padding: const EdgeInsets.all(5),
                                                   gridDelegate:
-                                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                                      const SliverGridDelegateWithFixedCrossAxisCount(
                                                           crossAxisCount: 2),
                                                   children: List.generate(
                                                       data.length, (int index) {
@@ -344,9 +346,9 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
                                                                       gridIndex ==
                                                                           index
                                                                   ? Colors.green
-                                                                  : Color(
+                                                                  : const Color(
                                                                       0xfff3f3f4),
-                                                              boxShadow: [
+                                                              boxShadow: const [
                                                                 BoxShadow(
                                                                     color: Colors
                                                                         .grey,
@@ -398,7 +400,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
                                                                             [
                                                                             "id"]
                                                                         .toString(),
-                                                                    eyeStyle: QrEyeStyle(
+                                                                    eyeStyle: const QrEyeStyle(
                                                                         eyeShape:
                                                                             QrEyeShape
                                                                                 .square,
@@ -441,7 +443,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
 
     const double inch = 72.0;
     doc.addPage(pw.Page(
-        pageFormat: PdfPageFormat(7 * inch, double.infinity, marginLeft: 5),
+        pageFormat: const PdfPageFormat(7 * inch, double.infinity, marginLeft: 5),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
@@ -580,7 +582,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
       final dir = await getExternalStorageDirectory();
       String? dirPath = dir?.path;
       final String paths = '$dirPath/${data["email"] + formattedDate}.pdf';
-      final File file = await File(paths);
+      final File file = File(paths);
       var x = await file.writeAsBytes(await doc.save());
       print(x);
       print(paths);
@@ -618,15 +620,15 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
     return Expanded(
       flex: 1,
       child: Padding(
-        padding: EdgeInsets.only(right: 1.0),
+        padding: const EdgeInsets.only(right: 1.0),
         child: PopupMenuButton(
           tooltip: 'Menu',
-          child: Icon(
+          child: const Icon(
             Icons.more_vert,
             size: 28.0,
             color: Colors.black,
           ),
-          offset: Offset(20, 40),
+          offset: const Offset(20, 40),
           itemBuilder: (context) => [
             PopupMenuItem(
               onTap: () async {
@@ -647,7 +649,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
                     color: kPrimaryColor,
                     size: getProportionateScreenHeight(22),
                   ),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.only(
                       left: 5.0,
                     ),
@@ -673,7 +675,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
                     color: kPrimaryColor,
                     size: getProportionateScreenHeight(22),
                   ),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.only(
                       left: 5.0,
                     ),

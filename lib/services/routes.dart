@@ -25,39 +25,43 @@ import 'package:tfsappv1/screens/splash/splashscreen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tfsappv1/screens/updates/updates.dart';
 import 'package:tfsappv1/screens/verification/expectedTpHistory.dart';
+import 'package:tfsappv1/screens/verification/extension_approvalscreen.dart';
 import 'package:tfsappv1/screens/verification/tpTimeline.dart';
+import 'package:tfsappv1/screens/verification/tp_editing.dart';
 import 'package:tfsappv1/screens/verification/verificationScreen.dart';
 
 // We use name route
 // All our routes will be available here
 final Map<String, WidgetBuilder> routes = {
-  SplashScreen.routeName: (context) => SplashScreen(),
-  LoginScreen.routeName: (context) => LoginScreen(),
-  DashboardScreen.routeName: (context) => DashboardScreen(),
-  BillForm.routeName: (context) => BillForm(),
-  ServiceBills.routeName: (context) => ServiceBills(),
-  Payments.routeName: (context) => Payments(),
-  PaymentList.routeName: (context) => PaymentList(''),
+  SplashScreen.routeName: (context) => const SplashScreen(),
+  LoginScreen.routeName: (context) => const LoginScreen(),
+  DashboardScreen.routeName: (context) => const DashboardScreen(),
+  BillForm.routeName: (context) => const BillForm(),
+  ServiceBills.routeName: (context) => const ServiceBills(),
+  Payments.routeName: (context) => const Payments(),
+  PaymentList.routeName: (context) => const PaymentList(''),
   PermittList.routeName: (context) => PermittList(),
-  VerificationScreen.routeName: (context) => VerificationScreen(),
-  Grading.routeName: (context) => Grading(),
-  InspectionForm.routeName: (context) => InspectionForm(),
-  ExpiredBills.routeName: (context) => ExpiredBills(''),
-  SealScreen.routeName: (context) => SealScreen(''),
-  BillsDashBoard.routeName: (context) => BillsDashBoard(''),
-  PosReg.routeName: (context) => PosReg(),
-  Otp.routeName: (context) => Otp(),
-  UpdateApp.routeName: (context) => UpdateApp(),
-  BillManagement.routeName: (context) => BillManagement(""),
-  ForestInventoryScreen.routeName: (context) => ForestInventoryScreen(),
-  ListSystems.routeName: (context) => ListSystems(),
-  IllegalProductScreen.routeName: (context) => IllegalProductScreen(),
-  NFRScreen.routeName: (context) => NFRScreen(),
-  CreateTourism.routeName: (context) => CreateTourism(),
-  TPtimeline.routeName: ((context) => TPtimeline()),
-  GenerateQrCode.routeName: (context) => GenerateQrCode(
+  VerificationScreen.routeName: (context) => const VerificationScreen(),
+  Grading.routeName: (context) => const Grading(),
+  InspectionForm.routeName: (context) => const InspectionForm(),
+  ExpiredBills.routeName: (context) => const ExpiredBills(''),
+  SealScreen.routeName: (context) => const SealScreen(''),
+  BillsDashBoard.routeName: (context) => const BillsDashBoard(''),
+  PosReg.routeName: (context) => const PosReg(),
+  Otp.routeName: (context) => const Otp(),
+  UpdateApp.routeName: (context) => const UpdateApp(),
+  BillManagement.routeName: (context) => const BillManagement(""),
+  ForestInventoryScreen.routeName: (context) => const ForestInventoryScreen(),
+  ListSystems.routeName: (context) => const ListSystems(),
+  IllegalProductScreen.routeName: (context) => const IllegalProductScreen(),
+  NFRScreen.routeName: (context) => const NFRScreen(),
+  CreateTourism.routeName: (context) => const CreateTourism(),
+  TPtimeline.routeName: ((context) => const TPtimeline()),
+  GenerateQrCode.routeName: (context) => const GenerateQrCode(
         id: "",
       ),
-  VisitorsList.routeName: ((context) => VisitorsList()),
-  ExpectedTP.routeName: ((context) => ExpectedTP())
+  VisitorsList.routeName: ((context) => const VisitorsList()),
+  ExpectedTP.routeName: ((context) => const ExpectedTP()),
+  TPEditing.routeName: ((context) => const TPEditing()),
+  ExtensionApproval.routeName: ((context) => const ExtensionApproval())
 };

@@ -1,4 +1,4 @@
-// ignore_for_file: body_might_complete_normally_nullable
+// ignore_for_file: body_might_complete_normally_nullable, file_names, prefer_typing_uninitialized_variables, avoid_print
 
 import 'dart:convert';
 import 'dart:io';
@@ -26,7 +26,7 @@ import 'package:http/http.dart' as http;
 
 class InspectionForm extends StatefulWidget {
   static String routeName = "/inspection";
-  InspectionForm({Key? key}) : super(key: key);
+  const InspectionForm({Key? key}) : super(key: key);
 
   @override
   _InspectionFormState createState() => _InspectionFormState();
@@ -169,8 +169,8 @@ class _InspectionFormState extends State<InspectionForm> {
         context: context,
         content: Column(
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Text(
                 "Enter Idenfication Mark",
                 style: TextStyle(fontSize: 16),
@@ -204,11 +204,9 @@ class _InspectionFormState extends State<InspectionForm> {
                 Expanded(child: Container()),
                 Expanded(
                   //flex: 4,
-                  child: Container(
-                    child: Text(
-                      "Clear Mark",
-                      style: TextStyle(fontSize: 12.sp),
-                    ),
+                  child: Text(
+                    "Clear Mark",
+                    style: TextStyle(fontSize: 12.sp),
                   ),
                 ),
                 Expanded(
@@ -221,7 +219,7 @@ class _InspectionFormState extends State<InspectionForm> {
                         iconSize: 15.sp,
                         onPressed: () =>
                             signatureGlobalKey.currentState!.clear(),
-                        icon: Icon(Icons.clear)),
+                        icon: const Icon(Icons.clear)),
                   ),
                 ),
               ],
@@ -230,7 +228,7 @@ class _InspectionFormState extends State<InspectionForm> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 " $formattedDate",
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           ],
@@ -238,7 +236,7 @@ class _InspectionFormState extends State<InspectionForm> {
         buttons: [
           DialogButton(
             onPressed: () async => _handleSaveButtonPressed(),
-            child: Text(
+            child: const Text(
               "Ok",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
@@ -249,19 +247,7 @@ class _InspectionFormState extends State<InspectionForm> {
   Widget _previewImage(var _imageFile) {
     // ignore: unnecessary_null_comparison
     if (_imageFile != null) {
-      return Container(
-        // height: 100,
-        // width: 100,
-        child: Image.file(File(_imageFile.path)),
-
-        // RaisedButton(
-        //   onPressed: () async {
-        //     var res = await uploadImage(_imageFile.path, uploadUrl);
-        //     print(res);
-        //   },
-        //   child: const Text('Upload'),
-        // )
-      );
+      return Image.file(File(_imageFile.path));
     } else {
       return const Text(
         'You have not yet picked an image.',
@@ -272,13 +258,13 @@ class _InspectionFormState extends State<InspectionForm> {
 
   void _pickImage(int numb) async {
     try {
-      await Future.delayed(Duration(milliseconds: 1000));
+      await Future.delayed(const Duration(milliseconds: 1000));
       final pickedFile = await _picker.getImage(
         source: ImageSource.camera,
         imageQuality: 40,
         preferredCameraDevice: CameraDevice.rear,
       );
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
       if (pickedFile != null) {
         setState(() {
           numb == 1 ? _imageFile = pickedFile : _imageFile1 = pickedFile;
@@ -347,7 +333,7 @@ class _InspectionFormState extends State<InspectionForm> {
       desc: message,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -371,8 +357,8 @@ class _InspectionFormState extends State<InspectionForm> {
       print(tokens);
 
       var headers = {"Authorization": "Bearer " + tokens!};
-      BaseOptions options = new BaseOptions(
-          baseUrl: "$baseUrl",
+      BaseOptions options = BaseOptions(
+          baseUrl: baseUrl,
           connectTimeout: 50000,
           receiveTimeout: 50000,
           headers: headers);
@@ -521,7 +507,7 @@ class _InspectionFormState extends State<InspectionForm> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -566,19 +552,19 @@ class _InspectionFormState extends State<InspectionForm> {
         }
       },
       child: isLoading
-          ? SpinKitCircle(
+          ? const SpinKitCircle(
               color: kPrimaryColor,
             )
           : Container(
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.symmetric(vertical: 15),
+              padding: const EdgeInsets.symmetric(vertical: 15),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
                         color: Colors.grey.shade200,
-                        offset: Offset(2, 4),
+                        offset: const Offset(2, 4),
                         blurRadius: 5,
                         spreadRadius: 2)
                   ],
@@ -596,7 +582,7 @@ class _InspectionFormState extends State<InspectionForm> {
 
   @override
   void initState() {
-    this.getUnit();
+    getUnit();
     RealTimeCommunication().createConnection(
       "14",
     );
@@ -615,26 +601,26 @@ class _InspectionFormState extends State<InspectionForm> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
-        title: Text(
+        title: const Text(
           ' ',
           style: TextStyle(
               fontFamily: 'Ubuntu', color: Colors.black, fontSize: 17),
         ),
       ),
-      floatingActionButton: Container(
+      floatingActionButton: SizedBox(
         height: getProportionateScreenHeight(30),
         child: FloatingActionButton.extended(
           label: counter > args.species.length
-              ? Icon(
+              ? const Icon(
                   Icons.verified,
                   color: Colors.green,
                 )
               : Text(
                   '$counter Of ${args.species.length}',
-                  style: TextStyle(
+                  style: const TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold),
                 ),
-          icon: Icon(
+          icon: const Icon(
             Icons.star_border,
             color: Colors.black,
           ),
@@ -647,18 +633,18 @@ class _InspectionFormState extends State<InspectionForm> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
+            SizedBox(
               height: getProportionateScreenHeight(700),
               child: Column(
                 children: <Widget>[
-                  Container(
+                  SizedBox(
                     height: getProportionateScreenHeight(110),
                     child: Stack(
                       children: [
                         Container(
                           width: double.infinity,
                           height: getProportionateScreenHeight(60),
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             // borderRadius: BorderRadius.only(
                             //     bottomLeft: Radius.circular(100),
                             //     bottomRight: Radius.circular(100)),
@@ -675,8 +661,8 @@ class _InspectionFormState extends State<InspectionForm> {
                                   tileColor: Colors.white,
                                   title: _title(args.type),
                                   trailing:
-                                      Icon(Icons.document_scanner_rounded),
-                                  leading: CircleAvatar(
+                                      const Icon(Icons.document_scanner_rounded),
+                                  leading: const CircleAvatar(
                                     backgroundColor: Colors.pink,
                                     child: Icon(
                                       Icons.edit,
@@ -728,83 +714,79 @@ class _InspectionFormState extends State<InspectionForm> {
                             child: Padding(
                               padding: const EdgeInsets.only(
                                   top: 1, right: 16, left: 16),
-                              child: Container(
-                                // width: getProportionateScreenHeight(
-                                //     320),
-                                child: DropdownButtonFormField<String>(
-                                  itemHeight: 50,
-                                  decoration: InputDecoration(
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0),
-                                        borderSide: BorderSide(
-                                          color: Colors.cyan,
+                              child: DropdownButtonFormField<String>(
+                                itemHeight: 50,
+                                decoration: InputDecoration(
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(5.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.cyan,
+                                      ),
+                                    ),
+                                    fillColor: const Color(0xfff3f3f4),
+                                    filled: true,
+                                    isDense: true,
+                                    enabled: true,
+                                    contentPadding:
+                                        const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                    labelText: "Select Species",
+                                    border: InputBorder.none),
+                                isExpanded: true,
+
+                                value: ask1,
+                                //elevation: 5,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Ubuntu'),
+                                iconEnabledColor: Colors.black,
+                                items: data.map((item) {
+                                  // setState(() {
+                                  //   // productId = item['id'].toString();
+                                  //   // print(productId);
+                                  // });
+                                  return DropdownMenuItem(
+                                    child: Container(
+                                      width: double.infinity,
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xfff3f3f4),
+                                        border: Border(
+                                          bottom: BorderSide(
+                                              width: 1, color: kPrimaryColor),
                                         ),
                                       ),
-                                      fillColor: Color(0xfff3f3f4),
-                                      filled: true,
-                                      isDense: true,
-                                      enabled: true,
-                                      contentPadding:
-                                          EdgeInsets.fromLTRB(30, 10, 15, 10),
-                                      labelText: "Select Species",
-                                      border: InputBorder.none),
-                                  isExpanded: true,
-
-                                  value: ask1,
-                                  //elevation: 5,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: 'Ubuntu'),
-                                  iconEnabledColor: Colors.black,
-                                  items: data.map((item) {
-                                    // setState(() {
-                                    //   // productId = item['id'].toString();
-                                    //   // print(productId);
-                                    // });
-                                    return new DropdownMenuItem(
-                                      child: Container(
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          color: Color(0xfff3f3f4),
-                                          border: Border(
-                                            bottom: BorderSide(
-                                                width: 1, color: kPrimaryColor),
-                                          ),
-                                        ),
-                                        child: new Text(
-                                          item['species_name'].toString(),
-                                          style: TextStyle(color: Colors.black),
-                                        ),
+                                      child: Text(
+                                        item['species_name'].toString(),
+                                        style: const TextStyle(color: Colors.black),
                                       ),
-                                      value: item['species_name'].toString(),
-                                    );
-                                  }).toList(),
-                                  validator: (value) {
-                                    if (value == null) {
-                                      return "This Field is required";
-                                    }
-                                  },
-                                  onChanged: (value) {
-                                    setState(() {
-                                      FocusScope.of(context)
-                                          .requestFocus(new FocusNode());
-                                      ask1 = value!;
+                                    ),
+                                    value: item['species_name'].toString(),
+                                  );
+                                }).toList(),
+                                validator: (value) {
+                                  if (value == null) {
+                                    return "This Field is required";
+                                  }
+                                },
+                                onChanged: (value) {
+                                  setState(() {
+                                    FocusScope.of(context)
+                                        .requestFocus(FocusNode());
+                                    ask1 = value!;
 
-                                      print(ask1);
-                                    });
+                                    print(ask1);
+                                  });
 
-                                    for (var i = 0; i < data.length; i++) {
-                                      if (data[i]['species_name'] == ask1) {
-                                        setState(() {
-                                          productId = data[i]['id'].toString();
-                                        });
-                                        // Found the person, stop the loop
-                                        return;
-                                      }
+                                  for (var i = 0; i < data.length; i++) {
+                                    if (data[i]['species_name'] == ask1) {
+                                      setState(() {
+                                        productId = data[i]['id'].toString();
+                                      });
+                                      // Found the person, stop the loop
+                                      return;
                                     }
-                                  },
-                                ),
+                                  }
+                                },
                               ),
                             ),
                           ),
@@ -814,30 +796,28 @@ class _InspectionFormState extends State<InspectionForm> {
                     Padding(
                       padding:
                           const EdgeInsets.only(top: 5, right: 16, left: 16),
-                      child: Container(
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          key: Key("No"),
-                          onSaved: (val) => noOfPiece = val!,
-                          decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide(
-                                color: Colors.cyan,
-                              ),
+                      child: TextFormField(
+                        keyboardType: TextInputType.number,
+                        key: const Key("No"),
+                        onSaved: (val) => noOfPiece = val!,
+                        decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                              color: Colors.cyan,
                             ),
-                            fillColor: Color(0xfff3f3f4),
-                            filled: true,
-                            labelText: "No. Of Pieces",
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                           ),
-                          validator: (value) {
-                            if (value == '') return "This Field Is Required";
-                            return null;
-                          },
+                          fillColor: const Color(0xfff3f3f4),
+                          filled: true,
+                          labelText: "No. Of Pieces",
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                         ),
+                        validator: (value) {
+                          if (value == '') return "This Field Is Required";
+                          return null;
+                        },
                       ),
                     ),
                     Row(
@@ -848,31 +828,29 @@ class _InspectionFormState extends State<InspectionForm> {
                           child: Padding(
                             padding: const EdgeInsets.only(
                                 top: 10, right: 16, left: 16),
-                            child: Container(
-                              child: TextFormField(
-                                keyboardType: TextInputType.number,
-                                key: Key("vol"),
-                                onSaved: (val) => quantity = val!,
-                                decoration: InputDecoration(
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    borderSide: BorderSide(
-                                      color: Colors.cyan,
-                                    ),
+                            child: TextFormField(
+                              keyboardType: TextInputType.number,
+                              key: const Key("vol"),
+                              onSaved: (val) => quantity = val!,
+                              decoration: InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.cyan,
                                   ),
-                                  fillColor: Color(0xfff3f3f4),
-                                  filled: true,
-                                  labelText: "Quantity",
-                                  border: InputBorder.none,
-                                  isDense: true,
-                                  contentPadding:
-                                      EdgeInsets.fromLTRB(30, 10, 15, 10),
                                 ),
-                                validator: (value) {
-                                  if (value == '') return "* Required";
-                                  return null;
-                                },
+                                fillColor: const Color(0xfff3f3f4),
+                                filled: true,
+                                labelText: "Quantity",
+                                border: InputBorder.none,
+                                isDense: true,
+                                contentPadding:
+                                    const EdgeInsets.fromLTRB(30, 10, 15, 10),
                               ),
+                              validator: (value) {
+                                if (value == '') return "* Required";
+                                return null;
+                              },
                             ),
                           ),
                         ),
@@ -887,57 +865,55 @@ class _InspectionFormState extends State<InspectionForm> {
                                       color: kPrimaryColor,
                                       size: 35.0.sp,
                                     )
-                                  : Container(
-                                      child: new DropdownButtonFormField(
-                                        itemHeight: 50,
-                                        decoration: InputDecoration(
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(5.0),
-                                              borderSide: BorderSide(
-                                                color: Colors.cyan,
-                                              ),
-                                            ),
-                                            fillColor: Color(0xfff3f3f4),
-                                            filled: true,
-                                            isDense: true,
-                                            contentPadding: EdgeInsets.fromLTRB(
-                                                30, 10, 15, 10),
-                                            labelText: "Unit",
-                                            border: InputBorder.none),
-                                        isExpanded: true,
+                                  : DropdownButtonFormField(
+                                    itemHeight: 50,
+                                    decoration: InputDecoration(
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                          borderSide: const BorderSide(
+                                            color: Colors.cyan,
+                                          ),
+                                        ),
+                                        fillColor: const Color(0xfff3f3f4),
+                                        filled: true,
                                         isDense: true,
-                                        validator: (value) =>
-                                            value == null ? "* Required" : null,
-                                        items: data1.map((item) {
-                                          return new DropdownMenuItem(
-                                            child: Container(
-                                              width: double.infinity,
-                                              decoration: BoxDecoration(
-                                                color: Color(0xfff3f3f4),
-                                                border: Border(
-                                                  bottom: BorderSide(
-                                                      width: 1,
-                                                      color: kPrimaryColor),
-                                                ),
-                                              ),
-                                              child: new Text(
-                                                item['name'].toString(),
-                                              ),
+                                        contentPadding: const EdgeInsets.fromLTRB(
+                                            30, 10, 15, 10),
+                                        labelText: "Unit",
+                                        border: InputBorder.none),
+                                    isExpanded: true,
+                                    isDense: true,
+                                    validator: (value) =>
+                                        value == null ? "* Required" : null,
+                                    items: data1.map((item) {
+                                      return DropdownMenuItem(
+                                        child: Container(
+                                          width: double.infinity,
+                                          decoration: const BoxDecoration(
+                                            color: Color(0xfff3f3f4),
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                  width: 1,
+                                                  color: kPrimaryColor),
                                             ),
-                                            value: item['name'].toString(),
-                                          );
-                                        }).toList(),
-                                        onChanged: (newVal) {
-                                          setState(() {
-                                            FocusScope.of(context)
-                                                .requestFocus(new FocusNode());
-                                            unit = newVal.toString();
-                                          });
-                                        },
-                                        value: unit,
-                                      ),
-                                    ),
+                                          ),
+                                          child: Text(
+                                            item['name'].toString(),
+                                          ),
+                                        ),
+                                        value: item['name'].toString(),
+                                      );
+                                    }).toList(),
+                                    onChanged: (newVal) {
+                                      setState(() {
+                                        FocusScope.of(context)
+                                            .requestFocus(FocusNode());
+                                        unit = newVal.toString();
+                                      });
+                                    },
+                                    value: unit,
+                                  ),
                             ),
                           ),
                         ),
@@ -947,26 +923,24 @@ class _InspectionFormState extends State<InspectionForm> {
                         ? Padding(
                             padding: const EdgeInsets.only(
                                 top: 10, right: 16, left: 16),
-                            child: Container(
-                              child: TextFormField(
-                                keyboardType: TextInputType.text,
-                                key: Key("vol"),
-                                onSaved: (val) => mark = val!,
-                                decoration: InputDecoration(
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    borderSide: BorderSide(
-                                      color: Colors.cyan,
-                                    ),
+                            child: TextFormField(
+                              keyboardType: TextInputType.text,
+                              key: const Key("vol"),
+                              onSaved: (val) => mark = val!,
+                              decoration: InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.cyan,
                                   ),
-                                  fillColor: Color(0xfff3f3f4),
-                                  filled: true,
-                                  labelText: "Identification Mark",
-                                  border: InputBorder.none,
-                                  isDense: true,
-                                  contentPadding:
-                                      EdgeInsets.fromLTRB(30, 10, 15, 10),
                                 ),
+                                fillColor: const Color(0xfff3f3f4),
+                                filled: true,
+                                labelText: "Identification Mark",
+                                border: InputBorder.none,
+                                isDense: true,
+                                contentPadding:
+                                    const EdgeInsets.fromLTRB(30, 10, 15, 10),
                               ),
                             ),
                           )
@@ -975,26 +949,24 @@ class _InspectionFormState extends State<InspectionForm> {
                         ? Padding(
                             padding: const EdgeInsets.only(
                                 top: 10, right: 16, left: 16),
-                            child: Container(
-                              child: TextFormField(
-                                keyboardType: TextInputType.text,
-                                key: Key("vol"),
-                                onSaved: (val) => inspectionMark = val!,
-                                decoration: InputDecoration(
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    borderSide: BorderSide(
-                                      color: Colors.cyan,
-                                    ),
+                            child: TextFormField(
+                              keyboardType: TextInputType.text,
+                              key: const Key("vol"),
+                              onSaved: (val) => inspectionMark = val!,
+                              decoration: InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.cyan,
                                   ),
-                                  fillColor: Color(0xfff3f3f4),
-                                  filled: true,
-                                  labelText: "Inspection Mark",
-                                  border: InputBorder.none,
-                                  isDense: true,
-                                  contentPadding:
-                                      EdgeInsets.fromLTRB(30, 10, 15, 10),
                                 ),
+                                fillColor: const Color(0xfff3f3f4),
+                                filled: true,
+                                labelText: "Inspection Mark",
+                                border: InputBorder.none,
+                                isDense: true,
+                                contentPadding:
+                                    const EdgeInsets.fromLTRB(30, 10, 15, 10),
                               ),
                             ),
                           )
@@ -1002,7 +974,7 @@ class _InspectionFormState extends State<InspectionForm> {
                     SizedBox(
                       height: getProportionateScreenHeight(10),
                     ),
-                    Container(
+                    SizedBox(
                       height: getProportionateScreenHeight(200),
                       width: double.infinity,
                       child: Row(
@@ -1104,7 +1076,7 @@ class _InspectionFormState extends State<InspectionForm> {
                             child: Center(
                               child: Text(
                                 imageErr.toString(),
-                                style: TextStyle(color: Colors.red),
+                                style: const TextStyle(color: Colors.red),
                               ),
                             ),
                           )

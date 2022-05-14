@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/services.dart';
@@ -19,7 +21,7 @@ import 'package:tfsappv1/services/textFieldConstant.dart';
 
 class PosReg extends StatefulWidget {
   static String routeName = "/POSmanager";
-  PosReg({Key? key}) : super(key: key);
+  const PosReg({Key? key}) : super(key: key);
 
   @override
   _PosRegState createState() => _PosRegState();
@@ -191,7 +193,7 @@ class _PosRegState extends State<PosReg> {
       desc: message,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -213,7 +215,7 @@ class _PosRegState extends State<PosReg> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -264,19 +266,19 @@ class _PosRegState extends State<PosReg> {
         }
       },
       child: isLoading
-          ? SpinKitCircle(
+          ? const SpinKitCircle(
               color: kPrimaryColor,
             )
           : Container(
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.symmetric(vertical: 15),
+              padding: const EdgeInsets.symmetric(vertical: 15),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
                         color: Colors.grey.shade200,
-                        offset: Offset(2, 4),
+                        offset: const Offset(2, 4),
                         blurRadius: 5,
                         spreadRadius: 2)
                   ],
@@ -284,7 +286,7 @@ class _PosRegState extends State<PosReg> {
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                       colors: [kPrimaryColor, Colors.green[100]!])),
-              child: Text(
+              child: const Text(
                 'Submit',
                 style: TextStyle(fontSize: 20, color: Colors.white),
               ),
@@ -314,7 +316,7 @@ class _PosRegState extends State<PosReg> {
     _serialNoController = TextEditingController();
     _issueByController = TextEditingController();
     RealTimeCommunication().createConnection('4');
-    this.getDetails();
+    getDetails();
 
     // ignore: todo
     // TODO: implement initState
@@ -341,7 +343,7 @@ class _PosRegState extends State<PosReg> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
-        title: Text(
+        title: const Text(
           ' ',
           style: TextStyle(
               fontFamily: 'Ubuntu', color: Colors.black, fontSize: 17),
@@ -350,18 +352,18 @@ class _PosRegState extends State<PosReg> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
+            SizedBox(
               height: getProportionateScreenHeight(700),
               child: Column(
                 children: <Widget>[
-                  Container(
+                  SizedBox(
                     height: getProportionateScreenHeight(110),
                     child: Stack(
                       children: [
                         Container(
                           width: double.infinity,
                           height: getProportionateScreenHeight(60),
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             // borderRadius: BorderRadius.only(
                             //     bottomLeft: Radius.circular(100),
                             //     bottomRight: Radius.circular(100)),
@@ -378,8 +380,8 @@ class _PosRegState extends State<PosReg> {
                                   tileColor: Colors.white,
                                   title: _title(),
                                   trailing:
-                                      Icon(Icons.document_scanner_rounded),
-                                  leading: CircleAvatar(
+                                      const Icon(Icons.document_scanner_rounded),
+                                  leading: const CircleAvatar(
                                     backgroundColor: Colors.pink,
                                     child: Icon(
                                       Icons.edit,
@@ -394,7 +396,7 @@ class _PosRegState extends State<PosReg> {
                   ),
                   // Adding the form here
                   deviceInfo == null
-                      ? Center(
+                      ? const Center(
                           child: Text(
                               "Your Device Is Not Supported For Registration"),
                         )
@@ -466,24 +468,23 @@ class _PosRegState extends State<PosReg> {
                     Padding(
                       padding:
                           const EdgeInsets.only(top: 10, right: 16, left: 16),
-                      child: Container(
-                          child: Card(
+                      child: Card(
                         elevation: 1,
                         child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: kPrimaryColor,
-                            foregroundColor: Colors.white,
-                            child: Icon(Icons.calendar_today),
-                          ),
-                          onTap: () {
-                            _selectDate(context);
-                          },
-                          title: Text(
-                            'Issuing Date: $formattedDate',
-                            style: TextStyle(color: Colors.black54),
-                          ),
+                      leading: const CircleAvatar(
+                        backgroundColor: kPrimaryColor,
+                        foregroundColor: Colors.white,
+                        child: Icon(Icons.calendar_today),
+                      ),
+                      onTap: () {
+                        _selectDate(context);
+                      },
+                      title: Text(
+                        'Issuing Date: $formattedDate',
+                        style: const TextStyle(color: Colors.black54),
+                      ),
                         ),
-                      )),
+                      ),
                     ),
                     SizedBox(
                       height: getProportionateScreenHeight(10),
@@ -492,66 +493,62 @@ class _PosRegState extends State<PosReg> {
                       child: Padding(
                         padding:
                             const EdgeInsets.only(top: 1, right: 16, left: 16),
-                        child: Container(
-                          // width: getProportionateScreenHeight(
-                          //     320),
-                          child: DropdownButtonFormField<String>(
-                            itemHeight: 50,
-                            decoration: InputDecoration(
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                  borderSide: BorderSide(
-                                    color: Colors.cyan,
-                                  ),
+                        child: DropdownButtonFormField<String>(
+                          itemHeight: 50,
+                          decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                                borderSide: const BorderSide(
+                                  color: Colors.cyan,
                                 ),
-                                fillColor: Color(0xfff3f3f4),
-                                filled: true,
-                                isDense: true,
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(30, 10, 15, 10),
-                                labelText: "Select POS Status",
-                                border: InputBorder.none),
-                            isExpanded: true,
+                              ),
+                              fillColor: const Color(0xfff3f3f4),
+                              filled: true,
+                              isDense: true,
+                              contentPadding:
+                                  const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                              labelText: "Select POS Status",
+                              border: InputBorder.none),
+                          isExpanded: true,
 
-                            value: ask1,
-                            //elevation: 5,
-                            style: TextStyle(
-                                color: Colors.white, fontFamily: 'Ubuntu'),
-                            iconEnabledColor: Colors.black,
-                            items: ask
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return new DropdownMenuItem(
-                                child: Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xfff3f3f4),
-                                    border: Border(
-                                      bottom: BorderSide(
-                                          width: 1, color: kPrimaryColor),
-                                    ),
-                                  ),
-                                  child: new Text(
-                                    value,
-                                    style: TextStyle(color: Colors.black),
+                          value: ask1,
+                          //elevation: 5,
+                          style: const TextStyle(
+                              color: Colors.white, fontFamily: 'Ubuntu'),
+                          iconEnabledColor: Colors.black,
+                          items: ask
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem(
+                              child: Container(
+                                width: double.infinity,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xfff3f3f4),
+                                  border: Border(
+                                    bottom: BorderSide(
+                                        width: 1, color: kPrimaryColor),
                                   ),
                                 ),
-                                value: value,
-                              );
-                            }).toList(),
-                            validator: (value) {
-                              if (value == null) {
-                                return "This Field is required";
-                              }
-                              return null;
-                            },
-                            onChanged: (value) {
-                              setState(() {
-                                FocusScope.of(context)
-                                    .requestFocus(new FocusNode());
-                                ask1 = value!;
-                              });
-                            },
-                          ),
+                                child: Text(
+                                  value,
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                              ),
+                              value: value,
+                            );
+                          }).toList(),
+                          validator: (value) {
+                            if (value == null) {
+                              return "This Field is required";
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            setState(() {
+                              FocusScope.of(context)
+                                  .requestFocus(FocusNode());
+                              ask1 = value!;
+                            });
+                          },
                         ),
                       ),
                     ),

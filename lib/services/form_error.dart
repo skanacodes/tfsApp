@@ -41,7 +41,7 @@ class FormError extends StatelessWidget {
             flex: 6,
             child: Text(
               error!,
-              style: TextStyle(color: Colors.red),
+              style: const TextStyle(color: Colors.red),
             )),
       ],
     );

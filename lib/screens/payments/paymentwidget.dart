@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -21,9 +23,10 @@ import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:ticket_widget/ticket_widget.dart';
 
 class PaymentWidget extends StatefulWidget {
-  PaymentWidget({Key? key}) : super(key: key);
+  const PaymentWidget({Key? key}) : super(key: key);
 
   @override
   _PaymentWidgetState createState() => _PaymentWidgetState();
@@ -31,6 +34,7 @@ class PaymentWidget extends StatefulWidget {
 
 class _PaymentWidgetState extends State<PaymentWidget> {
   var data;
+  String? username;
   var brand;
   String? billId;
   bool isLoading = false;
@@ -62,16 +66,16 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       // .then((prefs) => prefs.getInt('email').toString());
 
       print(email);
-      // var tokens = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getString('token'));
-      // var headers = {"Authorization": "Bearer " + tokens!};
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      var headers = {"Authorization": "Bearer " + tokens!};
       var url =
           Uri.parse('http://mis.tfs.go.tz/fremis-test/api/v1/print_status');
       print(billId);
       // var url =
       //     Uri.parse('http://mis.tfs.go.tz/e-auction/api/v1/Bill/PrintReceipt');
-      final response = await http
-          .post(url, body: {"control_number":controlNumber});
+      final response = await http.post(url,
+          body: {"control_number": controlNumber}, headers: headers);
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
@@ -103,28 +107,26 @@ class _PaymentWidgetState extends State<PaymentWidget> {
     }
   }
 
-  Future itemsReceipt(bill_Id, system) async {
+  Future itemsReceipt(billId, system) async {
     setState(() {
       isLoading = true;
-      billId = bill_Id;
+      billId = billId;
     });
     try {
       // String stationId = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getInt('station_id').toString());
 
       //print(stationId);
-      // var tokens = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getString('token'));
-      // var headers = {"Authorization": "Bearer " + tokens!};
-      print(bill_Id);
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      var headers = {"Authorization": "Bearer " + tokens!};
+      print(billId);
       print(system);
       var url = system == "E-Auction"
           ? Uri.parse(
-              'https://mis.tfs.go.tz/e-auction/api/Bill/GetPriceDistribution/$bill_Id')
-          : Uri.parse('$baseUrlTest/api/v1/bill-items/$bill_Id');
-      final response = await http.get(
-        url,
-      );
+              'https://mis.tfs.go.tz/e-auction/api/Bill/GetPriceDistribution/$billId')
+          : Uri.parse('$baseUrlTest/api/v1/bill-items/$billId');
+      final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
@@ -135,6 +137,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
             print(res);
             isItems = true;
             dataItems = res['data'];
+            //dataItems = [];
           });
 
           break;
@@ -183,7 +186,8 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       String? description,
       String? plotname,
       String? station,
-      List? items}) async {
+      List? items,
+      bool? isBill}) async {
     setState(() {
       isPrinting = true;
     });
@@ -196,8 +200,8 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       print(dataItems[i]["BillItemAmt"].runtimeType);
       amounts.add(formatNumber.format(dataItems[i]["BillItemAmt"]));
     }
-    print(desc);
-    print(amounts);
+    // print(desc);
+    // print(amounts);
     await screenshotController.capture().then((Uint8List? image) {
       //Capture Done
       setState(() {
@@ -217,7 +221,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
 
     try {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Starting Printer"),
         ),
       );
@@ -237,26 +241,28 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         "qrcode": base64Encode(_imageFile1!),
         "plotname": plotname,
         "station": station,
-        "activity": "printing"
+        "activity": "printing",
+        "type": isBill! ? "bill" : "receipt"
       });
 
       print(result);
       if (result == "Successfully Printed") {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("$result"),
+            content: Text(result),
           ),
         );
-        if (mounted)
+        if (mounted) {
           setState(() {
             isReceiptGenerated = true;
           });
-        await updatePrinterStatus(controlNo);
+        }
+        isBill ? null : await updatePrinterStatus(controlNo);
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("$result"),
+            content: Text(result),
           ),
         );
       }
@@ -332,7 +338,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -357,7 +363,9 @@ class _PaymentWidgetState extends State<PaymentWidget> {
   @override
   void initState() {
     // this.getData();
-    this.getBrand();
+
+    getBrand();
+
     super.initState();
   }
 
@@ -370,6 +378,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
     setState(() {
       isPrinting = true;
     });
+    print(username);
     final args =
         ModalRoute.of(context)!.settings.arguments as ReceiptScreenArguments;
     isItems
@@ -382,22 +391,22 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       children: [
         isReceiptGenerated
             ? Container()
-            : dataItems.isEmpty
+            : dataItems.isEmpty && !args.isBill
                 ? Container()
                 : Padding(
                     padding: const EdgeInsets.fromLTRB(13, 8, 13, 0),
                     child: Card(
                         elevation: 10,
-                        child: Container(
+                        child: SizedBox(
                             width: double.infinity,
                             //  height: getProportionateScreenHeight(100),
                             child: Padding(
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  Expanded(
+                                  const Expanded(
                                     flex: 1,
                                     child: Icon(
                                       Icons.select_all,
@@ -419,403 +428,425 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                   ),
         isReceiptGenerated ? Container() : userMail(args),
         Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Container(
-            // height: isNotFpund
-            //     ? getProportionateScreenHeight(100)
-            //     : getPropoPartionateScreenHeight(300),
-            decoration: BoxDecoration(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+              child: TicketWidget(
+            width: 350,
+            height: brand == "MobiWire" || brand == "MobiIoT"
+                ? getProportionateScreenHeight(1800)
+                : MediaQuery.of(context).size.height,
+            shadow: [
+              BoxShadow(
+                color: Colors.grey[400]!,
+                offset: const Offset(
+                  5.0,
+                  5.0,
+                ),
+                blurRadius: 10.0,
+                spreadRadius: 2.0,
+              ), //BoxShadow
+              const BoxShadow(
                 color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                      blurRadius: 10,
-                      color: Colors.grey,
-                      spreadRadius: 3,
-                      offset: Offset.zero)
-                ],
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20))),
-            child: Container(
-                color: Colors.white,
-                child: Stack(children: [
-                  Column(
-                    children: [
-                      const SizedBox(
-                        height: 50,
+                offset: Offset(0.0, 0.0),
+                blurRadius: 0.0,
+                spreadRadius: 0.0,
+              ), //BoxShadow
+            ],
+            isCornerRounded: true,
+            padding: const EdgeInsets.all(20),
+            child: ListView(
+              //crossAxisAlignment: CrossAxisAlignment.start,
+              shrinkWrap: true,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        width: getProportionateScreenWidth(200),
+                        height: getProportionateScreenHeight(60),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30.0),
+                          border: Border.all(width: 1.0, color: Colors.green),
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              args.isBill
+                                  ? "Client Bill Preview"
+                                  : "Client Receipt Preview",
+                              style: const TextStyle(color: Colors.green),
+                            ),
+                          ),
+                        ),
                       ),
-                      // Align(
-                      //     alignment: Alignment.topCenter, child: transform()),
-                      // Align(alignment: Alignment.center, child: transform()),
-                      // Align(
-                      //     alignment: Alignment.bottomCenter,
-                      //     child: transform()),
-                      // Align(
-                      //     alignment: Alignment.bottomCenter,
-                      //     child: transform()),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Screenshot(
-                          controller: screenshotController,
-                          child: Container(
-                            color: Colors.white,
-                            child: Padding(
-                                padding: const EdgeInsets.all(1.0),
-                                child: Center(
-                                  child: Container(
-                                      height: getProportionateScreenHeight(300),
-                                      width: getProportionateScreenHeight(300),
-                                      color: Colors.white,
-                                      child: Image.asset(
-                                        'assets/images/logo.png',
-                                      )),
+                    ),
+                    // Row(
+                    //   children: const [
+                    //     Text(
+                    //       'LHR',
+                    //       style: TextStyle(
+                    //           color: Colors.black, fontWeight: FontWeight.bold),
+                    //     ),
+                    //     Padding(
+                    //       padding: EdgeInsets.only(left: 8.0),
+                    //       child: Icon(
+                    //         Icons.flight_takeoff,
+                    //         color: Colors.pink,
+                    //       ),
+                    //     ),
+                    //     Padding(
+                    //       padding: EdgeInsets.only(left: 8.0),
+                    //       child: Text(
+                    //         'ISL',
+                    //         style: TextStyle(
+                    //             color: Colors.black, fontWeight: FontWeight.bold),
+                    //       ),
+                    //     )
+                    //   ],
+                    // )
+                  ],
+                ),
+                // const Padding(
+                //   padding: EdgeInsets.only(top: 20.0),
+                //   child: Text(
+                //     'Flight Ticket',
+                //     style: TextStyle(
+                //         color: Colors.black,
+                //         fontSize: 20.0,
+                //         fontWeight: FontWeight.bold),
+                //   ),
+                // ),
+                Screenshot(
+                    controller: screenshotController,
+                    child: Container(
+                      color: Colors.white,
+                      child: Padding(
+                          padding: const EdgeInsets.all(1.0),
+                          child: Center(
+                            child: Container(
+                                height: brand == "qti"
+                                    ? getProportionateScreenHeight(160)
+                                    : brand == "MobiWire" || brand == "MobiIoT"
+                                        ? getProportionateScreenHeight(300)
+                                        : getProportionateScreenHeight(200),
+                                width: brand == "qti"
+                                    ? getProportionateScreenHeight(160)
+                                    : getProportionateScreenHeight(300),
+                                color: Colors.white,
+                                child: Image.asset(
+                                  'assets/images/logo.png',
                                 )),
                           )),
+                    )),
+                Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Column(
+                    children: const [
+                      Text('---------------------------',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold)),
+                      Text(
+                        ' Tanzania Forest Service Agency (TFS).',
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.bold),
+                      ),
+                      Text('---------------------------',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.only(top: 1.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Padding(
-                        padding: const EdgeInsets.all(5.0),
+                        padding: const EdgeInsets.only(
+                          left: 10,
+                          right: 10,
+                        ),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text('---------------------------',
+                            const Text('Client: ',
                                 style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold)),
-                            Text(
-                              ' Tanzania Forest Service Agency (TFS).',
-                              style: TextStyle(
+                                  color: Colors.grey,
+                                )),
+                            Text(args.payerName.toString(),
+                                style: const TextStyle(
                                   color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text('---------------------------',
+                                ))
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 10,
+                          right: 10,
+                        ),
+                        child: ticketDetailsWidget(
+                            'Control No',
+                            args.controlNumber.toString() == "null"
+                                ? "N/A"
+                                : args.controlNumber.toString(),
+                            'Receipt No',
+                            args.receiptNo.toString() == "null"
+                                ? " "
+                                : args.receiptNo.toString()),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 10,
+                          right: 10,
+                        ),
+                        child: ticketDetailsWidget(
+                            'Issuer',
+                            args.issuer.toString().toUpperCase(),
+                            'Station',
+                            args.station!),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 10,
+                          right: 10,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Text('Description: ',
                                 style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold)),
+                                  color: Colors.grey,
+                                )),
+                            Text(args.desc.toString(),
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                ))
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10, right: 10, bottom: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                                child: Text('Client: ',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                    ))),
-                            Expanded(
-                              child: Text(args.payerName.toString(),
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                  )),
-                            )
-                          ],
-                        ),
-                      ),
-                      args.isBill
-                          ? Container()
-                          : Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 10, right: 10, bottom: 10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                      child: Text('Receipt No: ',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                          ))),
-                                  Expanded(
-                                    child: Text(args.receiptNo.toString(),
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                        )),
-                                  )
-                                ],
-                              ),
-                            ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10, right: 10, bottom: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                                child: Text('Control No: ',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                    ))),
-                            Expanded(
-                              child: Text(args.controlNumber.toString(),
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                  )),
-                            )
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10, right: 10, bottom: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                                child: Text('Desc: ',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                    ))),
-                            Expanded(
-                              child: Text(args.desc.toString(),
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                  )),
-                            )
-                          ],
-                        ),
-                      ),
-                      args.plotname.toString() == "null"
-                          ? Container()
-                          : Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 10, right: 10, bottom: 10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                      child: Text('Plot Name: ',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                          ))),
-                                  Expanded(
-                                    child: Text(args.plotname.toString(),
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                        )),
-                                  )
-                                ],
-                              ),
-                            ),
-                      args.station.toString() == "null"
-                          ? Container()
-                          : Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 10, right: 10, bottom: 10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                      child: Text('Station: ',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                          ))),
-                                  Expanded(
-                                    child: Text(args.station!,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                        )),
-                                  )
-                                ],
-                              ),
-                            ),
                       args.isBill
                           ? Padding(
                               padding: const EdgeInsets.only(
-                                  left: 10, right: 10, bottom: 10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                      child: Text('Fee',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                          ))),
-                                  Expanded(
-                                    child:
-                                        Text(formatNumber.format(args.amount),
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                            )),
-                                  )
-                                ],
+                                left: 10,
+                                right: 10,
                               ),
+                              child: ticketDetailsWidget(
+                                  args.isBill ? 'Fee' : "",
+                                  args.isBill
+                                      ? formatNumber.format(args.amount)
+                                      : " ",
+                                  "",
+                                  ""),
                             )
-                          : Container(),
-                      Padding(
+                          : Padding(
+                              padding: const EdgeInsets.only(
+                                left: 10,
+                                right: 10,
+                              ),
+                              child: ticketDetailsWidget(
+                                'Payed On:',
+                                args.payedDate.toString(),
+                                '',
+                                "",
+                              )),
+                    ],
+                  ),
+                ),
+                Divider(
+                  color: Colors.grey[400],
+                ),
+                args.isBill
+                    ? Container()
+                    : Padding(
                         padding: const EdgeInsets.only(
-                            left: 10, right: 10, bottom: 10),
+                            left: 10, right: 10, bottom: 10, top: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                                child: Text('Issuer: ',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                    ))),
-                            Expanded(
-                              child: Text(args.issuer,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                  )),
-                            )
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10, right: 10, bottom: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                                child: Text('Paid On: ',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                    ))),
-                            Expanded(
-                              child: Text(args.payedDate.toString(),
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                  )),
-                            )
-                          ],
-                        ),
-                      ),
-                      Divider(
-                        color: Colors.grey[400],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10, right: 10, bottom: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
+                          children: const [
                             Expanded(
                                 flex: 6,
                                 child: Text('Description ',
                                     style: TextStyle(
-                                      color: Colors.black,
+                                      color: Colors.grey,
                                     ))),
                             Expanded(
                               flex: 3,
                               child: Text('Amount',
                                   style: TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.grey,
                                   )),
                             )
                           ],
                         ),
                       ),
-                      Divider(
+                args.isBill
+                    ? Container()
+                    : Divider(
                         color: Colors.grey[400],
                       ),
-                      for (var i = 0; i < dataItems.length; i++)
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10, right: 10, bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                  flex: 6,
-                                  child: Text(dataItems[i]['ItemDescr'],
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                      ))),
-                              Expanded(
-                                flex: 3,
-                                child: Text(
-                                    ": " +
-                                        formatNumber.format(
-                                            dataItems[i]['BillItemAmt']),
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                    )),
-                              )
-                            ],
-                          ),
-                        ),
-                      Divider(
+                for (var i = 0; i < dataItems.length; i++)
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                            flex: 6,
+                            child: Text(dataItems[i]['ItemDescr'],
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                ))),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                              formatNumber.format(dataItems[i]['BillItemAmt']),
+                              style: const TextStyle(
+                                color: Colors.black,
+                              )),
+                        )
+                      ],
+                    ),
+                  ),
+                args.isBill
+                    ? Container()
+                    : Divider(
                         color: Colors.grey[400],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10, right: 10, bottom: 10),
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Expanded(
+                          flex: 6,
+                          child: Text('Total Amount: ',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold))),
+                      Expanded(
+                        flex: 3,
+                        child: Text(formatNumber.format(args.amount),
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold)),
+                      )
+                    ],
+                  ),
+                ),
+                Divider(
+                  color: Colors.grey[400],
+                ),
+                Screenshot(
+                    controller: screenshotController1,
+                    child: Container(
+                      color: Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Expanded(
-                                flex: 6,
-                                child: Text('Total Amount: ',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold))),
-                            Expanded(
-                              flex: 3,
-                              child: Text(formatNumber.format(args.amount),
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold)),
-                            )
+                            QrImage(
+                              data: args.isBill
+                                  ? args.controlNumber.toString()
+                                  : args.receiptNo.toString(),
+                              version: QrVersions.auto,
+                              size: brand == "qti" ? 150 : 200,
+                              gapless: false,
+                            ),
                           ],
                         ),
                       ),
-                      Divider(
-                        color: Colors.grey[400],
+                    )),
+
+                args.isBill
+                    ? Container()
+                    : Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Expanded(
+                              child: Center(
+                                child: Text(
+                                  'Genuine Receipt for cash Received',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      Screenshot(
-                          controller: screenshotController1,
-                          child: Container(
-                            color: Colors.white,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  QrImage(
-                                    data: args.isBill
-                                        ? args.controlNumber
-                                        : args.receiptNo.toString(),
-                                    version: QrVersions.auto,
-                                    size: 200,
-                                    gapless: false,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )),
-                      args.isBill
-                          ? Container()
-                          : Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        'Genuine Receipt for cash Received',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                    ],
-                  ),
-                ])),
-          ),
+                SizedBox(
+                    height: brand == "MobiWire" || brand == "MobiIoT"
+                        ? getProportionateScreenHeight(1100)
+                        : getProportionateScreenHeight(350))
+              ],
+            ),
+          )),
         ),
       ],
+    );
+  }
+
+  Widget ticketDetailsWidget(String firstTitle, String firstDesc,
+      String secondTitle, String secondDesc) {
+    return Padding(
+      padding: const EdgeInsets.all(3.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            flex: 4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  firstTitle,
+                  style: const TextStyle(color: Colors.grey),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 1.0),
+                  child: Text(
+                    firstDesc,
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                )
+              ],
+            ),
+          ),
+          Expanded(
+            flex: 4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  secondTitle,
+                  style: const TextStyle(color: Colors.grey),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 1.0),
+                  child: Text(
+                    secondDesc,
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -835,7 +866,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
 
     const double inch = 72.0;
     doc.addPage(pw.Page(
-        pageFormat: PdfPageFormat(7 * inch, double.infinity, marginLeft: 5),
+        pageFormat: const PdfPageFormat(7 * inch, double.infinity, marginLeft: 5),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
@@ -1077,7 +1108,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       final dir = await getExternalStorageDirectory();
       String dirPath = dir!.path;
       final String paths = '$dirPath/${userEmail + formattedDate}.pdf';
-      final File file = await File(paths);
+      final File file = File(paths);
       var x = await file.writeAsBytes(await doc.save());
       print(x);
       print(paths);
@@ -1121,14 +1152,14 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    Container(
+                    SizedBox(
                       height: getProportionateScreenHeight(20),
                       width: double.infinity,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           IconButton(
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.disabled_by_default_outlined,
                               size: 13,
                               color: Colors.red,
@@ -1146,54 +1177,52 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                      child: Container(
-                        child: TextFormField(
-                          keyboardType: isEmail
-                              ? TextInputType.text
-                              : TextInputType.number,
-                          key: Key(""),
-                          onSaved: (val) => payerMail = val!,
-                          decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: BorderSide(
-                                color: Colors.cyan,
-                              ),
+                      child: TextFormField(
+                        keyboardType: isEmail
+                            ? TextInputType.text
+                            : TextInputType.number,
+                        key: const Key(""),
+                        onSaved: (val) => payerMail = val!,
+                        decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            borderSide: const BorderSide(
+                              color: Colors.cyan,
                             ),
-                            fillColor: Color(0xfff3f3f4),
-                            filled: true,
-                            labelText: isEmail
-                                ? "Enter Client Email"
-                                : "Enter Client Phone Number",
-                            border: InputBorder.none,
-                            suffixIcon: InkWell(
-                              onTap: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  _formKey.currentState!.save();
-                                  isEmail
-                                      ? await createPDF(args, payerMail!)
-                                      : await sendSms(payerMail!, args);
-                                  _formKey.currentState!.reset();
-                                }
-                              },
-                              child: Icon(
-                                Icons.send_outlined,
-                                size: 25,
-                                color: kPrimaryColor,
-                              ),
-                            ),
-                            isDense: true,
-                            contentPadding: EdgeInsets.fromLTRB(30, 10, 20, 10),
                           ),
-
-                          // onChanged: (val) {
-                          //   setState(() {});
-                          // },
-                          validator: (value) {
-                            if (value!.isEmpty) return "This Field Is Required";
-                            return null;
-                          },
+                          fillColor: const Color(0xfff3f3f4),
+                          filled: true,
+                          labelText: isEmail
+                              ? "Enter Client Email"
+                              : "Enter Client Phone Number",
+                          border: InputBorder.none,
+                          suffixIcon: InkWell(
+                            onTap: () async {
+                              if (_formKey.currentState!.validate()) {
+                                _formKey.currentState!.save();
+                                isEmail
+                                    ? await createPDF(args, payerMail!)
+                                    : await sendSms(payerMail!, args);
+                                _formKey.currentState!.reset();
+                              }
+                            },
+                            child: const Icon(
+                              Icons.send_outlined,
+                              size: 25,
+                              color: kPrimaryColor,
+                            ),
+                          ),
+                          isDense: true,
+                          contentPadding: const EdgeInsets.fromLTRB(30, 10, 20, 10),
                         ),
+
+                        // onChanged: (val) {
+                        //   setState(() {});
+                        // },
+                        validator: (value) {
+                          if (value!.isEmpty) return "This Field Is Required";
+                          return null;
+                        },
                       ),
                     ),
                     SizedBox(
@@ -1209,15 +1238,15 @@ class _PaymentWidgetState extends State<PaymentWidget> {
 
   popBar(ReceiptScreenArguments args) {
     return Padding(
-      padding: EdgeInsets.only(right: 10.0),
+      padding: const EdgeInsets.only(right: 10.0),
       child: PopupMenuButton(
         tooltip: 'Menu',
-        child: Icon(
+        child: const Icon(
           Icons.more_vert,
           size: 28.0,
           color: Colors.black,
         ),
-        offset: Offset(20, 40),
+        offset: const Offset(20, 40),
         itemBuilder: (context) => [
           PopupMenuItem(
             onTap: () async {
@@ -1231,6 +1260,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                   items: dataItems,
                   description: args.desc.toString(),
                   plotname: args.plotname.toString(),
+                  isBill: args.isBill ? true : false,
                   station: args.station.toString());
             },
             child: Row(
@@ -1240,7 +1270,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                   color: kPrimaryColor,
                   size: getProportionateScreenHeight(22),
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(
                     left: 5.0,
                   ),
@@ -1270,7 +1300,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                   color: kPrimaryColor,
                   size: getProportionateScreenHeight(22),
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(
                     left: 5.0,
                   ),
@@ -1298,7 +1328,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                   color: kPrimaryColor,
                   size: getProportionateScreenHeight(22),
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(
                     left: 5.0,
                   ),
@@ -1319,14 +1349,16 @@ class _PaymentWidgetState extends State<PaymentWidget> {
 
   Future sendSms(payerNumber, ReceiptScreenArguments args) async {
     try {
+      String content = args.isBill
+          ? "Malipo yamepokelewa kwenda TFS\nAnkara: ${args.controlNumber}\nKiasi: ${args.amount}\nRisiti: ${args.receiptNo}\n${args.payedDate}\nKupitia: ${args.bankReceipt}"
+          : " Malipo yanasubiriwa TFS\nAnkara: ${args.controlNumber}\nKiasi: ${args.amount}\n";
       var url = Uri.parse(
           'https://mis.tfs.go.tz/messaging/api/SMSMessaging/SendSMSCustom');
 
       final response = await http.post(url,
           body: jsonEncode(
             {
-              "Message":
-                  "Malipo yamepokelewa kwenda TFS\nAnkara: ${args.controlNumber}\nKiasi: ${args.amount}\nRisiti: ${args.receiptNo}\n${args.payedDate}\nKupitia: ${args.bankReceipt}",
+              "Message": content,
               "Phones": [
                 {"name": "$payerNumber"}
               ],
@@ -1341,7 +1373,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       switch (response.statusCode) {
         case 200:
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text("Sms Successfully Sent"),
             ),
           );
@@ -1355,7 +1387,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         default:
           setState(() {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
+              const SnackBar(
                 content: Text("Something Went Wrong"),
               ),
             );
@@ -1364,7 +1396,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       }
     } on SocketException {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Server Or Connectivity Error"),
         ),
       );

@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, use_key_in_widget_constructors, prefer_typing_uninitialized_variables, avoid_print
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -18,7 +20,7 @@ import 'package:badges/badges.dart';
 class BillsDashBoard extends StatefulWidget {
   static String routeName = "/billsDashboard";
   final String system;
-  BillsDashBoard(this.system);
+  const BillsDashBoard(this.system);
   @override
   _BillsDashBoardState createState() => _BillsDashBoardState();
 }
@@ -64,7 +66,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
       elevation: 10,
       shadowColor: kPrimaryColor,
       child: ListTile(
-        leading: CircleAvatar(
+        leading: const CircleAvatar(
           backgroundColor: kPrimaryColor,
           child: Icon(
             Icons.file_present,
@@ -73,7 +75,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
         ),
         title: Text(title),
         subtitle: Text(subtitle),
-        trailing: Icon(Icons.arrow_forward_ios_outlined),
+        trailing: const Icon(Icons.arrow_forward_ios_outlined),
       ),
     );
   }
@@ -81,12 +83,12 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
   @override
   void initState() {
     widget.system == "seedMIS"
-        ? this.getUserDetails()
+        ? getUserDetails()
         : widget.system == "HoneyTraceability"
-            ? this.getUserDetails()
+            ? getUserDetails()
             : widget.system == "E-Auction"
                 ? ""
-                : this.getStats();
+                : getStats();
 
     super.initState();
   }
@@ -98,11 +100,12 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: kPrimaryColor,
-          title: Text(
+          title: const Text(
             '',
             style: TextStyle(color: Colors.black, fontFamily: 'Ubuntu'),
           ),
         ),
+        // ignore: sized_box_for_whitespace
         body: Container(
           height: height,
           child: Column(
@@ -116,7 +119,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                   ),
                   Container(
                     height: getProportionateScreenHeight(50),
-                    decoration: BoxDecoration(color: kPrimaryColor),
+                    decoration: const BoxDecoration(color: kPrimaryColor),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
@@ -125,13 +128,13 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                       child: Card(
                         elevation: 10,
                         child: ListTile(
-                          leading: CircleAvatar(
+                          leading: const CircleAvatar(
                             foregroundColor: kPrimaryColor,
                             backgroundColor: Colors.black12,
                             child: Icon(Icons.payment_outlined),
                           ),
                           title: _title(),
-                          trailing: Icon(
+                          trailing: const Icon(
                             Icons.schedule,
                             color: Colors.pink,
                           ),
@@ -147,7 +150,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                 padding: const EdgeInsets.all(0.0),
                 child: Container(
                   color: Colors.transparent,
-                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: AnimationLimiter(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -172,8 +175,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                 children: <Widget>[
                                   InkWell(
                                     onTap: () {
-                                      widget.system == "Fremis" ||
-                                              widget.system == "E-Auction"
+                                      widget.system == "E-Auction"
                                           ? ""
                                           : Navigator.push(
                                               context,
@@ -193,8 +195,8 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                     },
                                     child: Container(
                                         decoration: BoxDecoration(
-                                            color: Color(0xfff3f3f4),
-                                            boxShadow: [
+                                            color: const Color(0xfff3f3f4),
+                                            boxShadow: const [
                                               BoxShadow(
                                                   color: Colors.grey,
                                                   offset: Offset.zero,
@@ -222,7 +224,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                           BadgeAnimationType
                                                               .scale,
                                                       padding:
-                                                          EdgeInsets.symmetric(
+                                                          const EdgeInsets.symmetric(
                                                               horizontal: 5,
                                                               vertical: 1),
                                                       badgeContent: Padding(
@@ -241,7 +243,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                                             [
                                                                             "totalBillCreated"]
                                                                         .toString(),
-                                                            style: TextStyle(
+                                                            style: const TextStyle(
                                                                 color: Colors
                                                                     .black),
                                                           )),
@@ -285,8 +287,8 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                     },
                                     child: Container(
                                         decoration: BoxDecoration(
-                                            color: Color(0xfff3f3f4),
-                                            boxShadow: [
+                                            color: const Color(0xfff3f3f4),
+                                            boxShadow: const [
                                               BoxShadow(
                                                   color: Colors.grey,
                                                   offset: Offset.zero,
@@ -312,7 +314,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                           BadgeAnimationType
                                                               .scale,
                                                       padding:
-                                                          EdgeInsets.symmetric(
+                                                          const EdgeInsets.symmetric(
                                                               horizontal: 5,
                                                               vertical: 1),
                                                       badgeContent: Padding(
@@ -331,7 +333,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                                           [
                                                                           "totalPending"]
                                                                       .toString(),
-                                                          style: TextStyle(
+                                                          style: const TextStyle(
                                                               color:
                                                                   Colors.black),
                                                         ),
@@ -374,8 +376,8 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                     },
                                     child: Container(
                                         decoration: BoxDecoration(
-                                            color: Color(0xfff3f3f4),
-                                            boxShadow: [
+                                            color: const Color(0xfff3f3f4),
+                                            boxShadow: const [
                                               BoxShadow(
                                                   color: Colors.grey,
                                                   offset: Offset.zero,
@@ -401,7 +403,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                           BadgeAnimationType
                                                               .scale,
                                                       padding:
-                                                          EdgeInsets.symmetric(
+                                                          const EdgeInsets.symmetric(
                                                               horizontal: 5,
                                                               vertical: 1),
                                                       badgeContent: Padding(
@@ -420,7 +422,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                                           [
                                                                           "totalPaid"]
                                                                       .toString(),
-                                                          style: TextStyle(
+                                                          style: const TextStyle(
                                                               color:
                                                                   Colors.black),
                                                         ),
@@ -464,8 +466,8 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                     },
                                     child: Container(
                                         decoration: BoxDecoration(
-                                            color: Color(0xfff3f3f4),
-                                            boxShadow: [
+                                            color: const Color(0xfff3f3f4),
+                                            boxShadow: const [
                                               BoxShadow(
                                                   color: Colors.grey,
                                                   offset: Offset.zero,
@@ -491,7 +493,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                           BadgeAnimationType
                                                               .scale,
                                                       padding:
-                                                          EdgeInsets.symmetric(
+                                                          const EdgeInsets.symmetric(
                                                               horizontal: 5,
                                                               vertical: 1),
                                                       badgeContent: Padding(
@@ -510,7 +512,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                                           [
                                                                           "totalExpired"]
                                                                       .toString(),
-                                                          style: TextStyle(
+                                                          style: const TextStyle(
                                                               color:
                                                                   Colors.black),
                                                         ),

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:device_info/device_info.dart';
@@ -19,6 +21,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 class SplashScreen extends StatefulWidget {
   static String routeName = "/splash";
 
+  const SplashScreen({Key? key}) : super(key: key);
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -27,10 +31,11 @@ class _SplashScreenState extends State<SplashScreen> {
   final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
 
+  @override
   void initState() {
     super.initState();
     // _determinePosition();
-    Timer(Duration(seconds: 5), () async {
+    Timer(const Duration(seconds: 5), () async {
       Map<Permission, PermissionStatus> statuses = await [
         Permission.location,
         Permission.camera,
@@ -54,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
       _determinePosition();
       initPlatformState();
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => LoginScreen()));
+          context, MaterialPageRoute(builder: (context) => const LoginScreen()));
     });
   }
 
@@ -210,7 +215,7 @@ class _SplashScreenState extends State<SplashScreen> {
               waveColor: Colors.black,
               boxBackgroundColor: Colors.white,
               textAlign: TextAlign.center,
-              textStyle: TextStyle(
+              textStyle: const TextStyle(
                 fontSize: 30.0,
                 //fontFamily: 'Pacifico',
                 fontWeight: FontWeight.bold,
@@ -219,7 +224,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ),
           //_deviceData['id'].toString()
-          Container(
+          SizedBox(
             height: 25.0.h,
             width: 40.0.w,
             child: Image.asset(

@@ -8,30 +8,28 @@ textField(
 ) {
   return Padding(
     padding: const EdgeInsets.only(top: 10, right: 16, left: 16),
-    child: Container(
-      child: TextFormField(
-        keyboardType: TextInputType.number,
-        key: Key("No"),
-        onSaved: (val) => hint = val!,
-        decoration: InputDecoration(
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(
-              color: Colors.cyan,
-            ),
+    child: TextFormField(
+      keyboardType: TextInputType.number,
+      key: const Key("No"),
+      onSaved: (val) => hint = val!,
+      decoration: InputDecoration(
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(
+            color: Colors.cyan,
           ),
-          fillColor: Color(0xfff3f3f4),
-          filled: true,
-          labelText: "No. Of Pieces",
-          border: InputBorder.none,
-          isDense: true,
-          contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
         ),
-        validator: (value) {
-          if (value == '') return "This Field Is Required";
-          return null;
-        },
+        fillColor: const Color(0xfff3f3f4),
+        filled: true,
+        labelText: "No. Of Pieces",
+        border: InputBorder.none,
+        isDense: true,
+        contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
       ),
+      validator: (value) {
+        if (value == '') return "This Field Is Required";
+        return null;
+      },
     ),
   );
 }
@@ -56,8 +54,9 @@ final headingStyle = TextStyle(
   color: Colors.black,
   height: 1.5,
 );
-final formatNumber = new NumberFormat("#,##0.00", "en_US");
+final formatNumber = NumberFormat("#,##0.00", "en_US");
 const defaultDuration = Duration(milliseconds: 250);
+
 
 // Form Error
 final RegExp emailValidatorRegExp =
@@ -82,6 +81,6 @@ final otpInputDecoration = InputDecoration(
 OutlineInputBorder outlineInputBorder() {
   return OutlineInputBorder(
     borderRadius: BorderRadius.circular(getProportionateScreenWidth(15)),
-    borderSide: BorderSide(color: Colors.cyan),
+    borderSide: const BorderSide(color: Colors.cyan),
   );
 }

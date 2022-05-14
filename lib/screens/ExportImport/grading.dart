@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -21,7 +23,7 @@ import 'package:http/http.dart' as http;
 
 class Grading extends StatefulWidget {
   static String routeName = "/grading";
-  Grading({Key? key}) : super(key: key);
+  const Grading({Key? key}) : super(key: key);
 
   @override
   _GradingState createState() => _GradingState();
@@ -137,8 +139,8 @@ class _GradingState extends State<Grading> {
         context: context,
         content: Column(
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Text(
                 "Enter Idenfication Mark",
                 style: TextStyle(fontSize: 16),
@@ -172,11 +174,9 @@ class _GradingState extends State<Grading> {
                 Expanded(child: Container()),
                 Expanded(
                   //flex: 4,
-                  child: Container(
-                    child: Text(
-                      "Clear Mark",
-                      style: TextStyle(fontSize: 12.sp),
-                    ),
+                  child: Text(
+                    "Clear Mark",
+                    style: TextStyle(fontSize: 12.sp),
                   ),
                 ),
                 Expanded(
@@ -189,7 +189,7 @@ class _GradingState extends State<Grading> {
                         iconSize: 15.sp,
                         onPressed: () =>
                             signatureGlobalKey.currentState!.clear(),
-                        icon: Icon(Icons.clear)),
+                        icon: const Icon(Icons.clear)),
                   ),
                 ),
               ],
@@ -198,7 +198,7 @@ class _GradingState extends State<Grading> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 " $formattedDate",
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           ],
@@ -206,7 +206,7 @@ class _GradingState extends State<Grading> {
         buttons: [
           DialogButton(
             onPressed: () async => _handleSaveButtonPressed(),
-            child: Text(
+            child: const Text(
               "Ok",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
@@ -252,7 +252,7 @@ class _GradingState extends State<Grading> {
       desc: message,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -274,8 +274,8 @@ class _GradingState extends State<Grading> {
       print(tokens);
 
       var headers = {"Authorization": "Bearer " + tokens!};
-      BaseOptions options = new BaseOptions(
-          baseUrl: "$baseUrl",
+      BaseOptions options = BaseOptions(
+          baseUrl: baseUrl,
           connectTimeout: 50000,
           receiveTimeout: 50000,
           headers: headers);
@@ -369,93 +369,90 @@ class _GradingState extends State<Grading> {
         isDismissible: true,
         builder: (context) {
           return SingleChildScrollView(
-            child: Container(
-              // height: getProportionateScreenHeight(800),
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Draw Grading Mark",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        CircleAvatar(
-                          radius: 17,
-                          backgroundColor: Colors.red,
-                          child: Center(
-                            child: IconButton(
-                              onPressed: () =>
-                                  signatureGlobalKey.currentState!.clear(),
-                              icon: Icon(
-                                Icons.undo_sharp,
-                                size: 17,
-                              ),
-                              color: Colors.black,
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Draw Grading Mark",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      CircleAvatar(
+                        radius: 17,
+                        backgroundColor: Colors.red,
+                        child: Center(
+                          child: IconButton(
+                            onPressed: () =>
+                                signatureGlobalKey.currentState!.clear(),
+                            icon: const Icon(
+                              Icons.undo_sharp,
+                              size: 17,
                             ),
+                            color: Colors.black,
                           ),
                         ),
-                        CircleAvatar(
-                          radius: 17,
-                          backgroundColor: Colors.green,
-                          child: Center(
-                            child: IconButton(
-                                onPressed: () async {
-                                  await _handleSaveButtonPressed();
-                                  //Navigator.pop(context);
-                                },
-                                icon: Icon(
-                                  Icons.mark_chat_read_outlined,
-                                  color: Colors.black,
-                                  size: 17,
-                                )),
-                          ),
+                      ),
+                      CircleAvatar(
+                        radius: 17,
+                        backgroundColor: Colors.green,
+                        child: Center(
+                          child: IconButton(
+                              onPressed: () async {
+                                await _handleSaveButtonPressed();
+                                //Navigator.pop(context);
+                              },
+                              icon: const Icon(
+                                Icons.mark_chat_read_outlined,
+                                color: Colors.black,
+                                size: 17,
+                              )),
                         ),
-                        CircleAvatar(
-                          radius: 17,
-                          backgroundColor: Colors.grey,
-                          child: Center(
-                            child: IconButton(
-                                onPressed: () => Navigator.pop(context),
-                                icon: Icon(
-                                  Icons.clear_rounded,
-                                  color: Colors.black,
-                                  size: 17,
-                                )),
-                          ),
-                        )
-                      ],
-                    ),
+                      ),
+                      CircleAvatar(
+                        radius: 17,
+                        backgroundColor: Colors.grey,
+                        child: Center(
+                          child: IconButton(
+                              onPressed: () => Navigator.pop(context),
+                              icon: const Icon(
+                                Icons.clear_rounded,
+                                color: Colors.black,
+                                size: 17,
+                              )),
+                        ),
+                      )
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(1.0),
-                    child: Container(
-                        height: getProportionateScreenHeight(550),
-                        width: double.infinity,
-                        child: SfSignaturePad(
-                            key: signatureGlobalKey,
-                            backgroundColor: Colors.white,
-                            strokeColor: Colors.black,
-                            onDrawStart: () {
-                              return false;
-                            },
-                            onDrawEnd: () {
-                              setState(() {
-                                isSigned = true;
-                              });
-                            },
-                            minimumStrokeWidth: 1.0,
-                            maximumStrokeWidth: 2.0),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey))),
-                  ),
-                  Container(
-                    height: getProportionateScreenHeight(50),
-                  )
-                ],
-              ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(1.0),
+                  child: Container(
+                      height: getProportionateScreenHeight(550),
+                      width: double.infinity,
+                      child: SfSignaturePad(
+                          key: signatureGlobalKey,
+                          backgroundColor: Colors.white,
+                          strokeColor: Colors.black,
+                          onDrawStart: () {
+                            return false;
+                          },
+                          onDrawEnd: () {
+                            setState(() {
+                              isSigned = true;
+                            });
+                          },
+                          minimumStrokeWidth: 1.0,
+                          maximumStrokeWidth: 2.0),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey))),
+                ),
+                Container(
+                  height: getProportionateScreenHeight(50),
+                )
+              ],
             ),
           );
         });
@@ -472,7 +469,7 @@ class _GradingState extends State<Grading> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -511,19 +508,19 @@ class _GradingState extends State<Grading> {
         }
       },
       child: isLoading
-          ? SpinKitCircle(
+          ? const SpinKitCircle(
               color: kPrimaryColor,
             )
           : Container(
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.symmetric(vertical: 15),
+              padding: const EdgeInsets.symmetric(vertical: 15),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
                         color: Colors.grey.shade200,
-                        offset: Offset(2, 4),
+                        offset: const Offset(2, 4),
                         blurRadius: 5,
                         spreadRadius: 2)
                   ],
@@ -531,7 +528,7 @@ class _GradingState extends State<Grading> {
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                       colors: [kPrimaryColor, Colors.green[100]!])),
-              child: Text(
+              child: const Text(
                 'Submit',
                 style: TextStyle(fontSize: 20, color: Colors.white),
               ),
@@ -544,7 +541,7 @@ class _GradingState extends State<Grading> {
     RealTimeCommunication().createConnection(
       "15",
     );
-    this.getCategory();
+    getCategory();
     // ignore: todo
     // TODO: implement initState
     super.initState();
@@ -558,7 +555,7 @@ class _GradingState extends State<Grading> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
-        title: Text(
+        title: const Text(
           ' ',
           style: TextStyle(
               fontFamily: 'Ubuntu', color: Colors.black, fontSize: 17),
@@ -567,18 +564,18 @@ class _GradingState extends State<Grading> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
+            SizedBox(
               height: getProportionateScreenHeight(700),
               child: Column(
                 children: <Widget>[
-                  Container(
+                  SizedBox(
                     height: getProportionateScreenHeight(110),
                     child: Stack(
                       children: [
                         Container(
                           width: double.infinity,
                           height: getProportionateScreenHeight(60),
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             // borderRadius: BorderRadius.only(
                             //     bottomLeft: Radius.circular(100),
                             //     bottomRight: Radius.circular(100)),
@@ -595,8 +592,8 @@ class _GradingState extends State<Grading> {
                                   tileColor: Colors.white,
                                   title: _title(),
                                   trailing:
-                                      Icon(Icons.document_scanner_rounded),
-                                  leading: CircleAvatar(
+                                      const Icon(Icons.document_scanner_rounded),
+                                  leading: const CircleAvatar(
                                     backgroundColor: Colors.pink,
                                     child: Icon(
                                       Icons.edit,
@@ -644,114 +641,108 @@ class _GradingState extends State<Grading> {
                                 color: kPrimaryColor,
                                 size: 35.0.sp,
                               )
-                            : Container(
-                                child: new DropdownButtonFormField(
-                                  itemHeight: 50,
-                                  decoration: InputDecoration(
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0),
-                                        borderSide: BorderSide(
-                                          color: Colors.cyan,
-                                        ),
-                                      ),
-                                      fillColor: Color(0xfff3f3f4),
-                                      filled: true,
-                                      isDense: true,
-                                      contentPadding:
-                                          EdgeInsets.fromLTRB(30, 10, 15, 10),
-                                      labelText: "Select Category",
-                                      border: InputBorder.none),
-                                  isExpanded: true,
+                            : DropdownButtonFormField(
+                              itemHeight: 50,
+                              decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(5.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.cyan,
+                                    ),
+                                  ),
+                                  fillColor: const Color(0xfff3f3f4),
+                                  filled: true,
                                   isDense: true,
-                                  validator: (value) => value == null
-                                      ? "This Field is Required"
-                                      : null,
-                                  items: data.map((item) {
-                                    return new DropdownMenuItem(
-                                      child: Container(
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          color: Color(0xfff3f3f4),
-                                          border: Border(
-                                            bottom: BorderSide(
-                                                width: 1, color: kPrimaryColor),
-                                          ),
-                                        ),
-                                        child: new Text(
-                                          item['name'].toString(),
-                                        ),
+                                  contentPadding:
+                                      const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                  labelText: "Select Category",
+                                  border: InputBorder.none),
+                              isExpanded: true,
+                              isDense: true,
+                              validator: (value) => value == null
+                                  ? "This Field is Required"
+                                  : null,
+                              items: data.map((item) {
+                                return DropdownMenuItem(
+                                  child: Container(
+                                    width: double.infinity,
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xfff3f3f4),
+                                      border: Border(
+                                        bottom: BorderSide(
+                                            width: 1, color: kPrimaryColor),
                                       ),
-                                      value: item['id'].toString(),
-                                    );
-                                  }).toList(),
-                                  onChanged: (newVal) {
-                                    setState(() {
-                                      classy = newVal.toString();
-                                      print(classy);
-                                    });
-                                  },
-                                  value: classy,
-                                ),
-                              ),
+                                    ),
+                                    child: Text(
+                                      item['name'].toString(),
+                                    ),
+                                  ),
+                                  value: item['id'].toString(),
+                                );
+                              }).toList(),
+                              onChanged: (newVal) {
+                                setState(() {
+                                  classy = newVal.toString();
+                                  print(classy);
+                                });
+                              },
+                              value: classy,
+                            ),
                       ),
                     ),
                     Padding(
                       padding:
                           const EdgeInsets.only(top: 10, right: 16, left: 16),
-                      child: Container(
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          key: Key("No"),
-                          onSaved: (val) => quantity = val!,
-                          decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide(
-                                color: Colors.cyan,
-                              ),
+                      child: TextFormField(
+                        keyboardType: TextInputType.number,
+                        key: const Key("No"),
+                        onSaved: (val) => quantity = val!,
+                        decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                              color: Colors.cyan,
                             ),
-                            fillColor: Color(0xfff3f3f4),
-                            filled: true,
-                            labelText: "No. Of Pieces",
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                           ),
-                          validator: (value) {
-                            if (value == '') return "This Field Is Required";
-                            return null;
-                          },
+                          fillColor: const Color(0xfff3f3f4),
+                          filled: true,
+                          labelText: "No. Of Pieces",
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                         ),
+                        validator: (value) {
+                          if (value == '') return "This Field Is Required";
+                          return null;
+                        },
                       ),
                     ),
                     Padding(
                       padding:
                           const EdgeInsets.only(top: 10, right: 16, left: 16),
-                      child: Container(
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          key: Key("vol"),
-                          onSaved: (val) => volume = val!,
-                          decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide(
-                                color: Colors.cyan,
-                              ),
+                      child: TextFormField(
+                        keyboardType: TextInputType.number,
+                        key: const Key("vol"),
+                        onSaved: (val) => volume = val!,
+                        decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                              color: Colors.cyan,
                             ),
-                            fillColor: Color(0xfff3f3f4),
-                            filled: true,
-                            labelText: "Volume",
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                           ),
-                          validator: (value) {
-                            if (value == '') return "This Field Is Required";
-                            return null;
-                          },
+                          fillColor: const Color(0xfff3f3f4),
+                          filled: true,
+                          labelText: "Volume",
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                         ),
+                        validator: (value) {
+                          if (value == '') return "This Field Is Required";
+                          return null;
+                        },
                       ),
                     ),
                     SizedBox(
@@ -761,66 +752,62 @@ class _GradingState extends State<Grading> {
                       child: Padding(
                         padding:
                             const EdgeInsets.only(top: 1, right: 16, left: 16),
-                        child: Container(
-                          // width: getProportionateScreenHeight(
-                          //     320),
-                          child: DropdownButtonFormField<String>(
-                            itemHeight: 50,
-                            decoration: InputDecoration(
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                  borderSide: BorderSide(
-                                    color: Colors.cyan,
-                                  ),
+                        child: DropdownButtonFormField<String>(
+                          itemHeight: 50,
+                          decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                                borderSide: const BorderSide(
+                                  color: Colors.cyan,
                                 ),
-                                fillColor: Color(0xfff3f3f4),
-                                filled: true,
-                                isDense: true,
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(30, 10, 15, 10),
-                                labelText: "Select Grading Class",
-                                border: InputBorder.none),
-                            isExpanded: true,
+                              ),
+                              fillColor: const Color(0xfff3f3f4),
+                              filled: true,
+                              isDense: true,
+                              contentPadding:
+                                  const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                              labelText: "Select Grading Class",
+                              border: InputBorder.none),
+                          isExpanded: true,
 
-                            value: ask1,
-                            //elevation: 5,
-                            style: TextStyle(
-                                color: Colors.white, fontFamily: 'Ubuntu'),
-                            iconEnabledColor: Colors.black,
-                            items: ask
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return new DropdownMenuItem(
-                                child: Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xfff3f3f4),
-                                    border: Border(
-                                      bottom: BorderSide(
-                                          width: 1, color: kPrimaryColor),
-                                    ),
-                                  ),
-                                  child: new Text(
-                                    value,
-                                    style: TextStyle(color: Colors.black),
+                          value: ask1,
+                          //elevation: 5,
+                          style: const TextStyle(
+                              color: Colors.white, fontFamily: 'Ubuntu'),
+                          iconEnabledColor: Colors.black,
+                          items: ask
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem(
+                              child: Container(
+                                width: double.infinity,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xfff3f3f4),
+                                  border: Border(
+                                    bottom: BorderSide(
+                                        width: 1, color: kPrimaryColor),
                                   ),
                                 ),
-                                value: value,
-                              );
-                            }).toList(),
-                            validator: (value) {
-                              if (value == null) {
-                                return "This Field is required";
-                              }
-                              return null;
-                            },
-                            onChanged: (value) {
-                              setState(() {
-                                FocusScope.of(context)
-                                    .requestFocus(new FocusNode());
-                                ask1 = value!;
-                              });
-                            },
-                          ),
+                                child: Text(
+                                  value,
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                              ),
+                              value: value,
+                            );
+                          }).toList(),
+                          validator: (value) {
+                            if (value == null) {
+                              return "This Field is required";
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            setState(() {
+                              FocusScope.of(context)
+                                  .requestFocus(FocusNode());
+                              ask1 = value!;
+                            });
+                          },
                         ),
                       ),
                     ),
@@ -841,7 +828,7 @@ class _GradingState extends State<Grading> {
                                 onTap: () {
                                   grandingMark();
                                 },
-                                title: Text('Write Grading Mark'),
+                                title: const Text('Write Grading Mark'),
                                 leading: Icon(
                                   isSigned
                                       ? Icons.verified
@@ -851,7 +838,7 @@ class _GradingState extends State<Grading> {
                               ),
                             ),
                           ),
-                          Spacer(),
+                          const Spacer(),
                           Flexible(
                               flex: 2,
                               child: InkWell(
@@ -876,13 +863,11 @@ class _GradingState extends State<Grading> {
                                         )
                                       : Container();
                                 },
-                                child: Container(
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.grey,
-                                    child: Icon(
-                                      Icons.remove_red_eye,
-                                      color: Colors.pink,
-                                    ),
+                                child: const CircleAvatar(
+                                  backgroundColor: Colors.grey,
+                                  child: Icon(
+                                    Icons.remove_red_eye,
+                                    color: Colors.pink,
                                   ),
                                 ),
                               )),

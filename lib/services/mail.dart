@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, avoid_print
+
 import 'dart:io';
 
 import 'package:mailer/mailer.dart';
@@ -8,8 +10,9 @@ class MailSending {
     try {
       String username = 'tfs.sofwares@gmail.com';
       String password = 'Tfs@12345';
-
       final smtpServer = gmail(username, password);
+
+      //  final smtpServer = gmail(username, password);
       // Use the SmtpServer class to configure an SMTP server:
       // final smtpServer = SmtpServer('smtp.domain.com');
       // See the named arguments of SmtpServer for further configuration
@@ -40,5 +43,6 @@ class MailSending {
         return "Problem Occured While Sending Email";
       }
     }
+    return null;
   }
 }

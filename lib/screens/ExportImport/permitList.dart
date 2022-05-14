@@ -1,8 +1,11 @@
+// ignore_for_file: file_names, prefer_const_constructors_in_immutables, prefer_typing_uninitialized_variables, avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -38,7 +41,7 @@ class _PermittListState extends State<PermittList> {
   String? permitNumber;
   goToTheSealScreen() {
     Navigator.push(context,
-        new MaterialPageRoute(builder: (__) => new SealScreen(exportData)));
+        MaterialPageRoute(builder: (__) => SealScreen(exportData)));
   }
 
   Future verify(String id, String token) async {
@@ -159,7 +162,7 @@ class _PermittListState extends State<PermittList> {
                 print(permitNumber);
               },
               cursorColor: kPrimaryColor,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 icon: Icon(Icons.folder_open),
                 labelText: 'Permit Number',
               ),
@@ -178,7 +181,7 @@ class _PermittListState extends State<PermittList> {
                 isVerify = false;
               });
             },
-            child: Text(
+            child: const Text(
               "VERIFY",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
@@ -186,7 +189,7 @@ class _PermittListState extends State<PermittList> {
           DialogButton(
             color: Colors.red,
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: const Text(
               "CANCEL",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
@@ -202,7 +205,7 @@ class _PermittListState extends State<PermittList> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -214,20 +217,20 @@ class _PermittListState extends State<PermittList> {
   }
 
   final List<DropdownMenuItem<String>> _permitType = [
-    DropdownMenuItem(
-      child: new Text("Export Inspection"),
+    const DropdownMenuItem(
+      child: Text("Export Inspection"),
       value: "Export Inspection",
     ),
-    DropdownMenuItem(
-      child: new Text("Import Inspection"),
+    const DropdownMenuItem(
+      child: Text("Import Inspection"),
       value: "Import Inspection",
     ),
-    DropdownMenuItem(
-      child: new Text("Grading"),
+    const DropdownMenuItem(
+      child: Text("Grading"),
       value: "Grading",
     ),
-    DropdownMenuItem(
-      child: new Text("Verification And Seal"),
+    const DropdownMenuItem(
+      child: Text("Verification And Seal"),
       value: "Verification And Seal",
     ),
   ];
@@ -365,7 +368,7 @@ class _PermittListState extends State<PermittList> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -397,7 +400,7 @@ class _PermittListState extends State<PermittList> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
-        title: Text(
+        title: const Text(
           'Export & Import Management',
           style: TextStyle(
               fontFamily: 'Ubuntu', color: Colors.black, fontSize: 15),
@@ -406,18 +409,18 @@ class _PermittListState extends State<PermittList> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
+            SizedBox(
               height: getProportionateScreenHeight(700),
               child: Column(
                 children: <Widget>[
-                  Container(
+                  SizedBox(
                     height: getProportionateScreenHeight(140),
                     child: Stack(
                       children: [
                         Container(
                           width: double.infinity,
                           height: getProportionateScreenHeight(90),
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             borderRadius: BorderRadius.only(
                                 bottomLeft: Radius.circular(100),
                                 bottomRight: Radius.circular(100)),
@@ -433,37 +436,35 @@ class _PermittListState extends State<PermittList> {
                               child: SafeArea(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    child: DropdownButtonFormField(
-                                        decoration: InputDecoration(
-                                            contentPadding: EdgeInsets.fromLTRB(
-                                                0, 5.5, 0, 0),
-                                            labelStyle: TextStyle(),
-                                            labelText: 'Select Operation'),
-                                        items: _permitType,
-                                        value: type,
-                                        validator: (value) => value == null
-                                            ? "This Field is Required"
-                                            : null,
-                                        onChanged: (value) async {
-                                          setState(() {
-                                            type = value.toString();
-                                            isLoading = true;
-                                          });
-                                          type == 'Grading'
-                                              ? await getData()
-                                              : type == 'Export Inspection'
-                                                  ? await getDataInspection()
-                                                  : type ==
-                                                          'Verification And Seal'
-                                                      ? print('Seal')
-                                                      : await getDataImport();
+                                  child: DropdownButtonFormField(
+                                      decoration: const InputDecoration(
+                                          contentPadding: EdgeInsets.fromLTRB(
+                                              0, 5.5, 0, 0),
+                                          labelStyle: TextStyle(),
+                                          labelText: 'Select Operation'),
+                                      items: _permitType,
+                                      value: type,
+                                      validator: (value) => value == null
+                                          ? "This Field is Required"
+                                          : null,
+                                      onChanged: (value) async {
+                                        setState(() {
+                                          type = value.toString();
+                                          isLoading = true;
+                                        });
+                                        type == 'Grading'
+                                            ? await getData()
+                                            : type == 'Export Inspection'
+                                                ? await getDataInspection()
+                                                : type ==
+                                                        'Verification And Seal'
+                                                    ? print('Seal')
+                                                    : await getDataImport();
 
-                                          setState(() {
-                                            isLoading = false;
-                                          });
-                                        }),
-                                  ),
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                      }),
                                 ),
                               ),
                             ),
@@ -476,29 +477,26 @@ class _PermittListState extends State<PermittList> {
                   type == 'Verification And Seal'
                       ? Container()
                       : isLoading
-                          ? SpinKitCircle(
+                          ? const SpinKitCircle(
                               color: kPrimaryColor,
                             )
                           : data.isEmpty
-                              ? Center(
+                              ? const Center(
                                   child: Padding(
-                                  padding: const EdgeInsets.all(20.0),
+                                  padding: EdgeInsets.all(20.0),
                                   child: Card(
                                     elevation: 10,
-                                    child: Container(
-                                        // height: getProportionateScreenHeight(40),
-                                        // width: getProportionateScreenWidth(200),
-                                        child: ListTile(
+                                    child: ListTile(
                                       title: Text('Data Not Found'),
                                       leading: CircleAvatar(
-                                        backgroundColor: Colors.pink,
-                                        child: Icon(Icons.hourglass_empty),
+                                    backgroundColor: Colors.pink,
+                                    child: Icon(Icons.hourglass_empty),
                                       ),
-                                    )),
+                                    ),
                                   ),
                                 ))
                               : Padding(
-                                  padding: EdgeInsets.all(10),
+                                  padding: const EdgeInsets.all(10),
                                   child: Container(
                                     height: getProportionateScreenHeight(500),
                                     color: Colors.white,
@@ -581,7 +579,7 @@ class _PermittListState extends State<PermittList> {
                                                                       });
                                                                     });
                                                             },
-                                                            trailing: Icon(
+                                                            trailing: const Icon(
                                                               Icons.arrow_right,
                                                               color:
                                                                   Colors.cyan,
@@ -648,12 +646,12 @@ class _PermittListState extends State<PermittList> {
                                 ),
                   type == 'Verification And Seal'
                       ? isVerify
-                          ? SpinKitCircle(
+                          ? const SpinKitCircle(
                               color: kPrimaryColor,
                             )
                           : Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Container(
+                              child: SizedBox(
                                 height: getProportionateScreenHeight(200),
                                 child: Center(
                                   child: Card(
@@ -662,11 +660,11 @@ class _PermittListState extends State<PermittList> {
                                       onTap: () async {
                                         await _scanQR();
                                       },
-                                      leading: CircleAvatar(
+                                      leading: const CircleAvatar(
                                         backgroundColor: Colors.pink,
                                         child: Icon(Icons.qr_code),
                                       ),
-                                      title: Text('Click To Verify And Seal'),
+                                      title: const Text('Click To Verify And Seal'),
                                     ),
                                   ),
                                 ),

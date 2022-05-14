@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, unrelated_type_equality_checks
+
 import 'package:sizer/sizer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,7 +11,7 @@ import 'package:tfsappv1/services/size_config.dart';
 
 class UpdateApp extends StatefulWidget {
   static String routeName = "/UpdateApp";
-  UpdateApp({Key? key}) : super(key: key);
+  const UpdateApp({Key? key}) : super(key: key);
 
   @override
   _UpdateAppState createState() => _UpdateAppState();
@@ -78,7 +80,7 @@ class _UpdateAppState extends State<UpdateApp> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
-        title: Text(
+        title: const Text(
           '',
           style: TextStyle(
               fontFamily: 'Ubuntu', color: Colors.black, fontSize: 15),
@@ -95,7 +97,7 @@ class _UpdateAppState extends State<UpdateApp> {
               ),
               Container(
                 height: getProportionateScreenHeight(50),
-                decoration: BoxDecoration(color: kPrimaryColor),
+                decoration: const BoxDecoration(color: kPrimaryColor),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
@@ -104,13 +106,13 @@ class _UpdateAppState extends State<UpdateApp> {
                   child: Card(
                     elevation: 10,
                     child: ListTile(
-                      leading: CircleAvatar(
+                      leading: const CircleAvatar(
                         foregroundColor: kPrimaryColor,
                         backgroundColor: Colors.black12,
                         child: Icon(Icons.update),
                       ),
                       title: _title(),
-                      trailing: Icon(
+                      trailing: const Icon(
                         Icons.format_align_justify,
                         color: Colors.pink,
                       ),
@@ -180,16 +182,16 @@ class _UpdateAppState extends State<UpdateApp> {
                 },
                 leading: CircleAvatar(
                   backgroundColor: Colors.grey[200],
-                  child: Icon(
+                  child: const Icon(
                     Icons.upgrade,
                     color: Colors.green,
                   ),
                 ),
-                trailing: Icon(
+                trailing: const Icon(
                   Icons.arrow_forward_ios_outlined,
                   color: Colors.pink,
                 ),
-                title: Text("Click To Update App To The Latest Version"),
+                title: const Text("Click To Update App To The Latest Version"),
               ),
             ),
           )

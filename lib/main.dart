@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
@@ -26,27 +28,27 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 void main() async {
-  HttpOverrides.global = new MyHttpOverrides();
-  // WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides();
+  WidgetsFlutterBinding.ensureInitialized();
 
-  // Workmanager().initialize(
-  //   callbackDispatcher,
-  //   isInDebugMode: true,
-  // );
+  Workmanager().initialize(
+    callbackDispatcher,
+    // isInDebugMode: true,
+  );
 
-  // Workmanager().registerPeriodicTask("3", simplePeriodicTask,
-  //     initialDelay: Duration(seconds: 120),
-  //     constraints: Constraints(
-  //       networkType: NetworkType.connected,
-  //     ));
+  Workmanager().registerPeriodicTask("3", simplePeriodicTask,
+      initialDelay: const Duration(seconds: 120),
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+      ));
 
   //needs to be initialized before using workmanager package
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -60,7 +62,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // _determinePosition();
+    _determinePosition();
     _initializeTimer();
   }
 
@@ -80,7 +82,7 @@ class _MyAppState extends State<MyApp> {
 
   // You'll probably want to wrap this function in a debounce
   void _handleUserInteraction([_]) {
-    print("_handleUserInteraction");
+    // print("_handleUserInteraction");
     _timer!.cancel();
     _initializeTimer();
   }
@@ -119,21 +121,21 @@ class _MyAppState extends State<MyApp> {
 
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
-    print("nsdjdsf");
-    await _determinePosition();
-    HttpOverrides.global = new MyHttpOverrides();
+    HttpOverrides.global = MyHttpOverrides();
     switch (task) {
       case simplePeriodicTask:
+        //  -6.180132662002722, 35.7512287377534
         final prefs = await SharedPreferences.getInstance();
         var on = prefs.getString("power_on").toString();
         var deviceId = prefs.getString("deviceId").toString();
         var lat = prefs.getString("latitude").toString();
         var long = prefs.getString("longitude").toString();
-        // print("nsdjdsf.......");
-        // print(lat + " dtyyfuuy");
-        // print(long + "  guhyguu");
+
+        print(lat + " dtyyfuuy");
+        print(long + "  guhyguu");
+
         // print(deviceId);
-        print(DateTime.now().toString());
+        // print(DateTime.now().toString());
         var url = Uri.parse(
           'http://41.59.82.189:5555/api/v1/pos-management',
         );
@@ -144,16 +146,15 @@ void callbackDispatcher() {
           "latitude": lat,
           "longitude": long
         });
-        var res;
         //final sharedP prefs=await
         print(response.statusCode);
+        print(response.body.toString());
         // print('dfsjjdsfsd');
         //final sharedP prefs=await
-        res = json.decode(response.body);
-        print(res);
-        print('we are here to run');
+        //print(res);
+        // print('we are here to run');
 
-        print("$simplePeriodicTask was executed");
+        // print("$simplePeriodicTask was executed");
         break;
     }
 
@@ -168,6 +169,7 @@ void callbackDispatcher() {
 Future<Position> _determinePosition() async {
   var x;
   try {
+    Position _currentPosition;
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -198,15 +200,29 @@ Future<Position> _determinePosition() async {
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
-
+    // print("sfnisfniwnfiewnf");
+    // print("location");
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
-    x = await Geolocator.getCurrentPosition();
+    x = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best,
+        forceAndroidLocationManager: true);
+
+    // print(x);
     final prefs = await SharedPreferences.getInstance();
-    print("location");
     prefs.setString("latitude", x.latitude.toString());
     prefs.setString("longitude", x.longitude.toString());
     print(x);
+
+    // Geolocator.getCurrentPosition(
+    //         desiredAccuracy: LocationAccuracy.best,
+    //         forceAndroidLocationManager: true)
+    //     .then((Position position) {
+    //   _currentPosition = position;
+    //   print(_currentPosition);
+    // }).catchError((e) {
+    //  print(e);
+    // });
   } catch (e) {
     print(e.toString());
   }

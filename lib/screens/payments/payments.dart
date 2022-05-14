@@ -9,15 +9,16 @@ class Payments extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[400],
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           ' Bill/Receipt',
           style: TextStyle(
               color: Colors.black, fontFamily: 'ubuntu', fontSize: 17),
         ),
         backgroundColor: kPrimaryColor,
       ),
-      body: SingleChildScrollView(child: PaymentWidget()),
+      body: const SingleChildScrollView(child: PaymentWidget()),
     );
   }
 }

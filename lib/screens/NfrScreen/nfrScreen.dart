@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -15,7 +17,7 @@ import 'package:tfsappv1/services/size_config.dart';
 
 class NFRScreen extends StatefulWidget {
   static String routeName = "/NFRscreen";
-  NFRScreen({Key? key}) : super(key: key);
+  const NFRScreen({Key? key}) : super(key: key);
 
   @override
   State<NFRScreen> createState() => _NFRScreenState();
@@ -131,7 +133,7 @@ class _NFRScreenState extends State<NFRScreen> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -165,13 +167,13 @@ class _NFRScreenState extends State<NFRScreen> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: kPrimaryColor,
-          title: Text(
+          title: const Text(
             '',
             style: TextStyle(
                 fontFamily: 'Ubuntu', color: Colors.black, fontSize: 15),
           ),
         ),
-        body: Container(
+        body: SizedBox(
             height: height,
             child: Column(children: <Widget>[
               Stack(
@@ -183,10 +185,10 @@ class _NFRScreenState extends State<NFRScreen> {
                   ),
                   Container(
                     height: getProportionateScreenHeight(50),
-                    decoration: BoxDecoration(color: kPrimaryColor),
+                    decoration: const BoxDecoration(color: kPrimaryColor),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(10, 10, 5, 0),
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child: Card(
@@ -215,7 +217,7 @@ class _NFRScreenState extends State<NFRScreen> {
               ),
               // _divider(),
               isLoading
-                  ? SpinKitCircle(
+                  ? const SpinKitCircle(
                       color: kPrimaryColor,
                     )
                   : _camState
@@ -240,7 +242,7 @@ class _NFRScreenState extends State<NFRScreen> {
                           child: Container(
                             height: getProportionateScreenHeight(500),
                             color: Colors.transparent,
-                            padding: EdgeInsets.symmetric(horizontal: 15),
+                            padding: const EdgeInsets.symmetric(horizontal: 15),
                             child: ListView.builder(
                               itemCount: 5,
                               itemBuilder: ((context, i) {
@@ -289,15 +291,15 @@ class _NFRScreenState extends State<NFRScreen> {
                                                 ],
                                               ))),
                                       title: i == 0
-                                          ? Text("Create Tourism")
+                                          ? const Text("Create Tourism")
                                           : i == 1
-                                              ? Text("List Of Visitors")
+                                              ? const Text("List Of Visitors")
                                               : i == 2
-                                                  ? Text("Scan To Check In")
+                                                  ? const Text("Scan To Check In")
                                                   : i == 3
-                                                      ? Text(
+                                                      ? const Text(
                                                           "Scan To Check Out")
-                                                      : Text(
+                                                      : const Text(
                                                           "Scan For Service"),
                                     ),
                                   ),

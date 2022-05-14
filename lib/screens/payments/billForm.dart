@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -22,7 +24,7 @@ import 'package:tfsappv1/services/size_config.dart';
 
 class BillForm extends StatefulWidget {
   static String routeName = "/billForm";
-  BillForm({Key? key}) : super(key: key);
+  const BillForm({Key? key}) : super(key: key);
 
   @override
   _BillFormState createState() => _BillFormState();
@@ -50,14 +52,14 @@ class _BillFormState extends State<BillForm> {
 
   //DateTime now = DateTime.now();
   String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-  final formKey = new GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
   final List<DropdownMenuItem<String>> _currencyType = [
-    DropdownMenuItem(
-      child: new Text("USD"),
+    const DropdownMenuItem(
+      child: Text("USD"),
       value: "USD",
     ),
-    DropdownMenuItem(
-      child: new Text("TSH"),
+    const DropdownMenuItem(
+      child: Text("TSH"),
       value: "TSH",
     ),
   ];
@@ -78,7 +80,7 @@ class _BillFormState extends State<BillForm> {
       desc: message,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -303,19 +305,19 @@ class _BillFormState extends State<BillForm> {
         await postDetails();
       },
       child: isLoading
-          ? SpinKitCircle(
+          ? const SpinKitCircle(
               color: kPrimaryColor,
             )
           : Container(
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.symmetric(vertical: 15),
+              padding: const EdgeInsets.symmetric(vertical: 15),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
                         color: Colors.grey.shade200,
-                        offset: Offset(2, 4),
+                        offset: const Offset(2, 4),
                         blurRadius: 5,
                         spreadRadius: 2)
                   ],
@@ -323,7 +325,7 @@ class _BillFormState extends State<BillForm> {
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                       colors: [kPrimaryColor, Colors.green[200]!])),
-              child: Text(
+              child: const Text(
                 'Submit',
                 style: TextStyle(fontSize: 20, color: Colors.white),
               ),
@@ -339,7 +341,7 @@ class _BillFormState extends State<BillForm> {
     // print(args.unitPrice);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           ' Bill Form',
           style: TextStyle(color: Colors.black, fontFamily: 'ubuntu'),
         ),
@@ -348,18 +350,18 @@ class _BillFormState extends State<BillForm> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
+            SizedBox(
               height: getProportionateScreenHeight(700),
               child: Column(
                 children: <Widget>[
-                  Container(
+                  SizedBox(
                     height: getProportionateScreenHeight(140),
                     child: Stack(
                       children: [
                         Container(
                           width: double.infinity,
                           height: getProportionateScreenHeight(100),
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             borderRadius: BorderRadius.only(
                                 bottomLeft: Radius.circular(100),
                                 bottomRight: Radius.circular(100)),
@@ -378,11 +380,11 @@ class _BillFormState extends State<BillForm> {
                                       DateFormat('yyyy-MM-dd hh:mm:ss')
                                           .format(DateTime.now())
                                           .toString()),
-                                  title: Text(
+                                  title: const Text(
                                     'Generate Bill Form',
                                     style: TextStyle(color: Colors.black),
                                   ),
-                                  leading: CircleAvatar(
+                                  leading: const CircleAvatar(
                                     backgroundColor: Colors.pink,
                                     child: Icon(
                                       Icons.edit,
@@ -423,8 +425,8 @@ class _BillFormState extends State<BillForm> {
                                       validator: (v) => v == null
                                           ? "This Field Is required"
                                           : null,
-                                      popupTitle: Padding(
-                                        padding: const EdgeInsets.all(8.0),
+                                      popupTitle: const Padding(
+                                        padding: EdgeInsets.all(8.0),
                                         child: Center(
                                             child: Text(
                                           'List Of GFS-CODE for Level One',
@@ -436,19 +438,19 @@ class _BillFormState extends State<BillForm> {
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(10.0),
-                                              borderSide: BorderSide(
+                                              borderSide: const BorderSide(
                                                 color: Colors.cyan,
                                               ),
                                             ),
-                                            fillColor: Color(0xfff3f3f4),
+                                            fillColor: const Color(0xfff3f3f4),
                                             filled: true,
                                             labelText: "Search",
                                             border: InputBorder.none,
                                             isDense: true,
-                                            contentPadding: EdgeInsets.fromLTRB(
+                                            contentPadding: const EdgeInsets.fromLTRB(
                                                 30, 10, 15, 10),
                                             suffixIcon: IconButton(
-                                              icon: Icon(Icons.clear),
+                                              icon: const Icon(Icons.clear),
                                               color: Colors.red,
                                               onPressed: () {
                                                 _dealerEditTextController
@@ -463,15 +465,15 @@ class _BillFormState extends State<BillForm> {
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius:
                                                 BorderRadius.circular(5.0),
-                                            borderSide: BorderSide(
+                                            borderSide: const BorderSide(
                                               color: Colors.cyan,
                                             ),
                                           ),
-                                          fillColor: Color(0xfff3f3f4),
+                                          fillColor: const Color(0xfff3f3f4),
                                           filled: true,
                                           isDense: true,
                                           contentPadding:
-                                              EdgeInsets.fromLTRB(30, 5, 10, 5),
+                                              const EdgeInsets.fromLTRB(30, 5, 10, 5),
                                           hintText: "Select Level 1 GFS Code",
                                           border: InputBorder.none),
                                       compareFn: (i, s) => i!.isEqual(s),
@@ -503,9 +505,9 @@ class _BillFormState extends State<BillForm> {
                                             validator: (v) => v == null
                                                 ? "This Field Is required"
                                                 : null,
-                                            popupTitle: Padding(
+                                            popupTitle: const Padding(
                                               padding:
-                                                  const EdgeInsets.all(8.0),
+                                                  EdgeInsets.all(8.0),
                                               child: Center(
                                                   child: Text(
                                                 'List of Level Two GFS-CODE',
@@ -520,20 +522,20 @@ class _BillFormState extends State<BillForm> {
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10.0),
-                                                    borderSide: BorderSide(
+                                                    borderSide: const BorderSide(
                                                       color: Colors.cyan,
                                                     ),
                                                   ),
-                                                  fillColor: Color(0xfff3f3f4),
+                                                  fillColor: const Color(0xfff3f3f4),
                                                   filled: true,
                                                   labelText: "Search",
                                                   border: InputBorder.none,
                                                   isDense: true,
                                                   contentPadding:
-                                                      EdgeInsets.fromLTRB(
+                                                      const EdgeInsets.fromLTRB(
                                                           30, 10, 15, 10),
                                                   suffixIcon: IconButton(
-                                                    icon: Icon(Icons.clear),
+                                                    icon: const Icon(Icons.clear),
                                                     color: Colors.red,
                                                     onPressed: () {
                                                       _dealerEditTextController
@@ -551,16 +553,16 @@ class _BillFormState extends State<BillForm> {
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               5.0),
-                                                      borderSide: BorderSide(
+                                                      borderSide: const BorderSide(
                                                         color: Colors.cyan,
                                                       ),
                                                     ),
                                                     fillColor:
-                                                        Color(0xfff3f3f4),
+                                                        const Color(0xfff3f3f4),
                                                     filled: true,
                                                     isDense: true,
                                                     contentPadding:
-                                                        EdgeInsets.fromLTRB(
+                                                        const EdgeInsets.fromLTRB(
                                                             30, 5, 10, 5),
                                                     hintText:
                                                         "Select Level 2 GFS Code",
@@ -595,9 +597,9 @@ class _BillFormState extends State<BillForm> {
                                             validator: (v) => v == null
                                                 ? "This Field Is required"
                                                 : null,
-                                            popupTitle: Padding(
+                                            popupTitle: const Padding(
                                               padding:
-                                                  const EdgeInsets.all(8.0),
+                                                  EdgeInsets.all(8.0),
                                               child: Center(
                                                   child: Text(
                                                 'List of Level Three GFS-CODE',
@@ -612,20 +614,20 @@ class _BillFormState extends State<BillForm> {
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10.0),
-                                                    borderSide: BorderSide(
+                                                    borderSide: const BorderSide(
                                                       color: Colors.cyan,
                                                     ),
                                                   ),
-                                                  fillColor: Color(0xfff3f3f4),
+                                                  fillColor: const Color(0xfff3f3f4),
                                                   filled: true,
                                                   labelText: "Search",
                                                   border: InputBorder.none,
                                                   isDense: true,
                                                   contentPadding:
-                                                      EdgeInsets.fromLTRB(
+                                                      const EdgeInsets.fromLTRB(
                                                           30, 10, 15, 10),
                                                   suffixIcon: IconButton(
-                                                    icon: Icon(Icons.clear),
+                                                    icon: const Icon(Icons.clear),
                                                     color: Colors.red,
                                                     onPressed: () {
                                                       _dealerEditTextController
@@ -643,16 +645,16 @@ class _BillFormState extends State<BillForm> {
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               5.0),
-                                                      borderSide: BorderSide(
+                                                      borderSide: const BorderSide(
                                                         color: Colors.cyan,
                                                       ),
                                                     ),
                                                     fillColor:
-                                                        Color(0xfff3f3f4),
+                                                        const Color(0xfff3f3f4),
                                                     filled: true,
                                                     isDense: true,
                                                     contentPadding:
-                                                        EdgeInsets.fromLTRB(
+                                                        const EdgeInsets.fromLTRB(
                                                             30, 5, 10, 5),
                                                     hintText:
                                                         "Select Level 3 GFS Code",
@@ -683,8 +685,8 @@ class _BillFormState extends State<BillForm> {
                                       validator: (v) => v == null
                                           ? "This Field Is required"
                                           : null,
-                                      popupTitle: Padding(
-                                        padding: const EdgeInsets.all(8.0),
+                                      popupTitle: const Padding(
+                                        padding: EdgeInsets.all(8.0),
                                         child: Center(
                                             child: Text(
                                           'List Of  Dealers',
@@ -696,19 +698,19 @@ class _BillFormState extends State<BillForm> {
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(10.0),
-                                              borderSide: BorderSide(
+                                              borderSide: const BorderSide(
                                                 color: Colors.cyan,
                                               ),
                                             ),
-                                            fillColor: Color(0xfff3f3f4),
+                                            fillColor: const Color(0xfff3f3f4),
                                             filled: true,
                                             labelText: "Search",
                                             border: InputBorder.none,
                                             isDense: true,
-                                            contentPadding: EdgeInsets.fromLTRB(
+                                            contentPadding: const EdgeInsets.fromLTRB(
                                                 30, 10, 15, 10),
                                             suffixIcon: IconButton(
-                                              icon: Icon(Icons.clear),
+                                              icon: const Icon(Icons.clear),
                                               color: Colors.red,
                                               onPressed: () {
                                                 _dealerEditTextController
@@ -723,15 +725,15 @@ class _BillFormState extends State<BillForm> {
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius:
                                                 BorderRadius.circular(5.0),
-                                            borderSide: BorderSide(
+                                            borderSide: const BorderSide(
                                               color: Colors.cyan,
                                             ),
                                           ),
-                                          fillColor: Color(0xfff3f3f4),
+                                          fillColor: const Color(0xfff3f3f4),
                                           filled: true,
                                           isDense: true,
                                           contentPadding:
-                                              EdgeInsets.fromLTRB(30, 5, 10, 5),
+                                              const EdgeInsets.fromLTRB(30, 5, 10, 5),
                                           hintText: "Select Dealer Name",
                                           border: InputBorder.none),
                                       compareFn: (i, s) => i!.isEqual(s),
@@ -783,46 +785,45 @@ class _BillFormState extends State<BillForm> {
                                           child: Padding(
                                             padding: const EdgeInsets.only(
                                                 top: 1, right: 1, left: 1),
-                                            child: Container(
-                                              child: TextFormField(
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                key: Key("plat"),
-                                                // onSaved: (val) => task.licencePlateNumber = val,
-                                                decoration: InputDecoration(
-                                                  focusedBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5.0),
-                                                    borderSide: BorderSide(
-                                                      color: Colors.cyan,
-                                                    ),
+                                            child: TextFormField(
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              key: const Key("plat"),
+                                              // onSaved: (val) => task.licencePlateNumber = val,
+                                              decoration: InputDecoration(
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          5.0),
+                                                  borderSide: const BorderSide(
+                                                    color: Colors.cyan,
                                                   ),
-                                                  fillColor: Color(0xfff3f3f4),
-                                                  filled: true,
-                                                  labelText: "Amount",
-                                                  border: InputBorder.none,
-                                                  isDense: true,
-                                                  contentPadding:
-                                                      EdgeInsets.fromLTRB(
-                                                          30, 10, 15, 10),
                                                 ),
-                                                onChanged: (val) {
-                                                  setState(() {
-                                                    val.isEmpty
-                                                        ? print(val)
-                                                        : amount =
-                                                            int.parse(val);
-                                                    getSum();
-                                                  });
-                                                },
-                                                validator: (value) {
-                                                  if (value!.isEmpty)
-                                                    return "This Field Is Required";
-                                                  return null;
-                                                },
+                                                fillColor: const Color(0xfff3f3f4),
+                                                filled: true,
+                                                labelText: "Amount",
+                                                border: InputBorder.none,
+                                                isDense: true,
+                                                contentPadding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        30, 10, 15, 10),
                                               ),
+                                              onChanged: (val) {
+                                                setState(() {
+                                                  val.isEmpty
+                                                      ? print(val)
+                                                      : amount =
+                                                          int.parse(val);
+                                                  getSum();
+                                                });
+                                              },
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return "This Field Is Required";
+                                                }
+                                                return null;
+                                              },
                                             ),
                                           ),
                                         ),
@@ -831,50 +832,49 @@ class _BillFormState extends State<BillForm> {
                                           child: Padding(
                                             padding: const EdgeInsets.only(
                                                 top: 1, right: 1, left: 1),
-                                            child: Container(
-                                              child: TextFormField(
-                                                initialValue:
-                                                    quantity.toString(),
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                key: Key("plat"),
-                                                // onSaved: (val) => task.licencePlateNumber = val,
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    value.isEmpty
-                                                        ? print(value)
-                                                        : quantity =
-                                                            int.parse(value);
+                                            child: TextFormField(
+                                              initialValue:
+                                                  quantity.toString(),
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              key: const Key("plat"),
+                                              // onSaved: (val) => task.licencePlateNumber = val,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  value.isEmpty
+                                                      ? print(value)
+                                                      : quantity =
+                                                          int.parse(value);
 
-                                                    getSum();
-                                                  });
-                                                },
-                                                decoration: InputDecoration(
-                                                  focusedBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5.0),
-                                                    borderSide: BorderSide(
-                                                      color: Colors.cyan,
-                                                    ),
+                                                  getSum();
+                                                });
+                                              },
+                                              decoration: InputDecoration(
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          5.0),
+                                                  borderSide: const BorderSide(
+                                                    color: Colors.cyan,
                                                   ),
-                                                  fillColor: Color(0xfff3f3f4),
-                                                  filled: true,
-                                                  border: InputBorder.none,
-                                                  isDense: true,
-                                                  labelText: 'Quantity',
-                                                  contentPadding:
-                                                      EdgeInsets.fromLTRB(
-                                                          30, 10, 15, 10),
                                                 ),
-
-                                                validator: (value) {
-                                                  if (value!.isEmpty)
-                                                    return "This Field Is Required";
-                                                  return null;
-                                                },
+                                                fillColor: const Color(0xfff3f3f4),
+                                                filled: true,
+                                                border: InputBorder.none,
+                                                isDense: true,
+                                                labelText: 'Quantity',
+                                                contentPadding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        30, 10, 15, 10),
                                               ),
+
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return "This Field Is Required";
+                                                }
+                                                return null;
+                                              },
                                             ),
                                           ),
                                         ),
@@ -895,37 +895,35 @@ class _BillFormState extends State<BillForm> {
                                             padding: const EdgeInsets.only(
                                                 top: 1, right: 1, left: 1),
                                             child: SafeArea(
-                                              child: Container(
-                                                child: DropdownButtonFormField(
-                                                    decoration: InputDecoration(
-                                                      focusedBorder:
-                                                          OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5.0),
-                                                        borderSide: BorderSide(
-                                                          color: Colors.cyan,
-                                                        ),
+                                              child: DropdownButtonFormField(
+                                                  decoration: InputDecoration(
+                                                    focusedBorder:
+                                                        OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius
+                                                              .circular(5.0),
+                                                      borderSide: const BorderSide(
+                                                        color: Colors.cyan,
                                                       ),
-                                                      fillColor:
-                                                          Color(0xfff3f3f4),
-                                                      filled: true,
-                                                      labelText: "Currency",
-                                                      border: InputBorder.none,
-                                                      isDense: true,
-                                                      contentPadding:
-                                                          EdgeInsets.fromLTRB(
-                                                              30, 7, 15, 7),
                                                     ),
-                                                    items: _currencyType,
-                                                    value: currency,
-                                                    validator: (value) => value ==
-                                                            null
-                                                        ? "This Field is Required"
-                                                        : null,
-                                                    onChanged:
-                                                        (value) async {}),
-                                              ),
+                                                    fillColor:
+                                                        const Color(0xfff3f3f4),
+                                                    filled: true,
+                                                    labelText: "Currency",
+                                                    border: InputBorder.none,
+                                                    isDense: true,
+                                                    contentPadding:
+                                                        const EdgeInsets.fromLTRB(
+                                                            30, 7, 15, 7),
+                                                  ),
+                                                  items: _currencyType,
+                                                  value: currency,
+                                                  validator: (value) => value ==
+                                                          null
+                                                      ? "This Field is Required"
+                                                      : null,
+                                                  onChanged:
+                                                      (value) async {}),
                                             ),
                                           ),
                                         ),
@@ -934,47 +932,46 @@ class _BillFormState extends State<BillForm> {
                                           child: Padding(
                                             padding: const EdgeInsets.only(
                                                 top: 1, right: 1, left: 1),
-                                            child: Container(
-                                              child: TextFormField(
-                                                initialValue: result.toString(),
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                enabled: false,
+                                            child: TextFormField(
+                                              initialValue: result.toString(),
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              enabled: false,
 
-                                                key: Key("plat"),
-                                                // onSaved: (val) => task.licencePlateNumber = val,
-                                                decoration: InputDecoration(
-                                                  labelText: "Total",
-                                                  focusedBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5.0),
-                                                    borderSide: BorderSide(
-                                                      color: Colors.cyan,
-                                                    ),
+                                              key: const Key("plat"),
+                                              // onSaved: (val) => task.licencePlateNumber = val,
+                                              decoration: InputDecoration(
+                                                labelText: "Total",
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          5.0),
+                                                  borderSide: const BorderSide(
+                                                    color: Colors.cyan,
                                                   ),
-                                                  fillColor: Color(0xfff3f3f4),
-                                                  filled: true,
-                                                  border: InputBorder.none,
-                                                  isDense: true,
-
-                                                  // subtotal.toString() ==
-                                                  //         'null'
-                                                  //     ? args.unitPrice
-                                                  //     : subtotal.toString(),
-
-                                                  contentPadding:
-                                                      EdgeInsets.fromLTRB(
-                                                          30, 10, 15, 10),
                                                 ),
+                                                fillColor: const Color(0xfff3f3f4),
+                                                filled: true,
+                                                border: InputBorder.none,
+                                                isDense: true,
 
-                                                validator: (value) {
-                                                  if (value!.isEmpty)
-                                                    return "This Field Is Required";
-                                                  return null;
-                                                },
+                                                // subtotal.toString() ==
+                                                //         'null'
+                                                //     ? args.unitPrice
+                                                //     : subtotal.toString(),
+
+                                                contentPadding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        30, 10, 15, 10),
                                               ),
+
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return "This Field Is Required";
+                                                }
+                                                return null;
+                                              },
                                             ),
                                           ),
                                         ),
@@ -991,37 +988,36 @@ class _BillFormState extends State<BillForm> {
                                           child: Padding(
                                             padding: const EdgeInsets.only(
                                                 top: 1, right: 1, left: 1),
-                                            child: Container(
-                                              child: TextFormField(
-                                                maxLines: 5,
-                                                keyboardType:
-                                                    TextInputType.emailAddress,
-                                                key: Key("plat"),
-                                                decoration: InputDecoration(
-                                                  focusedBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5.0),
-                                                    borderSide: BorderSide(
-                                                      color: Colors.cyan,
-                                                    ),
+                                            child: TextFormField(
+                                              maxLines: 5,
+                                              keyboardType:
+                                                  TextInputType.emailAddress,
+                                              key: const Key("plat"),
+                                              decoration: InputDecoration(
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          5.0),
+                                                  borderSide: const BorderSide(
+                                                    color: Colors.cyan,
                                                   ),
-                                                  fillColor: Color(0xfff3f3f4),
-                                                  filled: true,
-                                                  labelText: "Bill Description",
-                                                  border: InputBorder.none,
-                                                  isDense: true,
-                                                  contentPadding:
-                                                      EdgeInsets.fromLTRB(
-                                                          30, 10, 15, 10),
                                                 ),
-                                                validator: (value) {
-                                                  if (value!.isEmpty)
-                                                    return "This Field Is Required";
-                                                  return null;
-                                                },
+                                                fillColor: const Color(0xfff3f3f4),
+                                                filled: true,
+                                                labelText: "Bill Description",
+                                                border: InputBorder.none,
+                                                isDense: true,
+                                                contentPadding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        30, 10, 15, 10),
                                               ),
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return "This Field Is Required";
+                                                }
+                                                return null;
+                                              },
                                             ),
                                           ),
                                         ),
@@ -1058,7 +1054,7 @@ class _BillFormState extends State<BillForm> {
   Widget _customPopupItemBuilderGFS(
       BuildContext context, GfsModel item, bool isSelected) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: !isSelected
           ? null
           : BoxDecoration(
@@ -1072,8 +1068,8 @@ class _BillFormState extends State<BillForm> {
           selected: isSelected,
           title: Text(item.description),
           subtitle: Text("GFS - CODE: " + item.gfsCode),
-          tileColor: Color(0xfff3f3f4),
-          leading: CircleAvatar(
+          tileColor: const Color(0xfff3f3f4),
+          leading: const CircleAvatar(
             backgroundColor: Colors.pink,
             child: Icon(Icons.code),
           ),
@@ -1083,7 +1079,7 @@ class _BillFormState extends State<BillForm> {
   }
 
   Future<List<GfsModel>> getData(filter, level) async {
-    var url;
+    String url;
 
     level == "1"
         ? url = "http://41.59.82.189:5555/api/v1/gfs_lv_one"
@@ -1138,7 +1134,7 @@ class _BillFormState extends State<BillForm> {
   Widget _customPopupItemBuilder2(
       BuildContext context, DealerModel item, bool isSelected) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: !isSelected
           ? null
           : BoxDecoration(
@@ -1164,8 +1160,8 @@ class _BillFormState extends State<BillForm> {
                   ? ""
                   : item.companyName.toString()),
           //subtitle: Text(item.phoneNumber),
-          tileColor: Color(0xfff3f3f4),
-          leading: CircleAvatar(
+          tileColor: const Color(0xfff3f3f4),
+          leading: const CircleAvatar(
             backgroundColor: Colors.pink,
             child: Icon(Icons.code),
           ),

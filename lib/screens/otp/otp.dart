@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -15,6 +17,8 @@ import 'package:sizer/sizer.dart';
 
 class Otp extends StatefulWidget {
   static String routeName = "/OTP";
+
+  const Otp({Key? key}) : super(key: key);
   @override
   _OtpState createState() => _OtpState();
 }
@@ -96,7 +100,7 @@ class _OtpState extends State<Otp> {
       desc: message,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -131,14 +135,14 @@ class _OtpState extends State<Otp> {
           : SingleChildScrollView(
               child: SafeArea(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24, horizontal: 32),
+                  padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
                   child: Column(
                     children: [
                       Align(
                         alignment: Alignment.topLeft,
                         child: GestureDetector(
                           onTap: () => Navigator.pop(context),
-                          child: Icon(
+                          child: const Icon(
                             Icons.arrow_back,
                             size: 25,
                             color: Colors.black54,
@@ -172,7 +176,7 @@ class _OtpState extends State<Otp> {
                       SizedBox(
                         height: getProportionateScreenHeight(10),
                       ),
-                      Text(
+                      const Text(
                         "Enter your OTP code number",
                         style: TextStyle(
                           fontSize: 12,
@@ -185,7 +189,7 @@ class _OtpState extends State<Otp> {
                         height: getProportionateScreenHeight(10),
                       ),
                       Container(
-                        padding: EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
@@ -197,13 +201,13 @@ class _OtpState extends State<Otp> {
                               children: [
                                 _textFieldOTP(
                                     first: true, last: false, code: "1"),
-                                Spacer(),
+                                const Spacer(),
                                 _textFieldOTP(
                                     first: false, last: false, code: "2"),
-                                Spacer(),
+                                const Spacer(),
                                 _textFieldOTP(
                                     first: false, last: false, code: "3"),
-                                Spacer(),
+                                const Spacer(),
                                 _textFieldOTP(
                                     first: false, last: true, code: "4"),
                               ],
@@ -214,10 +218,10 @@ class _OtpState extends State<Otp> {
                           ],
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 18,
                       ),
-                      Text(
+                      const Text(
                         "Didn't you receive any code?",
                         style: TextStyle(
                           fontSize: 14,
@@ -226,7 +230,7 @@ class _OtpState extends State<Otp> {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 18,
                       ),
                       InkWell(
@@ -267,7 +271,7 @@ class _OtpState extends State<Otp> {
 
   Widget _textFieldOTP({bool? first, last, String? code}) {
     return Expanded(
-      child: Container(
+      child: SizedBox(
         height: getProportionateScreenHeight(60),
         child: TextField(
           autofocus: true,
@@ -278,7 +282,7 @@ class _OtpState extends State<Otp> {
             if (value.length == 1 && last == false) {
               FocusScope.of(context).nextFocus();
             }
-            if (value.length == 0 && first == false) {
+            if (value.isEmpty && first == false) {
               print(value);
               FocusScope.of(context).previousFocus();
             }
@@ -290,7 +294,7 @@ class _OtpState extends State<Otp> {
               print(ver);
               if (codeVerify == ver) {
                 FocusScope.of(context).unfocus();
-                Future.delayed(Duration(seconds: 1), () {});
+                Future.delayed(const Duration(seconds: 1), () {});
                 Navigator.pushNamed(
                   context,
                   DashboardScreen.routeName,
@@ -312,13 +316,13 @@ class _OtpState extends State<Otp> {
           keyboardType: TextInputType.number,
           maxLength: 1,
           decoration: InputDecoration(
-            contentPadding: EdgeInsets.fromLTRB(0, 2, 0, 2),
-            counter: Offstage(),
+            contentPadding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+            counter: const Offstage(),
             enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 2, color: Colors.black12),
+                borderSide: const BorderSide(width: 2, color: Colors.black12),
                 borderRadius: BorderRadius.circular(12)),
             focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 2, color: kPrimaryColor),
+                borderSide: const BorderSide(width: 2, color: kPrimaryColor),
                 borderRadius: BorderRadius.circular(12)),
           ),
         ),

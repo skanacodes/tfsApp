@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, non_constant_identifier_names, avoid_print, prefer_typing_uninitialized_variables, duplicate_ignore
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -16,7 +18,7 @@ import 'package:http/http.dart' as http;
 
 class CreateTourism extends StatefulWidget {
   static String routeName = "/createTourismscreen";
-  CreateTourism({Key? key}) : super(key: key);
+  const CreateTourism({Key? key}) : super(key: key);
 
   @override
   State<CreateTourism> createState() => _CreateTourismState();
@@ -101,6 +103,7 @@ class _CreateTourismState extends State<CreateTourism> {
       var url = Uri.parse('$baseUrlTest/api/v1/tr/groups');
 
       final response = await http.get(url, headers: headers);
+      // ignore: prefer_typing_uninitialized_variables
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
@@ -197,14 +200,14 @@ class _CreateTourismState extends State<CreateTourism> {
         body: {
           "station_id": stationId.toString(),
           "tourist_cat": tourCat,
-          "country": country == null ? "null" : country,
+          "country": country ?? "null",
           "gender": genderVal,
           "purpose_id": purpose,
           "is_group": isGroupVal,
-          "group_type_id": isGroupTypeVal == null ? "null" : isGroupTypeVal,
+          "group_type_id": isGroupTypeVal ?? "null",
           "first_name": fname,
           "days_spent": days.toString(),
-          "district_id": district == null ? "null" : district,
+          "district_id": district ?? "null",
           "phone_number": phoneNo,
           "email": email,
           "birth_date": formattedDate,
@@ -264,7 +267,7 @@ class _CreateTourismState extends State<CreateTourism> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -373,238 +376,223 @@ class _CreateTourismState extends State<CreateTourism> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                    child: Container(
-                      child: TextFormField(
-                        keyboardType: TextInputType.text,
-                        key: Key("name"),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(
-                              color: Colors.cyan,
-                            ),
+                    child: TextFormField(
+                      keyboardType: TextInputType.text,
+                      key: const Key("name"),
+                      decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(
+                            color: Colors.cyan,
                           ),
-                          fillColor: Color(0xfff3f3f4),
-                          filled: true,
-                          labelText: "First Name",
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                         ),
-                        validator: (value) {
-                          if (value!.isEmpty) return "This Field Is Required";
-                          return null;
-                        },
-                        onSaved: (value) {
-                          fname = value;
-                        },
+                        fillColor: const Color(0xfff3f3f4),
+                        filled: true,
+                        labelText: "First Name",
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                       ),
+                      validator: (value) {
+                        if (value!.isEmpty) return "This Field Is Required";
+                        return null;
+                      },
+                      onSaved: (value) {
+                        fname = value;
+                      },
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                    child: Container(
-                      child: TextFormField(
-                        keyboardType: TextInputType.text,
-                        key: Key("name"),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(
-                              color: Colors.cyan,
-                            ),
+                    child: TextFormField(
+                      keyboardType: TextInputType.text,
+                      key: const Key("name"),
+                      decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(
+                            color: Colors.cyan,
                           ),
-                          fillColor: Color(0xfff3f3f4),
-                          filled: true,
-                          labelText: "Middle Name",
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                         ),
-                        validator: (value) {
-                          if (value!.isEmpty) return "This Field Is Required";
-                          return null;
-                        },
-                        onSaved: (value) {
-                          mname = value;
-                        },
+                        fillColor: const Color(0xfff3f3f4),
+                        filled: true,
+                        labelText: "Middle Name",
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                       ),
+                      validator: (value) {
+                        if (value!.isEmpty) return "This Field Is Required";
+                        return null;
+                      },
+                      onSaved: (value) {
+                        mname = value;
+                      },
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                    child: Container(
-                      child: TextFormField(
-                        keyboardType: TextInputType.text,
-                        key: Key("name"),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(
-                              color: Colors.cyan,
-                            ),
+                    child: TextFormField(
+                      keyboardType: TextInputType.text,
+                      key: const Key("name"),
+                      decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(
+                            color: Colors.cyan,
                           ),
-                          fillColor: Color(0xfff3f3f4),
-                          filled: true,
-                          labelText: "Last Name",
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                         ),
-                        validator: (value) {
-                          if (value!.isEmpty) return "This Field Is Required";
-                          return null;
-                        },
-                        onSaved: (value) {
-                          lname = value;
-                        },
+                        fillColor: const Color(0xfff3f3f4),
+                        filled: true,
+                        labelText: "Last Name",
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                       ),
+                      validator: (value) {
+                        if (value!.isEmpty) return "This Field Is Required";
+                        return null;
+                      },
+                      onSaved: (value) {
+                        lname = value;
+                      },
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                    child: Container(
-                      child: TextFormField(
-                        keyboardType: TextInputType.phone,
-                        key: Key("name"),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(
-                              color: Colors.cyan,
-                            ),
+                    child: TextFormField(
+                      keyboardType: TextInputType.phone,
+                      key: const Key("name"),
+                      decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(
+                            color: Colors.cyan,
                           ),
-                          fillColor: Color(0xfff3f3f4),
-                          filled: true,
-                          labelText: "Phone Number",
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                         ),
-                        validator: (value) {
-                          if (value!.isEmpty) return "This Field Is Required";
-                          return null;
-                        },
-                        onSaved: (value) {
-                          phoneNo = value;
-                        },
+                        fillColor: const Color(0xfff3f3f4),
+                        filled: true,
+                        labelText: "Phone Number",
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                       ),
+                      validator: (value) {
+                        if (value!.isEmpty) return "This Field Is Required";
+                        return null;
+                      },
+                      onSaved: (value) {
+                        phoneNo = value;
+                      },
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                    child: Container(
-                      child: TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        key: Key("name"),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(
-                              color: Colors.cyan,
-                            ),
+                    child: TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      key: const Key("name"),
+                      decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(
+                            color: Colors.cyan,
                           ),
-                          fillColor: Color(0xfff3f3f4),
-                          filled: true,
-                          labelText: "Email",
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                         ),
-                        validator: (value) {
-                          if (value!.isEmpty) return "This Field Is Required";
-                          return null;
-                        },
-                        onSaved: (value) {
-                          email = value;
-                        },
+                        fillColor: const Color(0xfff3f3f4),
+                        filled: true,
+                        labelText: "Email",
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                       ),
+                      validator: (value) {
+                        if (value!.isEmpty) return "This Field Is Required";
+                        return null;
+                      },
+                      onSaved: (value) {
+                        email = value;
+                      },
                     ),
                   ),
                   SafeArea(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                      child: Container(
-                        // width: getProportionateScreenHeight(
-                        //     320),
-                        child: DropdownButtonFormField<String>(
-                          itemHeight: 50,
-                          decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5.0),
-                                borderSide: BorderSide(
-                                  color: Colors.cyan,
-                                ),
+                      child: DropdownButtonFormField<String>(
+                        itemHeight: 50,
+                        decoration: InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              borderSide: const BorderSide(
+                                color: Colors.cyan,
                               ),
-                              fillColor: Color(0xfff3f3f4),
-                              filled: true,
-                              isDense: true,
-                              contentPadding:
-                                  EdgeInsets.fromLTRB(30, 10, 15, 10),
-                              labelText: "Select Gender",
-                              border: InputBorder.none),
-                          isExpanded: true,
+                            ),
+                            fillColor: const Color(0xfff3f3f4),
+                            filled: true,
+                            isDense: true,
+                            contentPadding:
+                                const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                            labelText: "Select Gender",
+                            border: InputBorder.none),
+                        isExpanded: true,
 
-                          value: genderVal,
-                          //elevation: 5,
-                          style: TextStyle(
-                              color: Colors.white, fontFamily: 'Ubuntu'),
-                          iconEnabledColor: Colors.black,
-                          items: gender
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return new DropdownMenuItem(
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Color(0xfff3f3f4),
-                                  border: Border(
-                                    bottom: BorderSide(
-                                        width: 1, color: kPrimaryColor),
-                                  ),
-                                ),
-                                child: new Text(
-                                  value,
-                                  style: TextStyle(color: Colors.black),
+                        value: genderVal,
+                        //elevation: 5,
+                        style: const TextStyle(
+                            color: Colors.white, fontFamily: 'Ubuntu'),
+                        iconEnabledColor: Colors.black,
+                        items: gender
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem(
+                            child: Container(
+                              width: double.infinity,
+                              decoration: const BoxDecoration(
+                                color: Color(0xfff3f3f4),
+                                border: Border(
+                                  bottom: BorderSide(
+                                      width: 1, color: kPrimaryColor),
                                 ),
                               ),
-                              value: value,
-                            );
-                          }).toList(),
-                          validator: (value) {
-                            if (value == null) {
-                              return "This Field is required";
-                            }
-                            return null;
-                          },
-                          onChanged: (value) {
-                            genderVal = value;
-                            setState(() {
-                              FocusScope.of(context)
-                                  .requestFocus(new FocusNode());
-                            });
-                          },
-                        ),
+                              child: Text(
+                                value,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            ),
+                            value: value,
+                          );
+                        }).toList(),
+                        validator: (value) {
+                          if (value == null) {
+                            return "This Field is required";
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          genderVal = value;
+                          setState(() {
+                            FocusScope.of(context)
+                                .requestFocus(FocusNode());
+                          });
+                        },
                       ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                    child: Container(
-                        child: Card(
+                    child: Card(
                       elevation: 1,
                       child: ListTile(
-                        leading: CircleAvatar(
-                          child: Icon(Icons.calendar_today),
-                        ),
-                        onTap: () {
-                          _selectDate(context);
-                        },
-                        title: Text(
-                          'BirthDate Date: $formattedDate',
-                          style: TextStyle(color: Colors.black54),
-                        ),
+                    leading: const CircleAvatar(
+                      child: Icon(Icons.calendar_today),
+                    ),
+                    onTap: () {
+                      _selectDate(context);
+                    },
+                    title: Text(
+                      'BirthDate Date: $formattedDate',
+                      style: const TextStyle(color: Colors.black54),
+                    ),
                       ),
-                    )),
+                    ),
                   ),
                 ],
               )),
@@ -622,158 +610,148 @@ class _CreateTourismState extends State<CreateTourism> {
                 SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                    child: Container(
-                      // width: getProportionateScreenHeight(
-                      //     320),
-                      child: DropdownButtonFormField<String>(
-                        itemHeight: 50,
-                        decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: BorderSide(
-                                color: Colors.cyan,
-                              ),
+                    child: DropdownButtonFormField<String>(
+                      itemHeight: 50,
+                      decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            borderSide: const BorderSide(
+                              color: Colors.cyan,
                             ),
-                            fillColor: Color(0xfff3f3f4),
-                            filled: true,
-                            isDense: true,
-                            contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
-                            labelText: "  ID Type",
-                            border: InputBorder.none),
-                        isExpanded: true,
+                          ),
+                          fillColor: const Color(0xfff3f3f4),
+                          filled: true,
+                          isDense: true,
+                          contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                          labelText: "  ID Type",
+                          border: InputBorder.none),
+                      isExpanded: true,
 
-                        value: identity,
-                        //elevation: 5,
-                        style: TextStyle(
-                            color: Colors.white, fontFamily: 'Ubuntu'),
-                        iconEnabledColor: Colors.black,
-                        items: idType
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return new DropdownMenuItem(
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Color(0xfff3f3f4),
-                                border: Border(
-                                  bottom: BorderSide(
-                                      width: 1, color: kPrimaryColor),
-                                ),
-                              ),
-                              child: new Text(
-                                value,
-                                style: TextStyle(color: Colors.black),
+                      value: identity,
+                      //elevation: 5,
+                      style: const TextStyle(
+                          color: Colors.white, fontFamily: 'Ubuntu'),
+                      iconEnabledColor: Colors.black,
+                      items: idType
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem(
+                          child: Container(
+                            width: double.infinity,
+                            decoration: const BoxDecoration(
+                              color: Color(0xfff3f3f4),
+                              border: Border(
+                                bottom: BorderSide(
+                                    width: 1, color: kPrimaryColor),
                               ),
                             ),
-                            value: value,
-                          );
-                        }).toList(),
-                        validator: (value) {
-                          if (value == null) {
-                            return "This Field is required";
-                          }
-                          return null;
-                        },
-                        onChanged: (value) {
-                          identity = value;
-                          setState(() {
-                            FocusScope.of(context)
-                                .requestFocus(new FocusNode());
-                          });
-                        },
-                      ),
+                            child: Text(
+                              value,
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                          ),
+                          value: value,
+                        );
+                      }).toList(),
+                      validator: (value) {
+                        if (value == null) {
+                          return "This Field is required";
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        identity = value;
+                        setState(() {
+                          FocusScope.of(context)
+                              .requestFocus(FocusNode());
+                        });
+                      },
                     ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                  child: Container(
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      key: Key("name"),
-                      decoration: InputDecoration(
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(
-                            color: Colors.cyan,
-                          ),
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    key: const Key("name"),
+                    decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(
+                          color: Colors.cyan,
                         ),
-                        fillColor: Color(0xfff3f3f4),
-                        filled: true,
-                        labelText: "ID Number",
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                       ),
-                      validator: (value) {
-                        if (value!.isEmpty) return "This Field Is Required";
-                        return null;
-                      },
-                      onSaved: (value) {
-                        idNo = value;
-                      },
+                      fillColor: const Color(0xfff3f3f4),
+                      filled: true,
+                      labelText: "ID Number",
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                     ),
+                    validator: (value) {
+                      if (value!.isEmpty) return "This Field Is Required";
+                      return null;
+                    },
+                    onSaved: (value) {
+                      idNo = value;
+                    },
                   ),
                 ),
                 SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                    child: Container(
-                      // width: getProportionateScreenHeight(
-                      //     320),
-                      child: DropdownButtonFormField<String>(
-                        itemHeight: 50,
-                        decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: BorderSide(
-                                color: Colors.cyan,
+                    child: DropdownButtonFormField<String>(
+                      itemHeight: 50,
+                      decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            borderSide: const BorderSide(
+                              color: Colors.cyan,
+                            ),
+                          ),
+                          fillColor: const Color(0xfff3f3f4),
+                          filled: true,
+                          isDense: true,
+                          contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                          labelText: "Tourist Category",
+                          border: InputBorder.none),
+                      isExpanded: true,
+
+                      value: tourCat,
+                      //elevation: 5,
+                      style: const TextStyle(
+                          color: Colors.white, fontFamily: 'Ubuntu'),
+                      iconEnabledColor: Colors.black,
+                      items: touristCategory
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem(
+                          child: Container(
+                            width: double.infinity,
+                            decoration: const BoxDecoration(
+                              color: Color(0xfff3f3f4),
+                              border: Border(
+                                bottom: BorderSide(
+                                    width: 1, color: kPrimaryColor),
                               ),
                             ),
-                            fillColor: Color(0xfff3f3f4),
-                            filled: true,
-                            isDense: true,
-                            contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
-                            labelText: "Tourist Category",
-                            border: InputBorder.none),
-                        isExpanded: true,
-
-                        value: tourCat,
-                        //elevation: 5,
-                        style: TextStyle(
-                            color: Colors.white, fontFamily: 'Ubuntu'),
-                        iconEnabledColor: Colors.black,
-                        items: touristCategory
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return new DropdownMenuItem(
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Color(0xfff3f3f4),
-                                border: Border(
-                                  bottom: BorderSide(
-                                      width: 1, color: kPrimaryColor),
-                                ),
-                              ),
-                              child: new Text(
-                                value,
-                                style: TextStyle(color: Colors.black),
-                              ),
+                            child: Text(
+                              value,
+                              style: const TextStyle(color: Colors.black),
                             ),
-                            value: value,
-                          );
-                        }).toList(),
-                        validator: (value) {
-                          if (value == null) {
-                            return "This Field is required";
-                          }
-                          return null;
-                        },
-                        onChanged: (value) {
-                          tourCat = value;
+                          ),
+                          value: value,
+                        );
+                      }).toList(),
+                      validator: (value) {
+                        if (value == null) {
+                          return "This Field is required";
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        tourCat = value;
 
-                          FocusScope.of(context).requestFocus(new FocusNode());
-                        },
-                      ),
+                        FocusScope.of(context).requestFocus(FocusNode());
+                      },
                     ),
                   ),
                 ),
@@ -786,8 +764,8 @@ class _CreateTourismState extends State<CreateTourism> {
                           showSearchBox: true,
                           validator: (v) =>
                               v == null ? "This Field Is required" : null,
-                          popupTitle: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          popupTitle: const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Center(
                                 child: Text(
                               'List Of Country',
@@ -798,19 +776,19 @@ class _CreateTourismState extends State<CreateTourism> {
                             decoration: InputDecoration(
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                     color: Colors.cyan,
                                   ),
                                 ),
-                                fillColor: Color(0xfff3f3f4),
+                                fillColor: const Color(0xfff3f3f4),
                                 filled: true,
                                 labelText: "Search",
                                 border: InputBorder.none,
                                 isDense: true,
                                 contentPadding:
-                                    EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                    const EdgeInsets.fromLTRB(30, 10, 15, 10),
                                 suffixIcon: IconButton(
-                                  icon: Icon(Icons.clear),
+                                  icon: const Icon(Icons.clear),
                                   color: Colors.red,
                                   onPressed: () {
                                     _countryTextController.clear();
@@ -823,14 +801,14 @@ class _CreateTourismState extends State<CreateTourism> {
                           dropdownSearchDecoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(5.0),
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Colors.cyan,
                                 ),
                               ),
-                              fillColor: Color(0xfff3f3f4),
+                              fillColor: const Color(0xfff3f3f4),
                               filled: true,
                               isDense: true,
-                              contentPadding: EdgeInsets.fromLTRB(30, 5, 10, 5),
+                              contentPadding: const EdgeInsets.fromLTRB(30, 5, 10, 5),
                               hintText: "Select Country",
                               border: InputBorder.none),
                           compareFn: (i, s) => i!.isEqual(s),
@@ -859,8 +837,8 @@ class _CreateTourismState extends State<CreateTourism> {
                           showSearchBox: true,
                           validator: (v) =>
                               v == null ? "This Field Is required" : null,
-                          popupTitle: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          popupTitle: const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Center(
                                 child: Text(
                               'List Of Districts',
@@ -871,19 +849,19 @@ class _CreateTourismState extends State<CreateTourism> {
                             decoration: InputDecoration(
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                     color: Colors.cyan,
                                   ),
                                 ),
-                                fillColor: Color(0xfff3f3f4),
+                                fillColor: const Color(0xfff3f3f4),
                                 filled: true,
                                 labelText: "Search",
                                 border: InputBorder.none,
                                 isDense: true,
                                 contentPadding:
-                                    EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                    const EdgeInsets.fromLTRB(30, 10, 15, 10),
                                 suffixIcon: IconButton(
-                                  icon: Icon(Icons.clear),
+                                  icon: const Icon(Icons.clear),
                                   color: Colors.red,
                                   onPressed: () {
                                     _DistrictTextController.clear();
@@ -896,14 +874,14 @@ class _CreateTourismState extends State<CreateTourism> {
                           dropdownSearchDecoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(5.0),
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Colors.cyan,
                                 ),
                               ),
-                              fillColor: Color(0xfff3f3f4),
+                              fillColor: const Color(0xfff3f3f4),
                               filled: true,
                               isDense: true,
-                              contentPadding: EdgeInsets.fromLTRB(30, 5, 10, 5),
+                              contentPadding: const EdgeInsets.fromLTRB(30, 5, 10, 5),
                               hintText: "Select District",
                               border: InputBorder.none),
                           compareFn: (i, s) => i!.isEqual(s),
@@ -938,64 +916,60 @@ class _CreateTourismState extends State<CreateTourism> {
               SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                  child: Container(
-                    // width: getProportionateScreenHeight(
-                    //     320),
-                    child: DropdownButtonFormField<String>(
-                      itemHeight: 50,
-                      decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                            borderSide: BorderSide(
-                              color: Colors.cyan,
-                            ),
+                  child: DropdownButtonFormField<String>(
+                    itemHeight: 50,
+                    decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                          borderSide: const BorderSide(
+                            color: Colors.cyan,
                           ),
-                          fillColor: Color(0xfff3f3f4),
-                          filled: true,
-                          isDense: true,
-                          contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
-                          labelText: "Is Group",
-                          border: InputBorder.none),
-                      isExpanded: true,
+                        ),
+                        fillColor: const Color(0xfff3f3f4),
+                        filled: true,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                        labelText: "Is Group",
+                        border: InputBorder.none),
+                    isExpanded: true,
 
-                      // value: isGroupVal,
-                      //elevation: 5,
-                      style:
-                          TextStyle(color: Colors.white, fontFamily: 'Ubuntu'),
-                      iconEnabledColor: Colors.black,
-                      items:
-                          isGroup.map<DropdownMenuItem<String>>((String value) {
-                        return new DropdownMenuItem(
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Color(0xfff3f3f4),
-                              border: Border(
-                                bottom:
-                                    BorderSide(width: 1, color: kPrimaryColor),
-                              ),
-                            ),
-                            child: new Text(
-                              value,
-                              style: TextStyle(color: Colors.black),
+                    // value: isGroupVal,
+                    //elevation: 5,
+                    style:
+                        const TextStyle(color: Colors.white, fontFamily: 'Ubuntu'),
+                    iconEnabledColor: Colors.black,
+                    items:
+                        isGroup.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem(
+                        child: Container(
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                            color: Color(0xfff3f3f4),
+                            border: Border(
+                              bottom:
+                                  BorderSide(width: 1, color: kPrimaryColor),
                             ),
                           ),
-                          value: value,
-                        );
-                      }).toList(),
-                      validator: (value) {
-                        if (value == null) {
-                          return "This Field is required";
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        setState(() {
-                          value == "Yes" ? isGroupVal = "1" : isGroupVal = "0";
-                          FocusScope.of(context).requestFocus(new FocusNode());
-                        });
-                      },
-                    ),
+                          child: Text(
+                            value,
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                        ),
+                        value: value,
+                      );
+                    }).toList(),
+                    validator: (value) {
+                      if (value == null) {
+                        return "This Field is required";
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      setState(() {
+                        value == "Yes" ? isGroupVal = "1" : isGroupVal = "0";
+                        FocusScope.of(context).requestFocus(FocusNode());
+                      });
+                    },
                   ),
                 ),
               ),
@@ -1008,88 +982,84 @@ class _CreateTourismState extends State<CreateTourism> {
                                 color: kPrimaryColor,
                                 size: 35.0.sp,
                               )
-                            : Container(
-                                child: new DropdownButtonFormField(
-                                  itemHeight: 50,
-                                  decoration: InputDecoration(
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0),
-                                        borderSide: BorderSide(
-                                          color: Colors.cyan,
-                                        ),
-                                      ),
-                                      fillColor: Color(0xfff3f3f4),
-                                      filled: true,
-                                      isDense: true,
-                                      contentPadding:
-                                          EdgeInsets.fromLTRB(30, 10, 15, 10),
-                                      labelText: "Group Type",
-                                      border: InputBorder.none),
-                                  isExpanded: true,
+                            : DropdownButtonFormField(
+                              itemHeight: 50,
+                              decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(5.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.cyan,
+                                    ),
+                                  ),
+                                  fillColor: const Color(0xfff3f3f4),
+                                  filled: true,
                                   isDense: true,
-                                  validator: (value) => value == null
-                                      ? "This Field is Required"
-                                      : null,
-                                  items: data.map((item) {
-                                    return new DropdownMenuItem(
-                                      child: Container(
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          color: Color(0xfff3f3f4),
-                                          border: Border(
-                                            bottom: BorderSide(
-                                                width: 1, color: kPrimaryColor),
-                                          ),
-                                        ),
-                                        child: new Text(
-                                          item['name'].toString(),
-                                        ),
+                                  contentPadding:
+                                      const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                  labelText: "Group Type",
+                                  border: InputBorder.none),
+                              isExpanded: true,
+                              isDense: true,
+                              validator: (value) => value == null
+                                  ? "This Field is Required"
+                                  : null,
+                              items: data.map((item) {
+                                return DropdownMenuItem(
+                                  child: Container(
+                                    width: double.infinity,
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xfff3f3f4),
+                                      border: Border(
+                                        bottom: BorderSide(
+                                            width: 1, color: kPrimaryColor),
                                       ),
-                                      value: item['id'].toString(),
-                                    );
-                                  }).toList(),
-                                  onChanged: (newVal) {
-                                    setState(() {
-                                      isGroupTypeVal = newVal.toString();
-                                      print(isGroupTypeVal);
-                                    });
-                                  },
-                                  value: isGroupTypeVal,
-                                ),
-                              ),
+                                    ),
+                                    child: Text(
+                                      item['name'].toString(),
+                                    ),
+                                  ),
+                                  value: item['id'].toString(),
+                                );
+                              }).toList(),
+                              onChanged: (newVal) {
+                                setState(() {
+                                  isGroupTypeVal = newVal.toString();
+                                  print(isGroupTypeVal);
+                                });
+                              },
+                              value: isGroupTypeVal,
+                            ),
                       ),
                     )
                   : Container(),
               Padding(
                 padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                child: Container(
-                  child: TextFormField(
-                    maxLength: 3,
-                    keyboardType: TextInputType.number,
-                    key: Key("name"),
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide(
-                          color: Colors.cyan,
-                        ),
+                child: TextFormField(
+                  maxLength: 3,
+                  keyboardType: TextInputType.number,
+                  key: const Key("name"),
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: const BorderSide(
+                        color: Colors.cyan,
                       ),
-                      fillColor: Color(0xfff3f3f4),
-                      filled: true,
-                      labelText: "No Of Days",
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                     ),
-                    validator: (value) {
-                      if (value!.isEmpty) return "This Field Is Required";
-                      return null;
-                    },
-                    onSaved: (value) {
-                      days = int.parse(value!);
-                    },
+                    fillColor: const Color(0xfff3f3f4),
+                    filled: true,
+                    labelText: "No Of Days",
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                   ),
+                  validator: (value) {
+                    if (value!.isEmpty) return "This Field Is Required";
+                    return null;
+                  },
+                  onSaved: (value) {
+                    days = int.parse(value!);
+                  },
                 ),
               ),
               Padding(
@@ -1100,54 +1070,52 @@ class _CreateTourismState extends State<CreateTourism> {
                           color: kPrimaryColor,
                           size: 35.0.sp,
                         )
-                      : Container(
-                          child: new DropdownButtonFormField(
-                            itemHeight: 50,
-                            decoration: InputDecoration(
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                  borderSide: BorderSide(
-                                    color: Colors.cyan,
-                                  ),
-                                ),
-                                fillColor: Color(0xfff3f3f4),
-                                filled: true,
-                                isDense: true,
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(30, 10, 15, 10),
-                                labelText: "Purpose",
-                                border: InputBorder.none),
-                            isExpanded: true,
+                      : DropdownButtonFormField(
+                        itemHeight: 50,
+                        decoration: InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              borderSide: const BorderSide(
+                                color: Colors.cyan,
+                              ),
+                            ),
+                            fillColor: const Color(0xfff3f3f4),
+                            filled: true,
                             isDense: true,
-                            validator: (value) =>
-                                value == null ? "This Field is Required" : null,
-                            items: data1.map((item) {
-                              return new DropdownMenuItem(
-                                child: Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xfff3f3f4),
-                                    border: Border(
-                                      bottom: BorderSide(
-                                          width: 1, color: kPrimaryColor),
-                                    ),
-                                  ),
-                                  child: new Text(
-                                    item['name'].toString(),
-                                  ),
+                            contentPadding:
+                                const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                            labelText: "Purpose",
+                            border: InputBorder.none),
+                        isExpanded: true,
+                        isDense: true,
+                        validator: (value) =>
+                            value == null ? "This Field is Required" : null,
+                        items: data1.map((item) {
+                          return DropdownMenuItem(
+                            child: Container(
+                              width: double.infinity,
+                              decoration: const BoxDecoration(
+                                color: Color(0xfff3f3f4),
+                                border: Border(
+                                  bottom: BorderSide(
+                                      width: 1, color: kPrimaryColor),
                                 ),
-                                value: item['id'].toString(),
-                              );
-                            }).toList(),
-                            onChanged: (newVal) {
-                              setState(() {
-                                purpose = newVal.toString();
-                                // print(isGroupTypeVal);
-                              });
-                            },
-                            value: purpose,
-                          ),
-                        ),
+                              ),
+                              child: Text(
+                                item['name'].toString(),
+                              ),
+                            ),
+                            value: item['id'].toString(),
+                          );
+                        }).toList(),
+                        onChanged: (newVal) {
+                          setState(() {
+                            purpose = newVal.toString();
+                            // print(isGroupTypeVal);
+                          });
+                        },
+                        value: purpose,
+                      ),
                 ),
               ),
               SizedBox(
@@ -1170,14 +1138,14 @@ class _CreateTourismState extends State<CreateTourism> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
         floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.list),
+          child: const Icon(Icons.list),
           onPressed: switchStepType,
         ),
         appBar: AppBar(
           backgroundColor: kPrimaryColor,
-          title: Text(
+          title: const Text(
             'Create Tourism',
             style: TextStyle(
                 fontFamily: 'Ubuntu', color: Colors.white, fontSize: 15),
@@ -1207,7 +1175,7 @@ class _CreateTourismState extends State<CreateTourism> {
   Widget _customPopupItemBuilderCountry(
       BuildContext context, CountryModal item, bool isSelected) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: !isSelected
           ? null
           : BoxDecoration(
@@ -1221,7 +1189,7 @@ class _CreateTourismState extends State<CreateTourism> {
           selected: isSelected,
           title: Text(item.name),
           subtitle: Text("Country Code: " + item.id),
-          tileColor: Color(0xfff3f3f4),
+          tileColor: const Color(0xfff3f3f4),
           leading: IntrinsicHeight(
               child: SizedBox(
                   height: double.maxFinite,
@@ -1242,7 +1210,7 @@ class _CreateTourismState extends State<CreateTourism> {
   Widget _customPopupItemBuilderDistrict(
       BuildContext context, DistrictModal item, bool isSelected) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: !isSelected
           ? null
           : BoxDecoration(
@@ -1256,7 +1224,7 @@ class _CreateTourismState extends State<CreateTourism> {
           selected: isSelected,
           title: Text(item.name),
           //subtitle: Text("Unit Price: " + item.id),
-          tileColor: Color(0xfff3f3f4),
+          tileColor: const Color(0xfff3f3f4),
           leading: IntrinsicHeight(
               child: SizedBox(
                   height: double.maxFinite,

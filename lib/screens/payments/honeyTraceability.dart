@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, use_key_in_widget_constructors, avoid_print, prefer_typing_uninitialized_variables
+
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
@@ -20,7 +22,7 @@ import 'package:tfsappv1/services/size_config.dart';
 
 class HoneyTraceAbility extends StatefulWidget {
   final String token;
-  HoneyTraceAbility(this.token);
+  const HoneyTraceAbility(this.token);
 
   @override
   _HoneyTraceAbilityState createState() => _HoneyTraceAbilityState();
@@ -31,10 +33,11 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
   List billData = [];
   List honeyId = [];
   bool isVerify = false;
-  final value = new NumberFormat("#,##0.00", "en_US");
+  final value = NumberFormat("#,##0.00", "en_US");
   bool isLoading = false;
   bool isCustomerRegistered = false;
   String? customerName;
+  List<int> stationIds = [];
 
   bool isNewCustomer = false;
   int quantity = 1;
@@ -44,9 +47,9 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
 
   List<int> quantities = [];
 
-  final GlobalKey<ExpansionTileCardState> cardA = new GlobalKey();
-  final GlobalKey<ExpansionTileCardState> cardB = new GlobalKey();
-  final GlobalKey<ExpansionTileCardState> cardC = new GlobalKey();
+  final GlobalKey<ExpansionTileCardState> cardA = GlobalKey();
+  final GlobalKey<ExpansionTileCardState> cardB = GlobalKey();
+  final GlobalKey<ExpansionTileCardState> cardC = GlobalKey();
   List<String> ask = ['Domestic Customer', 'Non Domestic Customer'];
   List<String> typeseeds = ['Seed', 'Seedling'];
   String? type;
@@ -76,7 +79,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
       print(honeyId);
       print(quantities);
       var headers = {"Authorization": "Bearer " + widget.token};
-      BaseOptions options = new BaseOptions(
+      BaseOptions options = BaseOptions(
           baseUrl: "https://mis.tfs.go.tz/honey-traceability",
           connectTimeout: 50000,
           receiveTimeout: 50000,
@@ -87,6 +90,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
         "phone_number": mobileNumber,
         "honey_id[]": honeyId,
         "quantity[]": quantities,
+        "station_id": stationIds
       });
 
       var response = await dio.post(
@@ -176,14 +180,14 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
               child: Container(
                 height: 50,
                 width: getProportionateScreenWidth(200),
-                padding: EdgeInsets.symmetric(vertical: 15),
+                padding: const EdgeInsets.symmetric(vertical: 15),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
                     boxShadow: <BoxShadow>[
                       BoxShadow(
                           color: Colors.grey.shade200,
-                          offset: Offset(2, 4),
+                          offset: const Offset(2, 4),
                           blurRadius: 5,
                           spreadRadius: 2)
                     ],
@@ -214,7 +218,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
       // print(barcodeScanRes);
       // // String tokens = await SharedPreferences.getInstance()
       // //     .then((prefs) => prefs.getString('token').toString());
-      // // print(x.toString() + "hfdhg");
+      // print(x.toString() + "hfdhg");
       // if (x != null) {
       //   setState(() {
       //     isVerify = true;
@@ -225,11 +229,13 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
       //   Map billElements = {
       //     "price": res["price"],
       //     "station_name": res["station_id"]["name"],
+      //     "station_id": res["station_id"]["id"],
       //     "quantity": quantity
       //   };
       //   print(billElements);
       //   honeyId.add(res["honey_id"]);
       //   quantities.add(billElements["quantity"]);
+      //   stationIds.add(billElements["station_id"]);
       //   billData.add(billElements);
       //   print(billData);
       //   print(honeyId);
@@ -273,7 +279,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
                 // print(permitNumber);
               },
               cursorColor: kPrimaryColor,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 icon: Icon(Icons.folder_open),
                 labelText: 'Enter Bill Id',
               ),
@@ -292,7 +298,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
               //   isVerify = false;
               // });
             },
-            child: Text(
+            child: const Text(
               "Submit",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
@@ -300,9 +306,9 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
           DialogButton(
             color: Colors.red,
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: const Text(
               "CANCEL",
-              style: TextStyle(color: Colors.white, fontSize: 20),
+              style: TextStyle(color: Colors.red, fontSize: 20),
             ),
           )
         ]).show();
@@ -320,7 +326,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -338,7 +344,8 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
           width: 120,
         ),
         DialogButton(
-          child: Text(
+          color: Colors.red,
+          child: const Text(
             "Cancel",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -359,75 +366,71 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
           key: _formKey,
           child: Column(
             children: <Widget>[
-              Divider(
+              const Divider(
                 thickness: 1.0,
                 height: 1.0,
                 color: Colors.black26,
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                child: Container(
-                  child: TextFormField(
-                    keyboardType: TextInputType.text,
-                    key: Key(""),
-                    onSaved: (val) => customerName = val!,
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: BorderSide(
-                          color: Colors.cyan,
-                        ),
+                child: TextFormField(
+                  keyboardType: TextInputType.text,
+                  key: const Key(""),
+                  onSaved: (val) => customerName = val!,
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: const BorderSide(
+                        color: Colors.cyan,
                       ),
-                      fillColor: Color(0xfff3f3f4),
-                      filled: true,
-                      labelText: "Full Name",
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                     ),
-                    // onChanged: (val) {
-                    //   setState(() {});
-                    // },
-                    validator: (value) {
-                      if (value!.isEmpty) return "This Field Is Required";
-                      return null;
-                    },
+                    fillColor: const Color(0xfff3f3f4),
+                    filled: true,
+                    labelText: "Full Name",
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                   ),
+                  // onChanged: (val) {
+                  //   setState(() {});
+                  // },
+                  validator: (value) {
+                    if (value!.isEmpty) return "This Field Is Required";
+                    return null;
+                  },
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(
                     top: 5, right: 5, left: 5, bottom: 10),
-                child: Container(
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    key: Key(""),
-                    onSaved: (val) => mobileNumber = val!,
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: BorderSide(
-                          color: Colors.cyan,
-                        ),
+                child: TextFormField(
+                  keyboardType: TextInputType.number,
+                  key: const Key(""),
+                  onSaved: (val) => mobileNumber = val!,
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: const BorderSide(
+                        color: Colors.cyan,
                       ),
-                      fillColor: Color(0xfff3f3f4),
-                      filled: true,
-                      labelText: "Phone Number",
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                     ),
-                    // onChanged: (val) {
-                    //   setState(() {});
-                    // },
-                    validator: (value) {
-                      if (value!.isEmpty) return "This Field Is Required";
-                      return null;
-                    },
+                    fillColor: const Color(0xfff3f3f4),
+                    filled: true,
+                    labelText: "Phone Number",
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                   ),
+                  // onChanged: (val) {
+                  //   setState(() {});
+                  // },
+                  validator: (value) {
+                    if (value!.isEmpty) return "This Field Is Required";
+                    return null;
+                  },
                 ),
               ),
-              Divider(
+              const Divider(
                 thickness: 1.0,
                 height: 1.0,
                 color: Colors.cyan,
@@ -450,7 +453,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
                 Navigator.pop(context);
               }
             },
-            child: Text(
+            child: const Text(
               "Register",
               style: TextStyle(color: Colors.white, fontSize: 17),
             ),
@@ -458,7 +461,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
           DialogButton(
             color: Colors.red,
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: const Text(
               "Cancel",
               style: TextStyle(color: Colors.white, fontSize: 17),
             ),
@@ -474,47 +477,45 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
           key: _formKey,
           child: Column(
             children: <Widget>[
-              Divider(
+              const Divider(
                 thickness: 1.0,
                 height: 1.0,
                 color: Colors.black26,
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
-                child: Container(
-                  child: TextFormField(
-                    initialValue: quantit == null ? "0" : quantit.toString(),
-                    keyboardType: TextInputType.number,
-                    key: Key(""),
-                    onSaved: (val) => quantity = int.parse(val!),
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: BorderSide(
-                          color: Colors.cyan,
-                        ),
+                child: TextFormField(
+                  initialValue: quantit == null ? "0" : quantit.toString(),
+                  keyboardType: TextInputType.number,
+                  key: const Key(""),
+                  onSaved: (val) => quantity = int.parse(val!),
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: const BorderSide(
+                        color: Colors.cyan,
                       ),
-                      fillColor: Color(0xfff3f3f4),
-                      filled: true,
-                      labelText: "Quantity",
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
                     ),
-                    // onChanged: (val) {
-                    //   setState(() {});
-                    // },
-                    validator: (value) {
-                      if (value!.isEmpty) return "This Field Is Required";
-                      return null;
-                    },
+                    fillColor: const Color(0xfff3f3f4),
+                    filled: true,
+                    labelText: "Quantity",
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
                   ),
+                  // onChanged: (val) {
+                  //   setState(() {});
+                  // },
+                  validator: (value) {
+                    if (value!.isEmpty) return "This Field Is Required";
+                    return null;
+                  },
                 ),
               ),
               SizedBox(
                 height: getProportionateScreenHeight(20),
               ),
-              Divider(
+              const Divider(
                 thickness: 1.0,
                 height: 1.0,
                 color: Colors.grey,
@@ -539,7 +540,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
               }
               Navigator.pop(context);
             },
-            child: Text(
+            child: const Text(
               "Ok",
               style: TextStyle(color: Colors.white, fontSize: 17),
             ),
@@ -547,7 +548,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
           DialogButton(
             color: Colors.red,
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: const Text(
               "Cancel",
               style: TextStyle(color: Colors.white, fontSize: 17),
             ),
@@ -566,7 +567,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -595,7 +596,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Container(
+          SizedBox(
             height: getProportionateScreenHeight(800),
             child: Column(
               children: <Widget>[
@@ -617,23 +618,23 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
                                     createUser();
                                   },
                                   trailing: isCustomerRegistered
-                                      ? Icon(
+                                      ? const Icon(
                                           Icons.verified_outlined,
                                           color: Colors.blue,
                                         )
-                                      : Icon(
+                                      : const Icon(
                                           Icons.arrow_forward_ios_outlined,
                                           color: Colors.blue,
                                         ),
-                                  tileColor: Color(0xfff3f3f4),
-                                  leading: CircleAvatar(
+                                  tileColor: const Color(0xfff3f3f4),
+                                  leading: const CircleAvatar(
                                     foregroundColor: kPrimaryColor,
                                     backgroundColor: Colors.black12,
                                     child: Icon(
                                       Icons.app_registration,
                                     ),
                                   ),
-                                  title: Text(
+                                  title: const Text(
                                     "Register Customer",
                                     style: TextStyle(color: Colors.black),
                                   ),
@@ -657,8 +658,8 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
                                     children: <Widget>[
                                       ListTile(
                                         onTap: () => _scanQR(),
-                                        tileColor: Color(0xfff3f3f4),
-                                        leading: CircleAvatar(
+                                        tileColor: const Color(0xfff3f3f4),
+                                        leading: const CircleAvatar(
                                           foregroundColor: kPrimaryColor,
                                           backgroundColor: Colors.black12,
                                           child: Icon(
@@ -666,7 +667,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
                                             // size: 30,
                                           ),
                                         ),
-                                        title: Text(
+                                        title: const Text(
                                           "QR Code",
                                         ),
                                       ),
@@ -686,24 +687,24 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
                             key: cardC,
                             expandedTextColor: Colors.black,
                             shadowColor: kPrimaryColor,
-                            duration: Duration(milliseconds: 500),
+                            duration: const Duration(milliseconds: 500),
                             animateTrailing: true,
-                            baseColor: Color(0xfff3f3f4),
+                            baseColor: const Color(0xfff3f3f4),
                             elevation: 10,
-                            borderRadius: BorderRadius.only(
+                            borderRadius: const BorderRadius.only(
                                 bottomLeft: Radius.zero,
                                 bottomRight: Radius.zero,
                                 topLeft: Radius.circular(20),
                                 topRight: Radius.circular(20)),
-                            leading: CircleAvatar(
+                            leading: const CircleAvatar(
                                 backgroundColor: Colors.transparent,
                                 child: Icon(
                                   Icons.production_quantity_limits_rounded,
                                   color: kPrimaryColor,
                                 )),
-                            title: Text('Products List'),
+                            title: const Text('Products List'),
                             children: <Widget>[
-                              Divider(
+                              const Divider(
                                 thickness: 1.0,
                                 height: 1.0,
                                 color: Colors.brown,
@@ -714,7 +715,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
-                                  children: [
+                                  children: const [
                                     Expanded(
                                         flex: 1,
                                         child: Center(
@@ -758,7 +759,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
                                   ],
                                 ),
                               ),
-                              Divider(
+                              const Divider(
                                 thickness: 1.0,
                                 height: 1.0,
                                 color: Colors.brown,
@@ -812,11 +813,11 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
                                                         onPressed: () {
                                                           computeQuantity(
                                                               index: i,
-                                                              quantit: int.parse(
-                                                                  billData[i][
-                                                                      "quantity"]));
+                                                              quantit: billData[
+                                                                      i]
+                                                                  ["quantity"]);
                                                         },
-                                                        icon: Icon(
+                                                        icon: const Icon(
                                                           Icons.edit,
                                                           size: 17,
                                                           color: Colors.blue,
@@ -830,7 +831,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
                                                               "info",
                                                               index: i);
                                                         },
-                                                        icon: Icon(
+                                                        icon: const Icon(
                                                           Icons
                                                               .remove_circle_outline_sharp,
                                                           size: 17,
@@ -844,7 +845,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
                                       // SizedBox(
                                       //   height: getProportionateScreenHeight(5),
                                       // ),
-                                      Divider(
+                                      const Divider(
                                         thickness: 1.0,
                                         height: 0.0,
                                         color: Colors.grey,
@@ -859,9 +860,9 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  Expanded(
+                                  const Expanded(
                                       flex: 1, child: Center(child: Text(" "))),
-                                  Expanded(
+                                  const Expanded(
                                       flex: 3,
                                       child: Center(
                                         child: Text(
@@ -874,12 +875,12 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
                                       child: Center(
                                         child: Text(
                                           value.format(calculateSum()),
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Colors.black,
                                               fontWeight: FontWeight.bold),
                                         ),
                                       )),
-                                  Expanded(
+                                  const Expanded(
                                       flex: 2, child: Center(child: Text(" "))),
                                 ],
                               ),
@@ -908,7 +909,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
   }
 
   Future<List<CustomerModel>> getData(filter, level) async {
-    var url;
+    String url;
     var headers = {"Authorization": "Bearer " + widget.token};
     url = "http://41.59.227.103:9092/api/v1/customers";
     var response = await Dio().get(url,
@@ -931,7 +932,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
 
   Future<List<AccessionNumberModel>> getDataAccessionNumber(
       filter, seedId) async {
-    var url;
+    String url;
     var headers = {"Authorization": "Bearer " + widget.token};
     url = "http://41.59.227.103:9092/api/v1/accession-number/$seedId";
     var response = await Dio().get(url,
@@ -953,7 +954,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
   }
 
   Future<List<SeedModel>> getDataSeed(filter, level) async {
-    var url;
+    String url;
     var headers = {"Authorization": "Bearer " + widget.token};
     url = "http://41.59.227.103:9092/api/v1/seeds";
     var response = await Dio().get(url,
@@ -973,7 +974,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
   }
 
   Future<List<SeedlingModel>> getDataSeedling(filter, level) async {
-    var url;
+    String url;
     var headers = {"Authorization": "Bearer " + widget.token};
     url = "http://41.59.227.103:9092/api/v1/seedlings";
     var response = await Dio().get(url,

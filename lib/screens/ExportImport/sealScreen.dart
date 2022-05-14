@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, use_key_in_widget_constructors, avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -14,16 +16,16 @@ import 'package:sizer/sizer.dart';
 class SealScreen extends StatefulWidget {
   static String routeName = "/Seal";
   final objectData;
-  SealScreen(this.objectData);
+  const SealScreen(this.objectData);
 
   @override
   _SealScreenState createState() => _SealScreenState();
 }
 
 class _SealScreenState extends State<SealScreen> {
-  final GlobalKey<ExpansionTileCardState> cardA = new GlobalKey();
-  final GlobalKey<ExpansionTileCardState> cardB = new GlobalKey();
-  final GlobalKey<ExpansionTileCardState> cardC = new GlobalKey();
+  final GlobalKey<ExpansionTileCardState> cardA = GlobalKey();
+  final GlobalKey<ExpansionTileCardState> cardB = GlobalKey();
+  final GlobalKey<ExpansionTileCardState> cardC = GlobalKey();
   bool isLoading = false;
   Widget _title() {
     return RichText(
@@ -69,7 +71,7 @@ class _SealScreenState extends State<SealScreen> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: kPrimaryColor,
-          title: Text(
+          title: const Text(
             'Export Permit Sealing',
             style: TextStyle(color: Colors.black, fontFamily: 'Ubuntu'),
           ),
@@ -77,14 +79,14 @@ class _SealScreenState extends State<SealScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              Container(
+              SizedBox(
                 height: getProportionateScreenHeight(130),
                 child: Stack(
                   children: [
                     Container(
                       width: double.infinity,
                       height: getProportionateScreenHeight(90),
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         // borderRadius: BorderRadius.only(
                         //     bottomLeft: Radius.circular(150),
                         //     bottomRight: Radius.circular(150)),
@@ -100,11 +102,11 @@ class _SealScreenState extends State<SealScreen> {
                           child: ListTile(
                               tileColor: Colors.white,
                               title: _title(),
-                              trailing: Icon(
+                              trailing: const Icon(
                                 Icons.data_saver_off,
                                 color: Colors.cyan,
                               ),
-                              leading: CircleAvatar(
+                              leading: const CircleAvatar(
                                 backgroundColor: Colors.pink,
                                 child: Icon(
                                   Icons.edit,
@@ -126,24 +128,24 @@ class _SealScreenState extends State<SealScreen> {
                   key: cardA,
                   expandedTextColor: Colors.black,
                   shadowColor: kPrimaryColor,
-                  duration: Duration(milliseconds: 500),
+                  duration: const Duration(milliseconds: 500),
                   animateTrailing: true,
-                  baseColor: Color(0xfff3f3f4),
+                  baseColor: const Color(0xfff3f3f4),
                   elevation: 10,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.zero,
                       bottomRight: Radius.zero,
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20)),
-                  leading: CircleAvatar(
+                  leading: const CircleAvatar(
                       backgroundColor: Colors.transparent,
                       child: Icon(
                         Icons.data_usage_rounded,
                         color: kPrimaryColor,
                       )),
-                  title: Text('Export Permit Informations'),
+                  title: const Text('Export Permit Informations'),
                   children: <Widget>[
-                    Divider(
+                    const Divider(
                       thickness: 1.0,
                       height: 1.0,
                       color: Colors.cyan,
@@ -151,13 +153,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.person_pin,
                               color: Colors.purple,
                             )),
-                        Expanded(flex: 3, child: Text('Exporter Name: ')),
+                        const Expanded(flex: 3, child: Text('Exporter Name: ')),
                         Expanded(
                             flex: 4,
                             child: Text(
@@ -167,13 +169,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.format_list_numbered,
                               color: Colors.pink,
                             )),
-                        Expanded(flex: 3, child: Text('Certificate Number : ')),
+                        const Expanded(flex: 3, child: Text('Certificate Number : ')),
                         Expanded(
                             flex: 4,
                             child: Text(
@@ -183,13 +185,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.pin_drop,
                               color: Colors.amber,
                             )),
-                        Expanded(flex: 3, child: Text('Export-Code : ')),
+                        const Expanded(flex: 3, child: Text('Export-Code : ')),
                         Expanded(
                             flex: 4,
                             child: Text(widget.objectData['code'].toString()))
@@ -198,13 +200,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.location_city_rounded,
                               color: kPrimaryColor,
                             )),
-                        Expanded(flex: 3, child: Text('Postal Address: ')),
+                        const Expanded(flex: 3, child: Text('Postal Address: ')),
                         Expanded(
                             flex: 4,
                             child: Text(
@@ -214,13 +216,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.call_end_outlined,
                               color: Colors.brown,
                             )),
-                        Expanded(flex: 3, child: Text('Phone Number : ')),
+                        const Expanded(flex: 3, child: Text('Phone Number : ')),
                         Expanded(
                             flex: 4,
                             child:
@@ -230,13 +232,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.traffic,
                               color: Colors.indigoAccent,
                             )),
-                        Expanded(flex: 3, child: Text('Destination Owner : ')),
+                        const Expanded(flex: 3, child: Text('Destination Owner : ')),
                         Expanded(
                             flex: 4,
                             child: Text(widget.objectData['destination_owner']
@@ -246,13 +248,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.nature_outlined,
                               color: Colors.green,
                             )),
-                        Expanded(flex: 3, child: Text('Country : ')),
+                        const Expanded(flex: 3, child: Text('Country : ')),
                         Expanded(
                             flex: 4,
                             child:
@@ -262,13 +264,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.ac_unit,
                               color: Colors.blueAccent,
                             )),
-                        Expanded(flex: 3, child: Text('Origin SawMill : ')),
+                        const Expanded(flex: 3, child: Text('Origin SawMill : ')),
                         Expanded(
                             flex: 4,
                             child: Text(
@@ -278,13 +280,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.line_weight_rounded,
                               color: Colors.deepOrangeAccent,
                             )),
-                        Expanded(flex: 3, child: Text('Number Of Pieces : ')),
+                        const Expanded(flex: 3, child: Text('Number Of Pieces : ')),
                         Expanded(
                             flex: 4,
                             child: Text(
@@ -294,13 +296,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.vertical_align_center_outlined,
                               color: Colors.black,
                             )),
-                        Expanded(flex: 3, child: Text('Valid Days : ')),
+                        const Expanded(flex: 3, child: Text('Valid Days : ')),
                         Expanded(
                             flex: 4,
                             child: Text(
@@ -310,13 +312,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.published_with_changes_outlined,
                               color: Colors.grey,
                             )),
-                        Expanded(flex: 3, child: Text('Place Of Issue : ')),
+                        const Expanded(flex: 3, child: Text('Place Of Issue : ')),
                         Expanded(
                             flex: 4,
                             child: Text(
@@ -326,13 +328,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.calendar_today,
                               color: Colors.cyan,
                             )),
-                        Expanded(flex: 3, child: Text('Issue Date : ')),
+                        const Expanded(flex: 3, child: Text('Issue Date : ')),
                         Expanded(
                             flex: 4,
                             child: Text(
@@ -342,13 +344,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.receipt,
                               color: Colors.grey,
                             )),
-                        Expanded(flex: 3, child: Text('Receipt Number: ')),
+                        const Expanded(flex: 3, child: Text('Receipt Number: ')),
                         Expanded(
                             flex: 4,
                             child: Text(
@@ -358,13 +360,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.calendar_today_rounded,
                               color: Colors.red,
                             )),
-                        Expanded(flex: 3, child: Text('Receipt Date: ')),
+                        const Expanded(flex: 3, child: Text('Receipt Date: ')),
                         Expanded(
                             flex: 4,
                             child: Text(
@@ -374,13 +376,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.payment,
                               color: Colors.green,
                             )),
-                        Expanded(flex: 3, child: Text('Amount Paid: ')),
+                        const Expanded(flex: 3, child: Text('Amount Paid: ')),
                         Expanded(
                             flex: 4,
                             child: Text(
@@ -390,13 +392,13 @@ class _SealScreenState extends State<SealScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
+                        const Expanded(
                             flex: 1,
                             child: Icon(
                               Icons.file_copy,
                               color: Colors.brown,
                             )),
-                        Expanded(flex: 3, child: Text('Remarks: ')),
+                        const Expanded(flex: 3, child: Text('Remarks: ')),
                         Expanded(
                             flex: 4,
                             child:
@@ -414,11 +416,11 @@ class _SealScreenState extends State<SealScreen> {
                             cardA.currentState?.collapse();
                           },
                           child: Column(
-                            children: <Widget>[
+                            children: const <Widget>[
                               Icon(Icons.arrow_upward),
                               Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 2.0),
+                                    EdgeInsets.symmetric(vertical: 2.0),
                               ),
                               Text('Close'),
                             ],
@@ -431,11 +433,11 @@ class _SealScreenState extends State<SealScreen> {
                             cardC.currentState?.toggleExpansion();
                           },
                           child: Column(
-                            children: <Widget>[
+                            children: const <Widget>[
                               Icon(Icons.swap_vert),
                               Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 2.0),
+                                    EdgeInsets.symmetric(vertical: 2.0),
                               ),
                               Text('Toggle Exported Product'),
                             ],
@@ -453,27 +455,27 @@ class _SealScreenState extends State<SealScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: ExpansionTileCard(
                   key: cardC,
-                  duration: Duration(milliseconds: 500),
+                  duration: const Duration(milliseconds: 500),
                   animateTrailing: true,
-                  baseColor: Color(0xfff3f3f4),
+                  baseColor: const Color(0xfff3f3f4),
                   expandedTextColor: Colors.black,
                   elevation: 10,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.zero,
                       bottomRight: Radius.zero,
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20)),
 
-                  leading: CircleAvatar(
+                  leading: const CircleAvatar(
                       backgroundColor: Colors.transparent,
                       child: Icon(
                         Icons.star_purple500_outlined,
                         color: kPrimaryColor,
                       )),
-                  title: Text('Products'),
+                  title: const Text('Products'),
                   // subtitle: Text(''),
                   children: <Widget>[
-                    Divider(
+                    const Divider(
                       thickness: 1.0,
                       height: 1.0,
                       color: Colors.cyan,
@@ -483,13 +485,13 @@ class _SealScreenState extends State<SealScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Expanded(
+                            const Expanded(
                                 flex: 1,
                                 child: Icon(
                                   Icons.stay_primary_landscape_outlined,
                                   color: kPrimaryColor,
                                 )),
-                            Expanded(flex: 3, child: Text('Species Name : ')),
+                            const Expanded(flex: 3, child: Text('Species Name : ')),
                             Expanded(
                                 flex: 4,
                                 child: Text(widget.objectData['species']
@@ -502,13 +504,13 @@ class _SealScreenState extends State<SealScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Expanded(
+                            const Expanded(
                                 flex: 1,
                                 child: Icon(
                                   Icons.ac_unit,
                                   color: kPrimaryColor,
                                 )),
-                            Expanded(flex: 3, child: Text('Product Name : ')),
+                            const Expanded(flex: 3, child: Text('Product Name : ')),
                             Expanded(
                                 flex: 4,
                                 child: Text(widget.objectData['prod_ref']
@@ -524,13 +526,13 @@ class _SealScreenState extends State<SealScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Expanded(
+                            const Expanded(
                                 flex: 1,
                                 child: Icon(
                                   Icons.format_list_numbered_rtl_rounded,
                                   color: Colors.cyan,
                                 )),
-                            Expanded(flex: 3, child: Text('Quantity : ')),
+                            const Expanded(flex: 3, child: Text('Quantity : ')),
                             Expanded(
                                 flex: 4,
                                 child: Text(widget.objectData['quantity']
@@ -542,7 +544,7 @@ class _SealScreenState extends State<SealScreen> {
                                         widget.objectData['unit'].toString()))
                           ],
                         ),
-                        Divider(
+                        const Divider(
                           color: Colors.purple,
                           endIndent: 20,
                         )
@@ -559,11 +561,11 @@ class _SealScreenState extends State<SealScreen> {
                             cardC.currentState?.collapse();
                           },
                           child: Column(
-                            children: <Widget>[
+                            children: const <Widget>[
                               Icon(Icons.arrow_upward),
                               Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 2.0),
+                                    EdgeInsets.symmetric(vertical: 2.0),
                               ),
                               Text('Close'),
                             ],
@@ -576,11 +578,11 @@ class _SealScreenState extends State<SealScreen> {
                             cardC.currentState?.collapse();
                           },
                           child: Column(
-                            children: <Widget>[
+                            children: const <Widget>[
                               Icon(Icons.swap_vert),
                               Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 2.0),
+                                    EdgeInsets.symmetric(vertical: 2.0),
                               ),
                               Text('Toggle Export Info'),
                             ],
@@ -611,7 +613,7 @@ class _SealScreenState extends State<SealScreen> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -700,19 +702,19 @@ class _SealScreenState extends State<SealScreen> {
         });
       },
       child: isLoading
-          ? SpinKitCircle(
+          ? const SpinKitCircle(
               color: kPrimaryColor,
             )
           : Container(
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.symmetric(vertical: 15),
+              padding: const EdgeInsets.symmetric(vertical: 15),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
                         color: Colors.grey.shade200,
-                        offset: Offset(2, 4),
+                        offset: const Offset(2, 4),
                         blurRadius: 5,
                         spreadRadius: 2)
                   ],
@@ -720,7 +722,7 @@ class _SealScreenState extends State<SealScreen> {
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                       colors: [kPrimaryColor, Colors.green[200]!])),
-              child: Text(
+              child: const Text(
                 'Seal',
                 style: TextStyle(fontSize: 20, color: Colors.white),
               ),

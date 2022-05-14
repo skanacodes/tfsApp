@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field
+// ignore_for_file: unused_field, avoid_print
 
 import 'package:flutter/material.dart';
 
@@ -7,7 +7,7 @@ import 'package:tfsappv1/services/size_config.dart';
 
 class IllegalProductScreen extends StatefulWidget {
   static String routeName = "/illigalProductBills";
-  IllegalProductScreen({Key? key}) : super(key: key);
+  const IllegalProductScreen({Key? key}) : super(key: key);
 
   @override
   _IllegalProductScreenState createState() => _IllegalProductScreenState();
@@ -42,31 +42,29 @@ class _IllegalProductScreenState extends State<IllegalProductScreen> {
   _biuldTextField(variable, String? label, String? keybordType) {
     return Padding(
       padding: const EdgeInsets.only(top: 10, right: 16, left: 16),
-      child: Container(
-        child: TextFormField(
-          controller: variable,
-          keyboardType:
-              keybordType == "text" ? TextInputType.text : TextInputType.number,
-          key: Key(label!),
-          decoration: InputDecoration(
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(
-                color: Colors.cyan,
-              ),
+      child: TextFormField(
+        controller: variable,
+        keyboardType:
+            keybordType == "text" ? TextInputType.text : TextInputType.number,
+        key: Key(label!),
+        decoration: InputDecoration(
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(
+              color: Colors.cyan,
             ),
-            fillColor: Color(0xfff3f3f4),
-            filled: true,
-            labelText: label,
-            border: InputBorder.none,
-            isDense: true,
-            contentPadding: EdgeInsets.fromLTRB(30, 10, 15, 10),
           ),
-          validator: (value) {
-            if (value!.isEmpty) return "This Field Is Required";
-            return null;
-          },
+          fillColor: const Color(0xfff3f3f4),
+          filled: true,
+          labelText: label,
+          border: InputBorder.none,
+          isDense: true,
+          contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
         ),
+        validator: (value) {
+          if (value!.isEmpty) return "This Field Is Required";
+          return null;
+        },
       ),
     );
   }
@@ -153,17 +151,17 @@ class _IllegalProductScreenState extends State<IllegalProductScreen> {
     setState(() => currentStep = step);
   }
 
-  List<DropdownMenuItem<String>> _permitType = [
-    DropdownMenuItem(
-      child: new Text("Export"),
+  final List<DropdownMenuItem<String>> _permitType = [
+    const DropdownMenuItem(
+      child: Text("Export"),
       value: "Export",
     ),
-    DropdownMenuItem(
-      child: new Text("Import"),
+    const DropdownMenuItem(
+      child: Text("Import"),
       value: "Import",
     ),
-    DropdownMenuItem(
-      child: new Text("Internal Market"),
+    const DropdownMenuItem(
+      child: Text("Internal Market"),
       value: "Internal Market",
     ),
   ];
@@ -183,70 +181,66 @@ class _IllegalProductScreenState extends State<IllegalProductScreen> {
                     child: Padding(
                       padding:
                           const EdgeInsets.only(top: 10, right: 16, left: 16),
-                      child: Container(
-                        // width: getProportionateScreenHeight(
-                        //     320),
-                        child: DropdownButtonFormField<String>(
-                          itemHeight: 50,
-                          decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5.0),
-                                borderSide: BorderSide(
-                                  color: Colors.cyan,
-                                ),
+                      child: DropdownButtonFormField<String>(
+                        itemHeight: 50,
+                        decoration: InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              borderSide: const BorderSide(
+                                color: Colors.cyan,
                               ),
-                              fillColor: Color(0xfff3f3f4),
-                              filled: true,
-                              isDense: true,
-                              contentPadding:
-                                  EdgeInsets.fromLTRB(30, 10, 15, 10),
-                              labelText: "Is Transportation Vessel Involved?",
-                              border: InputBorder.none),
-                          isExpanded: true,
+                            ),
+                            fillColor: const Color(0xfff3f3f4),
+                            filled: true,
+                            isDense: true,
+                            contentPadding:
+                                const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                            labelText: "Is Transportation Vessel Involved?",
+                            border: InputBorder.none),
+                        isExpanded: true,
 
-                          value: vehicleStatus,
-                          //elevation: 5,
-                          style: TextStyle(
-                              color: Colors.white, fontFamily: 'Ubuntu'),
-                          iconEnabledColor: Colors.black,
-                          items: vehicleInvolved
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return new DropdownMenuItem(
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Color(0xfff3f3f4),
-                                  border: Border(
-                                    bottom: BorderSide(
-                                        width: 1, color: kPrimaryColor),
-                                  ),
-                                ),
-                                child: new Text(
-                                  value,
-                                  style: TextStyle(color: Colors.black),
+                        value: vehicleStatus,
+                        //elevation: 5,
+                        style: const TextStyle(
+                            color: Colors.white, fontFamily: 'Ubuntu'),
+                        iconEnabledColor: Colors.black,
+                        items: vehicleInvolved
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem(
+                            child: Container(
+                              width: double.infinity,
+                              decoration: const BoxDecoration(
+                                color: Color(0xfff3f3f4),
+                                border: Border(
+                                  bottom: BorderSide(
+                                      width: 1, color: kPrimaryColor),
                                 ),
                               ),
-                              value: value,
-                            );
-                          }).toList(),
-                          validator: (value) {
-                            if (value == null) {
-                              return "This Field is required";
-                            }
-                            return null;
-                          },
-                          onChanged: (value) {
-                            setState(() {
-                              FocusScope.of(context)
-                                  .requestFocus(new FocusNode());
-                              vehicleStatus = value!;
-                              vehicleStatus == "Yes"
-                                  ? isVehicle = true
-                                  : isVehicle = false;
-                              // print(typeSeed);
-                            });
-                          },
-                        ),
+                              child: Text(
+                                value,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            ),
+                            value: value,
+                          );
+                        }).toList(),
+                        validator: (value) {
+                          if (value == null) {
+                            return "This Field is required";
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            FocusScope.of(context)
+                                .requestFocus(FocusNode());
+                            vehicleStatus = value!;
+                            vehicleStatus == "Yes"
+                                ? isVehicle = true
+                                : isVehicle = false;
+                            // print(typeSeed);
+                          });
+                        },
                       ),
                     ),
                   ),
@@ -319,12 +313,12 @@ class _IllegalProductScreenState extends State<IllegalProductScreen> {
         state: isStepThreeComplete ? StepState.complete : StepState.indexed,
         title: const Text('Inspection'),
         subtitle: type == 'Export'
-            ? Text('Export')
+            ? const Text('Export')
             : type == 'Import'
-                ? Text('Import')
+                ? const Text('Import')
                 : type == 'Import'
-                    ? Text('Internal Market')
-                    : Text(''),
+                    ? const Text('Internal Market')
+                    : const Text(''),
         content: vehicleStatus == "Yes"
             ? _biuldTextField(_vesselNoController, "Vessel No", "text")
             : Container(),
@@ -351,14 +345,14 @@ class _IllegalProductScreenState extends State<IllegalProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
         floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.list),
+          child: const Icon(Icons.list),
           onPressed: switchStepType,
         ),
         appBar: AppBar(
           backgroundColor: kPrimaryColor,
-          title: Text(
+          title: const Text(
             'Offences Management',
             style: TextStyle(
                 fontFamily: 'Ubuntu', color: Colors.black, fontSize: 15),

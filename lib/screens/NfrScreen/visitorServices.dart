@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field
+// ignore_for_file: unused_field, file_names, prefer_typing_uninitialized_variables, avoid_print
 
 import 'dart:convert';
 
@@ -16,7 +16,7 @@ class VisitorServices extends StatefulWidget {
   final List data;
   final String memberId;
   final String name;
-  VisitorServices(
+  const VisitorServices(
       {Key? key,
       required this.data,
       required this.name,
@@ -28,7 +28,7 @@ class VisitorServices extends StatefulWidget {
 }
 
 class _VisitorServicesState extends State<VisitorServices> {
-  final GlobalKey<ExpansionTileCardState> cardA = new GlobalKey();
+  final GlobalKey<ExpansionTileCardState> cardA = GlobalKey();
   bool isLoading = false;
   List iconIndex = [];
   bool _switchValue = false;
@@ -184,7 +184,7 @@ class _VisitorServicesState extends State<VisitorServices> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -236,24 +236,24 @@ class _VisitorServicesState extends State<VisitorServices> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
-        title: Text(
+        title: const Text(
           '',
           style: TextStyle(color: Colors.black, fontFamily: 'Ubuntu'),
         ),
       ),
       body: SingleChildScrollView(
-        child: Container(
+        child: SizedBox(
           width: double.infinity,
           child: Column(
             children: <Widget>[
-              Container(
+              SizedBox(
                 height: getProportionateScreenHeight(130),
                 child: Stack(
                   children: [
                     Container(
                       width: double.infinity,
                       height: getProportionateScreenHeight(90),
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         // borderRadius: BorderRadius.only(
                         //     bottomLeft: Radius.circular(150),
                         //     bottomRight: Radius.circular(150)),
@@ -269,11 +269,11 @@ class _VisitorServicesState extends State<VisitorServices> {
                           child: ListTile(
                               tileColor: Colors.white,
                               title: _title(),
-                              trailing: Icon(
+                              trailing: const Icon(
                                 Icons.data_saver_off,
                                 color: Colors.cyan,
                               ),
-                              leading: CircleAvatar(
+                              leading: const CircleAvatar(
                                 backgroundColor: Colors.pink,
                                 child: Icon(
                                   Icons.edit,
@@ -296,25 +296,25 @@ class _VisitorServicesState extends State<VisitorServices> {
                   animateTrailing: true,
                   shadowColor: kPrimaryColor,
                   expandedTextColor: Colors.black,
-                  duration: Duration(milliseconds: 500),
-                  baseColor: Color(0xfff3f3f4),
+                  duration: const Duration(milliseconds: 500),
+                  baseColor: const Color(0xfff3f3f4),
                   elevation: 10,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.zero,
                       bottomRight: Radius.zero,
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20)),
 
-                  leading: CircleAvatar(
+                  leading: const CircleAvatar(
                       backgroundColor: Colors.transparent,
                       child: Icon(
                         Icons.donut_large,
                         color: kPrimaryColor,
                       )),
-                  title: Text('Services'),
+                  title: const Text('Services'),
                   // subtitle: Text(''),
                   children: <Widget>[
-                    Divider(
+                    const Divider(
                       thickness: 1.0,
                       height: 1.0,
                       color: Colors.cyan,
@@ -324,7 +324,7 @@ class _VisitorServicesState extends State<VisitorServices> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Expanded(
+                          const Expanded(
                               flex: 3,
                               child: Text(
                                 'Client Name: ',
@@ -334,27 +334,27 @@ class _VisitorServicesState extends State<VisitorServices> {
                               flex: 4,
                               child: Text(
                                 widget.name,
-                                style: TextStyle(color: Colors.black),
+                                style: const TextStyle(color: Colors.black),
                               )),
                         ],
                       ),
                     ),
                     widget.data.isEmpty
-                        ? Center(
+                        ? const Center(
                             child: Text('There Is No Services In This Package'),
                           )
                         : Container(),
                     for (var i = 0; i < widget.data.length; i++)
                       Column(
                         children: [
-                          Divider(
+                          const Divider(
                             color: Colors.grey,
                             endIndent: 20,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Expanded(
+                              const Expanded(
                                   flex: 1,
                                   child: Icon(
                                     Icons.sell_rounded,
@@ -368,7 +368,7 @@ class _VisitorServicesState extends State<VisitorServices> {
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
+                            children: const [
                               Expanded(
                                   flex: 1,
                                   child: Icon(
@@ -387,13 +387,13 @@ class _VisitorServicesState extends State<VisitorServices> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Expanded(
+                              const Expanded(
                                   flex: 1,
                                   child: Icon(
                                     Icons.donut_small_outlined,
                                     color: Colors.purple,
                                   )),
-                              Expanded(flex: 3, child: Text('Status : ')),
+                              const Expanded(flex: 3, child: Text('Status : ')),
                               Expanded(
                                 flex: 4,
                                 child: Row(
@@ -401,8 +401,8 @@ class _VisitorServicesState extends State<VisitorServices> {
                                     widget.data[i]["is_check_in"].toString() ==
                                                 "1" ||
                                             iconIndex.contains(i)
-                                        ? Text("In")
-                                        : Text("Out"),
+                                        ? const Text("In")
+                                        : const Text("Out"),
                                     Center(
                                       child: CupertinoSwitch(
                                         activeColor: Colors.blue,
@@ -435,7 +435,7 @@ class _VisitorServicesState extends State<VisitorServices> {
                                       ),
                                     ),
                                     isLoading
-                                        ? CupertinoActivityIndicator(
+                                        ? const CupertinoActivityIndicator(
                                             animating: true,
                                           )
                                         : Container()

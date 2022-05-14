@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, avoid_print, prefer_typing_uninitialized_variables
+
 import 'dart:convert';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,6 +8,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:tfsappv1/screens/payments/fremisBills.dart';
 import 'package:tfsappv1/screens/payments/honeyTraceability.dart';
 import 'package:tfsappv1/screens/payments/seed.dart';
 import 'package:tfsappv1/services/constants.dart';
@@ -15,7 +18,7 @@ class BillManagement extends StatefulWidget {
   static String routeName = "/billManagement";
   final String? token;
   final String system;
-  BillManagement(this.system, {this.token});
+  const BillManagement(this.system, {Key? key, this.token}) : super(key: key);
 
   @override
   _BillManagementState createState() => _BillManagementState();
@@ -102,7 +105,7 @@ class _BillManagementState extends State<BillManagement> {
     // ignore: todo
     // TODO: implement initState
     // _handleRadioValueChange(0);
-    this.getUserDetails();
+    getUserDetails();
     super.initState();
   }
 
@@ -139,7 +142,7 @@ class _BillManagementState extends State<BillManagement> {
       elevation: 10,
       shadowColor: kPrimaryColor,
       child: ListTile(
-        leading: CircleAvatar(
+        leading: const CircleAvatar(
           backgroundColor: kPrimaryColor,
           child: Icon(
             Icons.file_present,
@@ -148,7 +151,7 @@ class _BillManagementState extends State<BillManagement> {
         ),
         title: Text(title),
         subtitle: Text(subtitle),
-        trailing: Icon(Icons.arrow_forward_ios_outlined),
+        trailing: const Icon(Icons.arrow_forward_ios_outlined),
       ),
     );
   }
@@ -161,12 +164,12 @@ class _BillManagementState extends State<BillManagement> {
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
           backgroundColor: kPrimaryColor,
-          title: Text(
+          title: const Text(
             '',
             style: TextStyle(color: Colors.black, fontFamily: 'Ubuntu'),
           ),
         ),
-        body: Container(
+        body: SizedBox(
           height: height,
           child: Column(
             children: <Widget>[
@@ -179,7 +182,7 @@ class _BillManagementState extends State<BillManagement> {
                   ),
                   Container(
                     height: getProportionateScreenHeight(50),
-                    decoration: BoxDecoration(color: kPrimaryColor),
+                    decoration: const BoxDecoration(color: kPrimaryColor),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
@@ -188,13 +191,13 @@ class _BillManagementState extends State<BillManagement> {
                       child: Card(
                         elevation: 10,
                         child: ListTile(
-                          leading: CircleAvatar(
+                          leading: const CircleAvatar(
                             foregroundColor: kPrimaryColor,
                             backgroundColor: Colors.black12,
                             child: Icon(Icons.format_align_center),
                           ),
                           title: _title(),
-                          trailing: Icon(
+                          trailing: const Icon(
                             Icons.api,
                             color: Colors.pink,
                           ),
@@ -210,7 +213,7 @@ class _BillManagementState extends State<BillManagement> {
                 padding: const EdgeInsets.all(0.0),
                 child: Container(
                   color: Colors.transparent,
-                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: AnimationLimiter(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -234,9 +237,11 @@ class _BillManagementState extends State<BillManagement> {
                                   color: Colors.transparent,
                                   child: widget.system == "HoneyTraceability"
                                       ? HoneyTraceAbility(seedToken!)
-                                      : Seeds(
-                                          seedToken!,
-                                        )),
+                                      : widget.system == "Fremis"
+                                          ? FremisBills()
+                                          : Seeds(
+                                              seedToken!,
+                                            )),
                         ],
                       ),
                     ),

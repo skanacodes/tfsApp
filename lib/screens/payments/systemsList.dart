@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
@@ -9,7 +11,7 @@ import 'package:tfsappv1/services/size_config.dart';
 
 class ListSystems extends StatefulWidget {
   static String routeName = "/listsystems";
-  ListSystems({Key? key}) : super(key: key);
+  const ListSystems({Key? key}) : super(key: key);
 
   @override
   _ListSystemsState createState() => _ListSystemsState();
@@ -20,7 +22,7 @@ class _ListSystemsState extends State<ListSystems> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Generate Bill Per Each System',
           style: TextStyle(
               color: Colors.black, fontFamily: 'Ubuntu', fontSize: 17),
@@ -29,7 +31,7 @@ class _ListSystemsState extends State<ListSystems> {
       ),
       body: Column(
         children: [
-          Container(
+          SizedBox(
             width: double.infinity,
             height: 60.h,
             // color: kPrimaryColor,
@@ -43,7 +45,7 @@ class _ListSystemsState extends State<ListSystems> {
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Padding(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     child: Container(
                       color: Colors.transparent,
                       child: AnimationLimiter(
@@ -60,64 +62,62 @@ class _ListSystemsState extends State<ListSystems> {
                                   child: Card(
                                     elevation: 10,
                                     shadowColor: Colors.grey,
-                                    child: Container(
-                                      child: ListTile(
-                                        onTap: () {
-                                          // index == 0
-                                          //     ? showModal()
-                                          //     : print('sahs');
-                                          index == 0
-                                              ? Navigator.push(context, MaterialPageRoute(builder: (context) => BillsDashBoard("Fremis"))).then(
-                                                  (_) => RealTimeCommunication()
-                                                      .createConnection("3"))
-                                              : index == 1
-                                                  ? Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              BillsDashBoard("seedMIS"))).then(
-                                                      (_) => RealTimeCommunication()
-                                                          .createConnection("3"))
-                                                  : index == 2
-                                                      ? Navigator.push(context, MaterialPageRoute(builder: (context) => BillsDashBoard("HoneyTraceability"))).then((_) => RealTimeCommunication().createConnection("3"))
-                                                      : index == 3
-                                                          ? Navigator.push(context, MaterialPageRoute(builder: (context) => BillsDashBoard("E-Auction"))).then((_) => RealTimeCommunication().createConnection("3"))
-                                                          : Navigator.pushNamed(
-                                                              context,
-                                                              PaymentList
-                                                                  .routeName,
-                                                            ).then((_) => RealTimeCommunication().createConnection("3"));
-                                        },
-                                        trailing: Icon(
-                                          Icons.arrow_right,
-                                          color: Colors.cyan,
-                                        ),
-                                        leading: IntrinsicHeight(
-                                            child: SizedBox(
-                                                height: double.maxFinite,
-                                                width:
-                                                    getProportionateScreenHeight(
-                                                        50),
-                                                child: Row(
-                                                  children: [
-                                                    VerticalDivider(
-                                                      color: index.isEven
-                                                          ? kPrimaryColor
-                                                          : Colors.green[200],
-                                                      thickness: 5,
-                                                    )
-                                                  ],
-                                                ))),
-                                        title: Text(index == 0
-                                            ? "FreMIS Bills"
+                                    child: ListTile(
+                                      onTap: () {
+                                        // index == 0
+                                        //     ? showModal()
+                                        //     : print('sahs');
+                                        index == 0
+                                            ? Navigator.push(context, MaterialPageRoute(builder: (context) => const BillsDashBoard("Fremis"))).then(
+                                                (_) => RealTimeCommunication()
+                                                    .createConnection("3"))
                                             : index == 1
-                                                ? "SeedMIS Bills"
+                                                ? Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const BillsDashBoard("seedMIS"))).then(
+                                                    (_) => RealTimeCommunication()
+                                                        .createConnection("3"))
                                                 : index == 2
-                                                    ? "HoneyTraceability"
+                                                    ? Navigator.push(context, MaterialPageRoute(builder: (context) => const BillsDashBoard("HoneyTraceability"))).then((_) => RealTimeCommunication().createConnection("3"))
                                                     : index == 3
-                                                        ? "E-Auction"
-                                                        : "PMIS"),
+                                                        ? Navigator.push(context, MaterialPageRoute(builder: (context) => const BillsDashBoard("E-Auction"))).then((_) => RealTimeCommunication().createConnection("3"))
+                                                        : Navigator.pushNamed(
+                                                            context,
+                                                            PaymentList
+                                                                .routeName,
+                                                          ).then((_) => RealTimeCommunication().createConnection("3"));
+                                      },
+                                      trailing: const Icon(
+                                        Icons.arrow_right,
+                                        color: Colors.cyan,
                                       ),
+                                      leading: IntrinsicHeight(
+                                          child: SizedBox(
+                                              height: double.maxFinite,
+                                              width:
+                                                  getProportionateScreenHeight(
+                                                      50),
+                                              child: Row(
+                                                children: [
+                                                  VerticalDivider(
+                                                    color: index.isEven
+                                                        ? kPrimaryColor
+                                                        : Colors.green[200],
+                                                    thickness: 5,
+                                                  )
+                                                ],
+                                              ))),
+                                      title: Text(index == 0
+                                          ? "FreMIS Bills"
+                                          : index == 1
+                                              ? "SeedMIS Bills"
+                                              : index == 2
+                                                  ? "HoneyTraceability"
+                                                  : index == 3
+                                                      ? "E-Auction"
+                                                      : "PMIS"),
                                     ),
                                   ),
                                 ),
@@ -144,19 +144,19 @@ class _ListSystemsState extends State<ListSystems> {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              ListTile(
-                leading: new Icon(
+              const ListTile(
+                leading: Icon(
                   Icons.select_all_outlined,
                   color: Colors.green,
                 ),
-                title: new Text('Select The Type Of Inspection'),
+                title: Text('Select The Type Of Inspection'),
               ),
               ListTile(
-                leading: new Icon(
+                leading: const Icon(
                   Icons.arrow_right,
                   color: Colors.green,
                 ),
-                title: new Text('Apiaries inspections'),
+                title: const Text('Apiaries inspections'),
                 onTap: () {
                   Navigator.pop(context);
                   // Navigator.pushNamed(
@@ -166,11 +166,11 @@ class _ListSystemsState extends State<ListSystems> {
                 },
               ),
               ListTile(
-                leading: new Icon(
+                leading: const Icon(
                   Icons.arrow_right,
                   color: Colors.green,
                 ),
-                title: new Text('Other Inspections'),
+                title: const Text('Other Inspections'),
                 onTap: () {
                   // Navigator.pop(context);
                 },

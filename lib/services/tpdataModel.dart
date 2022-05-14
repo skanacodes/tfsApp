@@ -1,3 +1,4 @@
+// ignore_for_file: file_names
 // class TpDataModel {
 //   final Map<String, dynamic> transitPass;
 //   final int id;

@@ -7,14 +7,14 @@ import 'package:tfsappv1/services/size_config.dart';
 import 'package:sizer/sizer.dart';
 
 class SystemsList extends StatefulWidget {
-  SystemsList({Key? key}) : super(key: key);
+  const SystemsList({Key? key}) : super(key: key);
 
   @override
   _SystemsListState createState() => _SystemsListState();
 }
 
 class _SystemsListState extends State<SystemsList> {
-  List cardList = [Item1(), Item2(), Item3(), Item4()];
+  List cardList = [const Item1(), const Item2(), const Item3(), const Item4()];
   List<T> map<T>(List list, Function handler) {
     List<T> result = [];
     for (var i = 0; i < list.length; i++) {
@@ -30,18 +30,18 @@ class _SystemsListState extends State<SystemsList> {
     return InkWell(
       onTap: () async {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LoginScreen()));
+            context, MaterialPageRoute(builder: (context) => const LoginScreen()));
       },
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
         child: Container(
           height: 60,
           width: getProportionateScreenWidth(250),
-          padding: EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(5)),
-              boxShadow: <BoxShadow>[
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
+              boxShadow: const <BoxShadow>[
                 BoxShadow(
                     color: Colors.transparent,
                     offset: Offset(2, 4),
@@ -59,7 +59,7 @@ class _SystemsListState extends State<SystemsList> {
               children: [
                 Expanded(
                   flex: 2,
-                  child: Container(
+                  child: SizedBox(
                     height: getProportionateScreenHeight(100),
                     child: CircleAvatar(
                       backgroundColor: Colors.grey,
@@ -94,7 +94,7 @@ class _SystemsListState extends State<SystemsList> {
         ),
         Stack(children: [
           Container(
-            padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+            padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
             child: CarouselSlider(
               options: CarouselOptions(
                 height: 600,
@@ -103,8 +103,8 @@ class _SystemsListState extends State<SystemsList> {
                 enableInfiniteScroll: true,
                 autoPlay: true,
                 pauseAutoPlayOnManualNavigate: true,
-                autoPlayInterval: Duration(seconds: 3),
-                autoPlayAnimationDuration: Duration(milliseconds: 800),
+                autoPlayInterval: const Duration(seconds: 3),
+                autoPlayAnimationDuration: const Duration(milliseconds: 800),
                 autoPlayCurve: Curves.fastLinearToSlowEaseIn,
                 pauseAutoPlayOnTouch: true,
                 onPageChanged: (index, reason) {
@@ -113,7 +113,7 @@ class _SystemsListState extends State<SystemsList> {
               ),
               items: cardList.map((card) {
                 return Builder(builder: (BuildContext context) {
-                  return Container(
+                  return SizedBox(
                     height: double.infinity,
                     width: double.infinity,
                     child: Card(
@@ -130,13 +130,13 @@ class _SystemsListState extends State<SystemsList> {
           ),
           Align(
               alignment: Alignment.bottomCenter,
-              child: Container(
+              child: SizedBox(
                   height: getProportionateScreenHeight(500),
                   child: Padding(
                       padding: const EdgeInsets.all(0.0),
                       child: Container(
                         color: Colors.transparent,
-                        padding: EdgeInsets.symmetric(horizontal: 15),
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: AnimationLimiter(
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -153,14 +153,14 @@ class _SystemsListState extends State<SystemsList> {
                                               ),
                                             ),
                                         children: <Widget>[
-                                      _submitButton(Icon(Icons.ac_unit),
+                                      _submitButton(const Icon(Icons.ac_unit),
                                           "Login With Fremis"),
-                                      _submitButton(Icon(Icons.nature_outlined),
+                                      _submitButton(const Icon(Icons.nature_outlined),
                                           "Login With SeedMIS"),
-                                      _submitButton(Icon(Icons.beenhere),
+                                      _submitButton(const Icon(Icons.beenhere),
                                           "Login With HoneyTraceability"),
                                       _submitButton(
-                                          Icon(Icons.nature), "Login With PMIS")
+                                          const Icon(Icons.nature), "Login With PMIS")
                                     ]))),
                       )))),
         ]),
@@ -170,14 +170,16 @@ class _SystemsListState extends State<SystemsList> {
 }
 
 class Item1 extends StatelessWidget {
+  const Item1({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Center(
         child: Container(
-      constraints: BoxConstraints.expand(),
+      constraints: const BoxConstraints.expand(),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          image: DecorationImage(
+          image: const DecorationImage(
               image: AssetImage(
                 'assets/images/trees.jpg',
               ),
@@ -187,14 +189,16 @@ class Item1 extends StatelessWidget {
 }
 
 class Item2 extends StatelessWidget {
+  const Item2({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Center(
         child: Container(
-      constraints: BoxConstraints.expand(),
+      constraints: const BoxConstraints.expand(),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          image: DecorationImage(
+          image: const DecorationImage(
               image: AssetImage(
                 'assets/images/nyuki.jpg',
               ),
@@ -204,14 +208,16 @@ class Item2 extends StatelessWidget {
 }
 
 class Item3 extends StatelessWidget {
+  const Item3({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Center(
         child: Container(
-      constraints: BoxConstraints.expand(),
+      constraints: const BoxConstraints.expand(),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          image: DecorationImage(
+          image: const DecorationImage(
               image: AssetImage(
                 'assets/images/afzelia.jpg',
               ),
@@ -221,14 +227,16 @@ class Item3 extends StatelessWidget {
 }
 
 class Item4 extends StatelessWidget {
+  const Item4({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Center(
         child: Container(
-      constraints: BoxConstraints.expand(),
+      constraints: const BoxConstraints.expand(),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          image: DecorationImage(
+          image: const DecorationImage(
               image: AssetImage(
                 'assets/images/afzelia2.jpg',
               ),

@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomDrawer extends StatelessWidget {
+  const CustomDrawer({Key? key}) : super(key: key);
+
 //static const  heroTag='';
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: getProportionateScreenHeight(300),
       child: Drawer(
         elevation: 20,
@@ -22,7 +24,7 @@ class CustomDrawer extends StatelessWidget {
                 child: Container(
                   height: getProportionateScreenHeight(200),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(300),
                     ),
                     color: Colors.white,
@@ -39,8 +41,8 @@ class CustomDrawer extends StatelessWidget {
             ),
             ListTile(
               title:
-                  Text('Register POS', style: TextStyle(color: Colors.black)),
-              leading: Icon(
+                  const Text('Register POS', style: TextStyle(color: Colors.black)),
+              leading: const Icon(
                 Icons.account_circle,
                 color: Colors.black,
               ),
@@ -53,24 +55,24 @@ class CustomDrawer extends StatelessWidget {
                 ).then((_) => RealTimeCommunication().createConnection("3"));
               },
             ),
-            Divider(
+            const Divider(
               color: Colors.black,
             ),
             ListTile(
-                title: Text('Settings', style: TextStyle(color: Colors.black)),
-                leading: Icon(
+                title: const Text('Settings', style: TextStyle(color: Colors.black)),
+                leading: const Icon(
                   Icons.settings,
                   color: Colors.black,
                 ),
                 onTap: () {
                   Navigator.of(context).pop();
                 }),
-            Divider(
+            const Divider(
               color: Colors.black,
             ),
             ListTile(
-              title: Text('Updates', style: TextStyle(color: Colors.black)),
-              leading: Icon(
+              title: const Text('Updates', style: TextStyle(color: Colors.black)),
+              leading: const Icon(
                 Icons.update,
                 color: Colors.black,
               ),
@@ -86,12 +88,12 @@ class CustomDrawer extends StatelessWidget {
                 ).then((_) => RealTimeCommunication().createConnection("3"));
               },
             ),
-            Divider(
+            const Divider(
               color: Colors.black,
             ),
             ListTile(
-              title: Text('Logout', style: TextStyle(color: Colors.black)),
-              leading: Icon(
+              title: const Text('Logout', style: TextStyle(color: Colors.black)),
+              leading: const Icon(
                 Icons.arrow_forward,
                 color: Colors.black,
               ),
@@ -108,7 +110,7 @@ class CustomDrawer extends StatelessWidget {
                     '/login', (Route<dynamic> route) => false);
               },
             ),
-            Divider(
+            const Divider(
               color: Colors.black,
             ),
           ],

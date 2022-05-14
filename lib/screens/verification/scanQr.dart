@@ -1,16 +1,18 @@
-// ignore_for_file: unused_import, unused_element
+// ignore_for_file: unused_import, unused_element, file_names, use_key_in_widget_constructors, prefer_typing_uninitialized_variables, avoid_print, non_constant_identifier_names
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_qr_bar_scanner/qr_bar_scanner_camera.dart';
-import 'package:qrscan/qrscan.dart' as scanner;
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/screens/verification/expectedTpHistory.dart';
+import 'package:tfsappv1/screens/verification/extension_approvalscreen.dart';
+import 'package:tfsappv1/screens/verification/tp_editing.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/screens/verification/afterverification.dart';
 import 'package:tfsappv1/services/size_config.dart';
@@ -24,7 +26,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ScanQr extends StatefulWidget {
   final String role;
-  ScanQr({required this.role});
+  const ScanQr({required this.role});
   @override
   _ScanQrState createState() => _ScanQrState();
 }
@@ -33,6 +35,7 @@ class _ScanQrState extends State<ScanQr> {
   String result = "Hey there !";
   bool isAlreadyVerified = false;
   bool iSscanned = false;
+  bool isReceiptLoading = false;
   String? tpNumberPrompt;
   bool? status;
   String? tpNumber;
@@ -51,6 +54,8 @@ class _ScanQrState extends State<ScanQr> {
   bool isPosting = false;
   String? _qrInfo = '';
   bool _camState = false;
+  bool istp = false;
+  bool isreceipt = false;
   static const platform = MethodChannel(
     'samples.flutter.dev/printing',
   );
@@ -65,7 +70,7 @@ class _ScanQrState extends State<ScanQr> {
   Future<void> _printBill() async {
     try {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Starting Printer"),
         ),
       );
@@ -84,14 +89,14 @@ class _ScanQrState extends State<ScanQr> {
       if (result == "Successfully Printed") {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("$result"),
+            content: Text(result),
           ),
         );
         if (mounted) Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("$result"),
+            content: Text(result),
           ),
         );
       }
@@ -107,22 +112,37 @@ class _ScanQrState extends State<ScanQr> {
 
   _qrCallback(String? code) async {
     try {
-      setState(() {
-        _camState = false;
-        _qrInfo = code;
-      });
-      print(_qrInfo!);
-      String tokens = await SharedPreferences.getInstance()
-          .then((prefs) => prefs.getString('token').toString());
-      verifyTp(_qrInfo!.substring(11, 19), tokens);
+      if (istp) {
+        setState(() {
+          _camState = false;
+          _qrInfo = code;
+          istp = false;
+        });
+        //  print(_qrInfo!);
+        String tokens = await SharedPreferences.getInstance()
+            .then((prefs) => prefs.getString('token').toString());
+        verifyTp(_qrInfo!.substring(11, 19), tokens);
+      }
+      if (isreceipt) {
+        setState(() {
+          _camState = false;
+          _qrInfo = code;
+          isreceipt = false;
+        });
+        // print(_qrInfo! + "dwf");
+        String tokens = await SharedPreferences.getInstance()
+            .then((prefs) => prefs.getString('token').toString());
+        await verifyReceipt(_qrInfo!, tokens);
+      }
     } catch (e) {
       message(e.toString(), "error");
     }
   }
 
-  _scanCode() {
+  _scanCode(String val) {
     setState(() {
       _camState = true;
+      val == "tp" ? istp = true : isreceipt = true;
     });
   }
 
@@ -207,6 +227,9 @@ class _ScanQrState extends State<ScanQr> {
             res = json.decode(response.body);
             print(res);
             isPosting = false;
+            if (res['message'] == 'This TP Already Expired') {
+              message("This TP Has Already Expired", "error");
+            }
             if (res['message'] == 'Error! Checkpoint Skipped') {
               message('Error! Checkpoint Skipped', 'error');
               setState(() {
@@ -244,6 +267,9 @@ class _ScanQrState extends State<ScanQr> {
             if (res['message'] ==
                 'Vessel Was Not Assigned to this checkpoint') {
               message('Vessel Was Not Assigned to this checkpoint', 'error');
+            }
+            if (res['message'] == "You Dont Have Permission to Scan Tp") {
+              message("You Dont Have Permission to Scan Tp", "error");
             }
           });
           break;
@@ -285,14 +311,83 @@ class _ScanQrState extends State<ScanQr> {
     }
   }
 
+  Future verifyReceipt(String Numbere, String token) async {
+    setState(() {
+      isReceiptLoading = true;
+    });
+
+    try {
+      var headers = {"Authorization": "Bearer " + token};
+      var url = Uri.parse('$baseUrlTest/api/v1/receipt-validate');
+      final response =
+          await http.post(url, body: {"receipt_no": Numbere}, headers: headers);
+      var res;
+      //final sharedP prefs=await
+      print(response.statusCode);
+
+      switch (response.statusCode) {
+        case 201:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            //message("The Receipt is Valid", "success");
+          });
+          break;
+        case 200:
+          res = json.decode(response.body);
+          print(res);
+          setState(() {
+            res = json.decode(response.body);
+            if (res["status"].toString() == "Token is Expired") {
+              message("Token Has Expired...Please Login Again", "error");
+            } else if (res["msg"].toString() == "Valid Receipt") {
+              message("The Receipt is Valid", "success");
+            } else if (res["msg"].toString() == "Invalid Receipt") {
+              message("The Receipt is Invalid", "success");
+            }
+          });
+          break;
+
+        case 404:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            message("Receipt Not Found", "error");
+          });
+          break;
+
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            print(res);
+            isPosting = false;
+            message("Something Went Wrong", "success");
+          });
+          break;
+      }
+    } on SocketException {
+      setState(() {
+        var res = 'Server Error';
+        message('Bad Connection Or  Server Error', 'error');
+        isPosting = false;
+        print(res);
+      });
+    }
+    setState(() {
+      isReceiptLoading = false;
+    });
+  }
+
   enterTpNoPrompt(String tokens) {
     return Alert(
         context: context,
-        title: "Failed Scanning Enter TP Number",
+        title: istp
+            ? "Failed Scanning Enter TP Number"
+            : "Failed Scanning Enter Receipt Number",
         content: Column(
           children: <Widget>[
             isPosting
-                ? CupertinoActivityIndicator(
+                ? const CupertinoActivityIndicator(
                     radius: 20,
                     animating: true,
                   )
@@ -303,8 +398,9 @@ class _ScanQrState extends State<ScanQr> {
                     },
                     cursorColor: kPrimaryColor,
                     decoration: InputDecoration(
-                      icon: Icon(Icons.folder_open),
-                      labelText: 'Enter TP Number',
+                      icon: const Icon(Icons.folder_open),
+                      labelText:
+                          istp ? 'Enter TP Number' : 'Enter Receipt Number',
                     ),
                   ),
           ],
@@ -316,9 +412,15 @@ class _ScanQrState extends State<ScanQr> {
               setState(() {
                 _camState = false;
               });
-              await verifyTp(tpNumberPrompt!, tokens);
+              istp
+                  ? await verifyTp(tpNumberPrompt!, tokens)
+                  : await verifyReceipt(tpNumberPrompt!, tokens);
+              setState(() {
+                isreceipt = false;
+                istp = false;
+              });
             },
-            child: Text(
+            child: const Text(
               "VERIFY",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
@@ -328,10 +430,12 @@ class _ScanQrState extends State<ScanQr> {
             onPressed: () {
               setState(() {
                 _camState = false;
+                istp = false;
+                isreceipt = false;
               });
               Navigator.pop(context);
             },
-            child: Text(
+            child: const Text(
               "CANCEL",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
@@ -347,7 +451,7 @@ class _ScanQrState extends State<ScanQr> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: Text(
+          child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
@@ -360,15 +464,15 @@ class _ScanQrState extends State<ScanQr> {
 
   Future _scanQR() async {
     try {
-      String? barcodeScanRes = await scanner.scan();
-      // var x = barcodeScanRes == null ? null : barcodeScanRes.substring(11, 19);
+      // String? barcodeScanRes = await scanner.scan();
+      // // var x = barcodeScanRes == null ? null : barcodeScanRes.substring(11, 19);
 
-      // barcodeScanRes
-      if (barcodeScanRes != null) {
-        setState(() {
-          result = barcodeScanRes.toString();
-        });
-      }
+      // // barcodeScanRes
+      // if (barcodeScanRes != null) {
+      //   setState(() {
+      //     result = barcodeScanRes.toString();
+      //   });
+      // }
     } on PlatformException catch (ex) {
       setState(() {
         result = "Unknown Error $ex";
@@ -428,211 +532,307 @@ class _ScanQrState extends State<ScanQr> {
               ),
             ))
         : iSscanned == false
-            ? Column(
-                children: [
-                  Container(
-                    height: getProportionateScreenHeight(400),
-                    child: Stack(
+            ? AnimationLimiter(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: AnimationConfiguration.toStaggeredList(
+                      duration: const Duration(milliseconds: 1375),
+                      childAnimationBuilder: (widget) => FadeInAnimation(
+                        child: SlideAnimation(
+                          child: widget,
+                        ),
+                      ),
                       children: [
-                        Container(
-                          height: getProportionateScreenHeight(450),
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                              color: kPrimaryColor,
-                              borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(400))),
-                          child: Align(
-                            alignment: Alignment.bottomRight,
-                            child: Container(
-                              width: getProportionateScreenWidth(150),
-                              height: getProportionateScreenHeight(150),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(300))),
-                            ),
+                        SizedBox(
+                          height: getProportionateScreenHeight(300),
+                          child: Stack(
+                            children: [
+                              Container(
+                                height: getProportionateScreenHeight(350),
+                                width: double.infinity,
+                                decoration: const BoxDecoration(
+                                    color: kPrimaryColor,
+                                    borderRadius: BorderRadius.only(
+                                        bottomLeft: Radius.circular(400))),
+                                child: Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Container(
+                                    width: getProportionateScreenWidth(150),
+                                    height: getProportionateScreenHeight(150),
+                                    decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(300))),
+                                  ),
+                                ),
+                              ),
+                              iSscanned
+                                  ? Text(result)
+                                  : Align(
+                                      alignment: Alignment.center,
+                                      child: SizedBox(
+                                        height:
+                                            getProportionateScreenHeight(400),
+                                        width: getProportionateScreenWidth(200),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              height:
+                                                  getProportionateScreenHeight(
+                                                      5),
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100)),
+                                            ),
+                                            Container(
+                                              height:
+                                                  getProportionateScreenHeight(
+                                                      180),
+                                              width:
+                                                  getProportionateScreenWidth(
+                                                      200),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(0)),
+                                              child: Card(
+                                                  elevation: 20,
+                                                  shadowColor: kPrimaryColor,
+                                                  color: Colors.white,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            15.0),
+                                                    child: SvgPicture.asset(
+                                                      'assets/icons/qr-code-scan.svg',
+                                                      alignment:
+                                                          Alignment.center,
+                                                    ),
+                                                  )),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                            ],
                           ),
                         ),
-                        iSscanned
-                            ? Container(
-                                child: Text(result),
+                        isPosting
+                            ? const CupertinoActivityIndicator(
+                                radius: 20,
                               )
-                            : Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                  height: getProportionateScreenHeight(400),
-                                  width: getProportionateScreenWidth(200),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        height: getProportionateScreenHeight(5),
-                                        decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(100)),
+                            : Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Card(
+                                  elevation: 10,
+                                  child: ListTile(
+                                    tileColor: Colors.grey[200],
+                                    onTap: () async {
+                                      _scanCode("tp");
+                                    },
+                                    trailing: const Icon(
+                                      Icons.arrow_right,
+                                      color: Colors.black,
+                                    ),
+                                    leading: IntrinsicHeight(
+                                        child: SizedBox(
+                                            height: double.maxFinite,
+                                            width: getProportionateScreenHeight(
+                                                50),
+                                            child: Row(
+                                              children: const [
+                                                VerticalDivider(
+                                                  color: kPrimaryColor,
+                                                  thickness: 5,
+                                                )
+                                              ],
+                                            ))),
+                                    title: const Text("Click To Verify TP "),
+                                    subtitle:
+                                        const Text("Check For The Validity Of TP"),
+                                  ),
+                                ),
+                              ),
+                        isReceiptLoading
+                            ? const CupertinoActivityIndicator(
+                                radius: 20,
+                              )
+                            : Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Card(
+                                  elevation: 10,
+                                  child: ListTile(
+                                    tileColor: Colors.grey[200],
+                                    onTap: () async {
+                                      _scanCode("receipt");
+                                    },
+                                    trailing: const Icon(
+                                      Icons.arrow_right,
+                                      color: Colors.black,
+                                    ),
+                                    leading: IntrinsicHeight(
+                                        child: SizedBox(
+                                            height: double.maxFinite,
+                                            width: getProportionateScreenHeight(
+                                                50),
+                                            child: Row(
+                                              children: [
+                                                VerticalDivider(
+                                                  color: Colors.green[200],
+                                                  thickness: 5,
+                                                )
+                                              ],
+                                            ))),
+                                    title: const Text("Verify Receipt"),
+                                    subtitle: const Text(
+                                        "Check For The Validity Of Receipt"),
+                                  ),
+                                ),
+                              ),
+                        controlNumber!.isNotEmpty
+                            ? Container()
+                            : Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Card(
+                                  elevation: 10,
+                                  child: ListTile(
+                                    tileColor: Colors.grey[200],
+                                    onTap: () async {
+                                      Navigator.pushNamed(
+                                        context,
+                                        ExpectedTP.routeName,
+                                      ).then((_) => RealTimeCommunication()
+                                          .createConnection("3"));
+                                    },
+                                    trailing: const Icon(
+                                      Icons.arrow_right,
+                                      color: Colors.black,
+                                    ),
+                                    leading: IntrinsicHeight(
+                                        child: SizedBox(
+                                            height: double.maxFinite,
+                                            width: getProportionateScreenHeight(
+                                                50),
+                                            child: Row(
+                                              children: const [
+                                                VerticalDivider(
+                                                  color: kPrimaryColor,
+                                                  thickness: 5,
+                                                )
+                                              ],
+                                            ))),
+                                    title: const Text("List Of Expected TP"),
+                                    subtitle: const Text(""),
+                                  ),
+                                ),
+                              ),
+                        controlNumber!.isNotEmpty
+                            ? Container()
+                            : Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Card(
+                                  elevation: 10,
+                                  child: ListTile(
+                                    tileColor: Colors.grey[200],
+                                    onTap: () async {
+                                      showModal();
+                                    },
+                                    trailing: const Icon(
+                                      Icons.arrow_right,
+                                      color: Colors.black,
+                                    ),
+                                    leading: IntrinsicHeight(
+                                        child: SizedBox(
+                                            height: double.maxFinite,
+                                            width: getProportionateScreenHeight(
+                                                50),
+                                            child: Row(
+                                              children: [
+                                                VerticalDivider(
+                                                  color: Colors.green[200],
+                                                  thickness: 5,
+                                                )
+                                              ],
+                                            ))),
+                                    title: const Text("Change Request(s)"),
+                                    subtitle: const Text("TP Editing and Extension"),
+                                  ),
+                                ),
+                              ),
+                        controlNumber!.isNotEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Card(
+                                  elevation: 10,
+                                  child: ListTile(
+                                    onTap: (() => _printBill()),
+                                    tileColor: Colors.grey[200],
+                                    trailing: const Icon(
+                                      Icons.error_outline_outlined,
+                                      color: Colors.black,
+                                    ),
+                                    leading: IntrinsicHeight(
+                                        child: SizedBox(
+                                            height: double.maxFinite,
+                                            width: getProportionateScreenHeight(
+                                                50),
+                                            child: Row(
+                                              children: const [
+                                                VerticalDivider(
+                                                  color: Colors.red,
+                                                  thickness: 5,
+                                                )
+                                              ],
+                                            ))),
+                                    title: const Center(
+                                      child: Text(
+                                        "Fine(s)",
+                                        style: TextStyle(
+                                            decoration:
+                                                TextDecoration.underline),
                                       ),
-                                      Container(
-                                        height:
-                                            getProportionateScreenHeight(190),
-                                        width: getProportionateScreenWidth(200),
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(0)),
-                                        child: Card(
-                                            elevation: 20,
-                                            shadowColor: kPrimaryColor,
-                                            color: Colors.white,
-                                            child: Container(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(15.0),
-                                                child: SvgPicture.asset(
-                                                  'assets/icons/qr-code-scan.svg',
-                                                  alignment: Alignment.center,
-                                                ),
-                                              ),
-                                            )),
-                                      ),
-                                    ],
+                                    ),
+                                    subtitle: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        for (var i = 0;
+                                            i < controlNumber!.length;
+                                            i++)
+                                          Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(controlNumber![i]
+                                                      ["bill_desc"]
+                                                  .toString()),
+                                              Text("Control-No: " +
+                                                  controlNumber![i]
+                                                          ["control_number"]
+                                                      .toString()),
+                                              Text("Amount: " +
+                                                  controlNumber![i]
+                                                          ["bill_amount"]
+                                                      .toString()),
+                                              const Divider(
+                                                color: Colors.black54,
+                                              )
+                                            ],
+                                          ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               )
+                            : Container(),
                       ],
-                    ),
-                  ),
-                  isPosting
-                      ? CupertinoActivityIndicator(
-                          radius: 20,
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Card(
-                            elevation: 10,
-                            child: ListTile(
-                              tileColor: Colors.grey[200],
-                              onTap: () async {
-                                _scanCode();
-                              },
-                              trailing: const Icon(
-                                Icons.arrow_right,
-                                color: Colors.black,
-                              ),
-                              leading: IntrinsicHeight(
-                                  child: SizedBox(
-                                      height: double.maxFinite,
-                                      width: getProportionateScreenHeight(50),
-                                      child: Row(
-                                        children: [
-                                          VerticalDivider(
-                                            color: kPrimaryColor,
-                                            thickness: 5,
-                                          )
-                                        ],
-                                      ))),
-                              title: Text("Click To Scan Qr Code "),
-                              subtitle: Text("Check For The Validity Of TP"),
-                            ),
-                          ),
-                        ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Card(
-                      elevation: 10,
-                      child: ListTile(
-                        tileColor: Colors.grey[200],
-                        onTap: () async {
-                          Navigator.pushNamed(
-                            context,
-                            ExpectedTP.routeName,
-                          ).then((_) =>
-                              RealTimeCommunication().createConnection("3"));
-                        },
-                        trailing: const Icon(
-                          Icons.arrow_right,
-                          color: Colors.black,
-                        ),
-                        leading: IntrinsicHeight(
-                            child: SizedBox(
-                                height: double.maxFinite,
-                                width: getProportionateScreenHeight(50),
-                                child: Row(
-                                  children: [
-                                    VerticalDivider(
-                                      color: kPrimaryColor,
-                                      thickness: 5,
-                                    )
-                                  ],
-                                ))),
-                        title: Text("List Of Expected TP"),
-                        subtitle: Text(""),
-                      ),
-                    ),
-                  ),
-                  controlNumber!.isNotEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Card(
-                            elevation: 10,
-                            child: ListTile(
-                              onTap: (() => _printBill()),
-                              tileColor: Colors.grey[200],
-                              trailing: const Icon(
-                                Icons.error_outline_outlined,
-                                color: Colors.black,
-                              ),
-                              leading: IntrinsicHeight(
-                                  child: SizedBox(
-                                      height: double.maxFinite,
-                                      width: getProportionateScreenHeight(50),
-                                      child: Row(
-                                        children: [
-                                          VerticalDivider(
-                                            color: Colors.red,
-                                            thickness: 5,
-                                          )
-                                        ],
-                                      ))),
-                              title: Center(
-                                child: Text(
-                                  "Fine(s)",
-                                  style: TextStyle(
-                                      decoration: TextDecoration.underline),
-                                ),
-                              ),
-                              subtitle: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  for (var i = 0;
-                                      i < controlNumber!.length;
-                                      i++)
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(controlNumber![i]["bill_desc"]
-                                            .toString()),
-                                        Text("Control-No: " +
-                                            controlNumber![i]["control_number"]
-                                                .toString()),
-                                        Text("Amount: " +
-                                            controlNumber![i]["bill_amount"]
-                                                .toString()),
-                                        Divider(
-                                          color: Colors.black54,
-                                        )
-                                      ],
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        )
-                      : Container(),
-                ],
-              )
+                    )))
             : AfterVerification(
                 tpData: tpData,
                 previousCheckpoint: prevCheck,
@@ -640,5 +840,55 @@ class _ScanQrState extends State<ScanQr> {
                 isAlreadyVerified: isAlreadyVerified,
                 verificationCode: vercode,
               );
+  }
+
+  showModal() {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const ListTile(
+                leading: Icon(
+                  Icons.select_all_outlined,
+                  color: Colors.green,
+                ),
+                title: Text(
+                  "Select Operation",
+                ),
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.arrow_right,
+                  color: Colors.green,
+                ),
+                title: const Text('TP Extensions Request(s)'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(
+                    context,
+                    ExtensionApproval.routeName,
+                  ).then((_) => RealTimeCommunication().createConnection("1"));
+                  //Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.arrow_right,
+                  color: Colors.green,
+                ),
+                title: const Text('TP Editing Request(s)'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(
+                    context,
+                    TPEditing.routeName,
+                  ).then((_) => RealTimeCommunication().createConnection("1"));
+                },
+              ),
+            ],
+          );
+        });
   }
 }
