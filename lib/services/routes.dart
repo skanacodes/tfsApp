@@ -25,6 +25,7 @@ import 'package:tfsappv1/screens/splash/splashscreen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tfsappv1/screens/updates/updates.dart';
 import 'package:tfsappv1/screens/verification/expectedTpHistory.dart';
+import 'package:tfsappv1/screens/verification/extensionApprovalWidget.dart';
 import 'package:tfsappv1/screens/verification/extension_approvalscreen.dart';
 import 'package:tfsappv1/screens/verification/tpTimeline.dart';
 import 'package:tfsappv1/screens/verification/tp_editing.dart';
@@ -46,6 +47,7 @@ final Map<String, WidgetBuilder> routes = {
   InspectionForm.routeName: (context) => const InspectionForm(),
   ExpiredBills.routeName: (context) => const ExpiredBills(''),
   SealScreen.routeName: (context) => const SealScreen(''),
+
   BillsDashBoard.routeName: (context) => const BillsDashBoard(''),
   PosReg.routeName: (context) => const PosReg(),
   Otp.routeName: (context) => const Otp(),
@@ -63,5 +65,6 @@ final Map<String, WidgetBuilder> routes = {
   VisitorsList.routeName: ((context) => const VisitorsList()),
   ExpectedTP.routeName: ((context) => const ExpectedTP()),
   TPEditing.routeName: ((context) => const TPEditing()),
-  ExtensionApproval.routeName: ((context) => const ExtensionApproval())
+  ExtensionApproval.routeName: ((context) => const ExtensionApproval()),
+  ExyensionApprovalWidget.routeName:(context) => const ExyensionApprovalWidget()
 };

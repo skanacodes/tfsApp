@@ -440,6 +440,7 @@ class _InspectionFormState extends State<InspectionForm> {
           isProductset = true;
           ask1 = null;
           print(data);
+          isLoading = false;
         });
 
         message('success', 'Data Submitted Successfull');
@@ -660,8 +661,8 @@ class _InspectionFormState extends State<InspectionForm> {
                               child: ListTile(
                                   tileColor: Colors.white,
                                   title: _title(args.type),
-                                  trailing:
-                                      const Icon(Icons.document_scanner_rounded),
+                                  trailing: const Icon(
+                                      Icons.document_scanner_rounded),
                                   leading: const CircleAvatar(
                                     backgroundColor: Colors.pink,
                                     child: Icon(
@@ -718,8 +719,7 @@ class _InspectionFormState extends State<InspectionForm> {
                                 itemHeight: 50,
                                 decoration: InputDecoration(
                                     focusedBorder: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(5.0),
+                                      borderRadius: BorderRadius.circular(5.0),
                                       borderSide: const BorderSide(
                                         color: Colors.cyan,
                                       ),
@@ -728,8 +728,8 @@ class _InspectionFormState extends State<InspectionForm> {
                                     filled: true,
                                     isDense: true,
                                     enabled: true,
-                                    contentPadding:
-                                        const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                    contentPadding: const EdgeInsets.fromLTRB(
+                                        30, 10, 15, 10),
                                     labelText: "Select Species",
                                     border: InputBorder.none),
                                 isExpanded: true,
@@ -737,8 +737,7 @@ class _InspectionFormState extends State<InspectionForm> {
                                 value: ask1,
                                 //elevation: 5,
                                 style: const TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: 'Ubuntu'),
+                                    color: Colors.white, fontFamily: 'Ubuntu'),
                                 iconEnabledColor: Colors.black,
                                 items: data.map((item) {
                                   // setState(() {
@@ -757,7 +756,8 @@ class _InspectionFormState extends State<InspectionForm> {
                                       ),
                                       child: Text(
                                         item['species_name'].toString(),
-                                        style: const TextStyle(color: Colors.black),
+                                        style: const TextStyle(
+                                            color: Colors.black),
                                       ),
                                     ),
                                     value: item['species_name'].toString(),
@@ -812,7 +812,8 @@ class _InspectionFormState extends State<InspectionForm> {
                           labelText: "No. Of Pieces",
                           border: InputBorder.none,
                           isDense: true,
-                          contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(30, 10, 15, 10),
                         ),
                         validator: (value) {
                           if (value == '') return "This Field Is Required";
@@ -866,54 +867,55 @@ class _InspectionFormState extends State<InspectionForm> {
                                       size: 35.0.sp,
                                     )
                                   : DropdownButtonFormField(
-                                    itemHeight: 50,
-                                    decoration: InputDecoration(
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0),
-                                          borderSide: const BorderSide(
-                                            color: Colors.cyan,
-                                          ),
-                                        ),
-                                        fillColor: const Color(0xfff3f3f4),
-                                        filled: true,
-                                        isDense: true,
-                                        contentPadding: const EdgeInsets.fromLTRB(
-                                            30, 10, 15, 10),
-                                        labelText: "Unit",
-                                        border: InputBorder.none),
-                                    isExpanded: true,
-                                    isDense: true,
-                                    validator: (value) =>
-                                        value == null ? "* Required" : null,
-                                    items: data1.map((item) {
-                                      return DropdownMenuItem(
-                                        child: Container(
-                                          width: double.infinity,
-                                          decoration: const BoxDecoration(
-                                            color: Color(0xfff3f3f4),
-                                            border: Border(
-                                              bottom: BorderSide(
-                                                  width: 1,
-                                                  color: kPrimaryColor),
+                                      itemHeight: 50,
+                                      decoration: InputDecoration(
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5.0),
+                                            borderSide: const BorderSide(
+                                              color: Colors.cyan,
                                             ),
                                           ),
-                                          child: Text(
-                                            item['name'].toString(),
+                                          fillColor: const Color(0xfff3f3f4),
+                                          filled: true,
+                                          isDense: true,
+                                          contentPadding:
+                                              const EdgeInsets.fromLTRB(
+                                                  30, 10, 15, 10),
+                                          labelText: "Unit",
+                                          border: InputBorder.none),
+                                      isExpanded: true,
+                                      isDense: true,
+                                      validator: (value) =>
+                                          value == null ? "* Required" : null,
+                                      items: data1.map((item) {
+                                        return DropdownMenuItem(
+                                          child: Container(
+                                            width: double.infinity,
+                                            decoration: const BoxDecoration(
+                                              color: Color(0xfff3f3f4),
+                                              border: Border(
+                                                bottom: BorderSide(
+                                                    width: 1,
+                                                    color: kPrimaryColor),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              item['name'].toString(),
+                                            ),
                                           ),
-                                        ),
-                                        value: item['name'].toString(),
-                                      );
-                                    }).toList(),
-                                    onChanged: (newVal) {
-                                      setState(() {
-                                        FocusScope.of(context)
-                                            .requestFocus(FocusNode());
-                                        unit = newVal.toString();
-                                      });
-                                    },
-                                    value: unit,
-                                  ),
+                                          value: item['name'].toString(),
+                                        );
+                                      }).toList(),
+                                      onChanged: (newVal) {
+                                        setState(() {
+                                          FocusScope.of(context)
+                                              .requestFocus(FocusNode());
+                                          unit = newVal.toString();
+                                        });
+                                      },
+                                      value: unit,
+                                    ),
                             ),
                           ),
                         ),

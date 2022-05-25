@@ -1,5 +1,7 @@
 // ignore_for_file: unused_import, unused_element, file_names, use_key_in_widget_constructors, prefer_typing_uninitialized_variables, avoid_print, non_constant_identifier_names
 
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -630,7 +632,7 @@ class _ScanQrState extends State<ScanQr> {
                                 child: Card(
                                   elevation: 10,
                                   child: ListTile(
-                                    tileColor: Colors.grey[200],
+                                    // tileColor: Colors.grey[200],
                                     onTap: () async {
                                       _scanCode("tp");
                                     },
@@ -642,18 +644,16 @@ class _ScanQrState extends State<ScanQr> {
                                         child: SizedBox(
                                             height: double.maxFinite,
                                             width: getProportionateScreenHeight(
-                                                50),
-                                            child: Row(
-                                              children: const [
-                                                VerticalDivider(
-                                                  color: kPrimaryColor,
-                                                  thickness: 5,
-                                                )
-                                              ],
+                                                35),
+                                            child: CircleAvatar(
+                                              backgroundColor: Colors.grey[200],
+                                              child: Image.asset(
+                                                  filepathImages +
+                                                      "verify.png"),
                                             ))),
                                     title: const Text("Click To Verify TP "),
-                                    subtitle:
-                                        const Text("Check For The Validity Of TP"),
+                                    subtitle: const Text(
+                                        "Check For The Validity Of TP"),
                                   ),
                                 ),
                               ),
@@ -666,7 +666,7 @@ class _ScanQrState extends State<ScanQr> {
                                 child: Card(
                                   elevation: 10,
                                   child: ListTile(
-                                    tileColor: Colors.grey[200],
+                                    //tileColor: Colors.grey[200],
                                     onTap: () async {
                                       _scanCode("receipt");
                                     },
@@ -678,14 +678,12 @@ class _ScanQrState extends State<ScanQr> {
                                         child: SizedBox(
                                             height: double.maxFinite,
                                             width: getProportionateScreenHeight(
-                                                50),
-                                            child: Row(
-                                              children: [
-                                                VerticalDivider(
-                                                  color: Colors.green[200],
-                                                  thickness: 5,
-                                                )
-                                              ],
+                                                35),
+                                            child: CircleAvatar(
+                                              backgroundColor: Colors.grey[200],
+                                              child: Image.asset(
+                                                  filepathImages +
+                                                      "receipt.png"),
                                             ))),
                                     title: const Text("Verify Receipt"),
                                     subtitle: const Text(
@@ -700,7 +698,7 @@ class _ScanQrState extends State<ScanQr> {
                                 child: Card(
                                   elevation: 10,
                                   child: ListTile(
-                                    tileColor: Colors.grey[200],
+                                    //  tileColor: Colors.grey[200],
                                     onTap: () async {
                                       Navigator.pushNamed(
                                         context,
@@ -716,14 +714,12 @@ class _ScanQrState extends State<ScanQr> {
                                         child: SizedBox(
                                             height: double.maxFinite,
                                             width: getProportionateScreenHeight(
-                                                50),
-                                            child: Row(
-                                              children: const [
-                                                VerticalDivider(
-                                                  color: kPrimaryColor,
-                                                  thickness: 5,
-                                                )
-                                              ],
+                                                35),
+                                            child: CircleAvatar(
+                                              backgroundColor: Colors.grey[200],
+                                              child: Image.asset(
+                                                  filepathImages +
+                                                      "expected.png"),
                                             ))),
                                     title: const Text("List Of Expected TP"),
                                     subtitle: const Text(""),
@@ -737,7 +733,7 @@ class _ScanQrState extends State<ScanQr> {
                                 child: Card(
                                   elevation: 10,
                                   child: ListTile(
-                                    tileColor: Colors.grey[200],
+                                    //tileColor: Colors.grey[200],
                                     onTap: () async {
                                       showModal();
                                     },
@@ -749,17 +745,16 @@ class _ScanQrState extends State<ScanQr> {
                                         child: SizedBox(
                                             height: double.maxFinite,
                                             width: getProportionateScreenHeight(
-                                                50),
-                                            child: Row(
-                                              children: [
-                                                VerticalDivider(
-                                                  color: Colors.green[200],
-                                                  thickness: 5,
-                                                )
-                                              ],
+                                                35),
+                                            child: CircleAvatar(
+                                              backgroundColor: Colors.grey[200],
+                                              child: Image.asset(
+                                                  filepathImages +
+                                                      "change.png"),
                                             ))),
                                     title: const Text("Change Request(s)"),
-                                    subtitle: const Text("TP Editing and Extension"),
+                                    subtitle:
+                                        const Text("TP Editing and Extension"),
                                   ),
                                 ),
                               ),
@@ -770,7 +765,7 @@ class _ScanQrState extends State<ScanQr> {
                                   elevation: 10,
                                   child: ListTile(
                                     onTap: (() => _printBill()),
-                                    tileColor: Colors.grey[200],
+                                    // tileColor: Colors.grey[200],
                                     trailing: const Icon(
                                       Icons.error_outline_outlined,
                                       color: Colors.black,

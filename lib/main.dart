@@ -1,4 +1,4 @@
-// ignore_for_file: unused_import
+// ignore_for_file: unused_import, avoid_print
 
 import 'dart:convert';
 import 'dart:io';
@@ -33,7 +33,7 @@ void main() async {
 
   Workmanager().initialize(
     callbackDispatcher,
-    // isInDebugMode: true,
+    isInDebugMode: true,
   );
 
   Workmanager().registerPeriodicTask("3", simplePeriodicTask,
@@ -124,7 +124,7 @@ void callbackDispatcher() {
     HttpOverrides.global = MyHttpOverrides();
     switch (task) {
       case simplePeriodicTask:
-        //  -6.180132662002722, 35.7512287377534
+        _determinePosition();
         final prefs = await SharedPreferences.getInstance();
         var on = prefs.getString("power_on").toString();
         var deviceId = prefs.getString("deviceId").toString();
@@ -149,12 +149,8 @@ void callbackDispatcher() {
         //final sharedP prefs=await
         print(response.statusCode);
         print(response.body.toString());
-        // print('dfsjjdsfsd');
-        //final sharedP prefs=await
-        //print(res);
-        // print('we are here to run');
 
-        // print("$simplePeriodicTask was executed");
+        print("$simplePeriodicTask was executed");
         break;
     }
 

@@ -282,11 +282,7 @@ class _GradingState extends State<Grading> {
       var dio = Dio(options);
       var formData = FormData.fromMap({
         'grading_id': jobId,
-        'export_id': exportId,
-        'category_id': classy,
-        'no_of_pieces': quantity,
         'grading_class': ask1,
-        'volume': volume,
         'identification_mark': base64Encode(bytes)
       });
 
@@ -541,7 +537,7 @@ class _GradingState extends State<Grading> {
     RealTimeCommunication().createConnection(
       "15",
     );
-    getCategory();
+    //  getCategory();
     // ignore: todo
     // TODO: implement initState
     super.initState();
@@ -591,8 +587,8 @@ class _GradingState extends State<Grading> {
                               child: ListTile(
                                   tileColor: Colors.white,
                                   title: _title(),
-                                  trailing:
-                                      const Icon(Icons.document_scanner_rounded),
+                                  trailing: const Icon(
+                                      Icons.document_scanner_rounded),
                                   leading: const CircleAvatar(
                                     backgroundColor: Colors.pink,
                                     child: Icon(
@@ -632,119 +628,64 @@ class _GradingState extends State<Grading> {
                 shadowColor: kPrimaryColor,
                 child: Column(
                   children: <Widget>[
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 10, right: 18, left: 18),
-                      child: SafeArea(
-                        child: data.isEmpty
-                            ? SpinKitFadingCircle(
-                                color: kPrimaryColor,
-                                size: 35.0.sp,
-                              )
-                            : DropdownButtonFormField(
-                              itemHeight: 50,
-                              decoration: InputDecoration(
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(5.0),
-                                    borderSide: const BorderSide(
-                                      color: Colors.cyan,
-                                    ),
-                                  ),
-                                  fillColor: const Color(0xfff3f3f4),
-                                  filled: true,
-                                  isDense: true,
-                                  contentPadding:
-                                      const EdgeInsets.fromLTRB(30, 10, 15, 10),
-                                  labelText: "Select Category",
-                                  border: InputBorder.none),
-                              isExpanded: true,
-                              isDense: true,
-                              validator: (value) => value == null
-                                  ? "This Field is Required"
-                                  : null,
-                              items: data.map((item) {
-                                return DropdownMenuItem(
-                                  child: Container(
-                                    width: double.infinity,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xfff3f3f4),
-                                      border: Border(
-                                        bottom: BorderSide(
-                                            width: 1, color: kPrimaryColor),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      item['name'].toString(),
-                                    ),
-                                  ),
-                                  value: item['id'].toString(),
-                                );
-                              }).toList(),
-                              onChanged: (newVal) {
-                                setState(() {
-                                  classy = newVal.toString();
-                                  print(classy);
-                                });
-                              },
-                              value: classy,
-                            ),
-                      ),
-                    ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 10, right: 16, left: 16),
-                      child: TextFormField(
-                        keyboardType: TextInputType.number,
-                        key: const Key("No"),
-                        onSaved: (val) => quantity = val!,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: const BorderSide(
-                              color: Colors.cyan,
-                            ),
-                          ),
-                          fillColor: const Color(0xfff3f3f4),
-                          filled: true,
-                          labelText: "No. Of Pieces",
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
-                        ),
-                        validator: (value) {
-                          if (value == '') return "This Field Is Required";
-                          return null;
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 10, right: 16, left: 16),
-                      child: TextFormField(
-                        keyboardType: TextInputType.number,
-                        key: const Key("vol"),
-                        onSaved: (val) => volume = val!,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: const BorderSide(
-                              color: Colors.cyan,
-                            ),
-                          ),
-                          fillColor: const Color(0xfff3f3f4),
-                          filled: true,
-                          labelText: "Volume",
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
-                        ),
-                        validator: (value) {
-                          if (value == '') return "This Field Is Required";
-                          return null;
-                        },
-                      ),
-                    ),
+                    // Padding(
+                    //   padding:
+                    //       const EdgeInsets.only(top: 10, right: 18, left: 18),
+                    //   child: SafeArea(
+                    //     child: data.isEmpty
+                    //         ? SpinKitFadingCircle(
+                    //             color: kPrimaryColor,
+                    //             size: 35.0.sp,
+                    //           )
+                    //         : DropdownButtonFormField(
+                    //             itemHeight: 50,
+                    //             decoration: InputDecoration(
+                    //                 focusedBorder: OutlineInputBorder(
+                    //                   borderRadius: BorderRadius.circular(5.0),
+                    //                   borderSide: const BorderSide(
+                    //                     color: Colors.cyan,
+                    //                   ),
+                    //                 ),
+                    //                 fillColor: const Color(0xfff3f3f4),
+                    //                 filled: true,
+                    //                 isDense: true,
+                    //                 contentPadding: const EdgeInsets.fromLTRB(
+                    //                     30, 10, 15, 10),
+                    //                 labelText: "Select Category",
+                    //                 border: InputBorder.none),
+                    //             isExpanded: true,
+                    //             isDense: true,
+                    //             validator: (value) => value == null
+                    //                 ? "This Field is Required"
+                    //                 : null,
+                    //             items: data.map((item) {
+                    //               return DropdownMenuItem(
+                    //                 child: Container(
+                    //                   width: double.infinity,
+                    //                   decoration: const BoxDecoration(
+                    //                     color: Color(0xfff3f3f4),
+                    //                     border: Border(
+                    //                       bottom: BorderSide(
+                    //                           width: 1, color: kPrimaryColor),
+                    //                     ),
+                    //                   ),
+                    //                   child: Text(
+                    //                     item['name'].toString(),
+                    //                   ),
+                    //                 ),
+                    //                 value: item['id'].toString(),
+                    //               );
+                    //             }).toList(),
+                    //             onChanged: (newVal) {
+                    //               setState(() {
+                    //                 classy = newVal.toString();
+                    //                 print(classy);
+                    //               });
+                    //             },
+                    //             value: classy,
+                    //           ),
+                    //   ),
+                    // ),
                     SizedBox(
                       height: getProportionateScreenHeight(10),
                     ),
@@ -775,8 +716,8 @@ class _GradingState extends State<Grading> {
                           style: const TextStyle(
                               color: Colors.white, fontFamily: 'Ubuntu'),
                           iconEnabledColor: Colors.black,
-                          items: ask
-                              .map<DropdownMenuItem<String>>((String value) {
+                          items:
+                              ask.map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem(
                               child: Container(
                                 width: double.infinity,
@@ -803,8 +744,7 @@ class _GradingState extends State<Grading> {
                           },
                           onChanged: (value) {
                             setState(() {
-                              FocusScope.of(context)
-                                  .requestFocus(FocusNode());
+                              FocusScope.of(context).requestFocus(FocusNode());
                               ask1 = value!;
                             });
                           },

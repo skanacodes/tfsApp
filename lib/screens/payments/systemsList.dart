@@ -67,27 +67,7 @@ class _ListSystemsState extends State<ListSystems> {
                                         // index == 0
                                         //     ? showModal()
                                         //     : print('sahs');
-                                        index == 0
-                                            ? Navigator.push(context, MaterialPageRoute(builder: (context) => const BillsDashBoard("Fremis"))).then(
-                                                (_) => RealTimeCommunication()
-                                                    .createConnection("3"))
-                                            : index == 1
-                                                ? Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const BillsDashBoard("seedMIS"))).then(
-                                                    (_) => RealTimeCommunication()
-                                                        .createConnection("3"))
-                                                : index == 2
-                                                    ? Navigator.push(context, MaterialPageRoute(builder: (context) => const BillsDashBoard("HoneyTraceability"))).then((_) => RealTimeCommunication().createConnection("3"))
-                                                    : index == 3
-                                                        ? Navigator.push(context, MaterialPageRoute(builder: (context) => const BillsDashBoard("E-Auction"))).then((_) => RealTimeCommunication().createConnection("3"))
-                                                        : Navigator.pushNamed(
-                                                            context,
-                                                            PaymentList
-                                                                .routeName,
-                                                          ).then((_) => RealTimeCommunication().createConnection("3"));
+                                       
                                       },
                                       trailing: const Icon(
                                         Icons.arrow_right,

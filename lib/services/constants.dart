@@ -48,6 +48,7 @@ const kAnimationDuration = Duration(milliseconds: 200);
 var baseUrl = "https://mis.tfs.go.tz/fremis-test";
 var baseUrlTest = "https://mis.tfs.go.tz/fremis-test";
 var baseUrlSeed = "http://41.59.227.103:9092";
+String filepathImages = "assets/images/";
 final headingStyle = TextStyle(
   fontSize: getProportionateScreenWidth(28),
   fontWeight: FontWeight.bold,
@@ -56,7 +57,6 @@ final headingStyle = TextStyle(
 );
 final formatNumber = NumberFormat("#,##0.00", "en_US");
 const defaultDuration = Duration(milliseconds: 250);
-
 
 // Form Error
 final RegExp emailValidatorRegExp =

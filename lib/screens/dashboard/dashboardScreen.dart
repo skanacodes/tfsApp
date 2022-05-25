@@ -13,6 +13,7 @@ import 'package:tfsappv1/screens/NfrScreen/nfrScreen.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/screens/dashboard/drawer.dart';
 import 'package:tfsappv1/screens/illegalproduct/illegal_product_screen.dart';
+import 'package:tfsappv1/screens/payments/billsDashboard.dart';
 
 import 'package:tfsappv1/screens/payments/systemsList.dart';
 import 'package:tfsappv1/screens/verification/verificationScreen.dart';
@@ -152,6 +153,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return WillPopScope(
       onWillPop: _willPopCallback,
       child: Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
             backgroundColor: kPrimaryColor,
             title: const Text(
@@ -164,7 +166,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Badge(
                     badgeColor: Colors.white,
                     animationType: BadgeAnimationType.scale,
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                     badgeContent: const Padding(
                       padding: EdgeInsets.all(1.0),
                       child: Text(
@@ -256,7 +259,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           duration: const Duration(milliseconds: 1375),
                           childAnimationBuilder: (widget) => SlideAnimation(
                             horizontalOffset: 50.0,
-                            child: ScaleAnimation(
+                            child: FadeInAnimation(
                               child: widget,
                             ),
                           ),
@@ -272,11 +275,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   children: <Widget>[
                                     InkWell(
                                       onTap: () {
-                                        Navigator.pushNamed(
-                                          context,
-                                          ListSystems.routeName,
-                                        ).then((_) => RealTimeCommunication()
-                                            .createConnection("3"));
+                                        showModal();
                                       },
                                       child: Container(
                                           decoration: BoxDecoration(
@@ -581,5 +580,104 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
     );
+  }
+
+  showModal() {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const ListTile(
+                leading: Icon(
+                  Icons.select_all_outlined,
+                  color: Colors.green,
+                ),
+                title: Text(
+                  "Select System",
+                ),
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.arrow_right,
+                  color: Colors.green,
+                ),
+                title: const Text("FreMIS Bills"),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const BillsDashBoard("Fremis"))).then(
+                      (_) => RealTimeCommunication().createConnection("3"));
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.arrow_right,
+                  color: Colors.green,
+                ),
+                title: const Text("SeedMIS Bills"),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const BillsDashBoard("seedMIS"))).then(
+                      (_) => RealTimeCommunication().createConnection("3"));
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.arrow_right,
+                  color: Colors.green,
+                ),
+                title: const Text('HoneyTraceability Bills'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const BillsDashBoard("HoneyTraceability"))).then(
+                      (_) => RealTimeCommunication().createConnection("3"));
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.arrow_right,
+                  color: Colors.green,
+                ),
+                title: const Text('E-Auction Bills'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const BillsDashBoard("E-Auction"))).then(
+                      (_) => RealTimeCommunication().createConnection("3"));
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.arrow_right,
+                  color: Colors.green,
+                ),
+                title: const Text('PMIS Bills'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Navigator.pushNamed(
+                  //   context,
+                  //   TPEditing.routeName,
+                  // ).then((_) => RealTimeCommunication().createConnection("1"));
+                },
+              ),
+            ],
+          );
+        });
   }
 }

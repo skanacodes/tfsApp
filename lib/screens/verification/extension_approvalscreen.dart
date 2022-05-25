@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tfsappv1/screens/verification/extensionApprovalWidget.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
@@ -277,174 +278,145 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
                             horizontal: getProportionateScreenWidth(10),
                             vertical: getProportionateScreenHeight(10)),
                         itemBuilder: (context, index) {
-                          return Container(
-                            padding: const EdgeInsets.all(10),
-                            margin: const EdgeInsets.only(bottom: 15),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.2),
-                                    spreadRadius: 0,
-                                    blurRadius: 5,
-                                    offset: const Offset(0, 1),
-                                  ),
-                                ]),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      flex: 5,
-                                      child: Row(children: [
-                                        SizedBox(
-                                            width: 20,
-                                            height: 40,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              child: IntrinsicHeight(
-                                                  child: SizedBox(
-                                                      height: double.maxFinite,
-                                                      width:
-                                                          getProportionateScreenHeight(
-                                                              50),
-                                                      child: Row(
-                                                        children: [
-                                                          VerticalDivider(
-                                                            color: index.isEven
-                                                                ? kPrimaryColor
-                                                                : Colors
-                                                                    .green[200],
-                                                            thickness: 5,
-                                                          )
-                                                        ],
-                                                      ))),
-                                            )),
-                                        const SizedBox(width: 5),
-                                        Flexible(
-                                          flex: 4,
-                                          child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                    "TP Number: " +
-                                                        Data[index]["tp_number"]
-                                                            .toString(),
-                                                    style: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.w500)),
-                                                const SizedBox(
-                                                  height: 5,
-                                                ),
-                                                Text(
-                                                    "Reason: " +
-                                                        Data[index]["reason"]
-                                                            .toString(),
-                                                    style: TextStyle(
-                                                        color:
-                                                            Colors.grey[500])),
-                                              ]),
-                                        )
-                                      ]),
+                          return InkWell(
+                            onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ExyensionApprovalWidget(
+                                          data: [Data[index]],
+                                          operation: "approval",
+                                        ))),
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              margin: const EdgeInsets.only(bottom: 15),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.2),
+                                      spreadRadius: 0,
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 1),
                                     ),
-                                    Expanded(
-                                      flex: 2,
-                                      child: AnimatedContainer(
-                                          height: 35,
-                                          padding: const EdgeInsets.all(5),
-                                          duration:
-                                              const Duration(milliseconds: 300),
+                                  ]),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        flex: 5,
+                                        child: Row(children: [
+                                          SizedBox(
+                                              width: 20,
+                                              height: 40,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                child: IntrinsicHeight(
+                                                    child: SizedBox(
+                                                        height:
+                                                            double.maxFinite,
+                                                        width:
+                                                            getProportionateScreenHeight(
+                                                                50),
+                                                        child: Row(
+                                                          children: [
+                                                            VerticalDivider(
+                                                              color: index
+                                                                      .isEven
+                                                                  ? kPrimaryColor
+                                                                  : Colors.green[
+                                                                      200],
+                                                              thickness: 5,
+                                                            )
+                                                          ],
+                                                        ))),
+                                              )),
+                                          const SizedBox(width: 5),
+                                          Flexible(
+                                            flex: 4,
+                                            child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                      "TP Number: " +
+                                                          Data[index]
+                                                                  ["tp_number"]
+                                                              .toString(),
+                                                      style: const TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.w500)),
+                                                  const SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  Text(
+                                                      "Reason: " +
+                                                          Data[index]["reason"]
+                                                              .toString(),
+                                                      style: TextStyle(
+                                                          color: Colors
+                                                              .grey[500])),
+                                                ]),
+                                          )
+                                        ]),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        flex: 4,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 8, horizontal: 15),
                                           decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(12),
-                                              border: Border.all(
-                                                  color:
-                                                      Colors.green.shade100)),
-                                          child: Center(
-                                              child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              InkWell(
-                                                onTap: () {
-                                                  verificationMessage(
-                                                      "info",
-                                                      "Are You Sure You Want to Accept This Request?",
-                                                      Data[index]["id"]);
-                                                },
-                                                child: Icon(
-                                                  Icons.verified_outlined,
-                                                  color: Colors.green[400],
-                                                ),
-                                              ),
-                                              InkWell(
-                                                onTap: () {
-                                                  comments(Data[index]["id"]);
-                                                },
-                                                child: const Icon(
-                                                  Icons.remove_circle_outline,
-                                                  color: Colors.red,
-                                                ),
-                                              ),
-                                            ],
-                                          ))),
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      flex: 4,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 15),
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            color: Colors.grey.shade200),
-                                        child: Text(
-                                          "Requested By: " +
-                                              Data[index]["requested_by"]
-                                                  .toString(),
-                                          style: const TextStyle(
-                                              color: Colors.black),
+                                              color: Colors.grey.shade200),
+                                          child: Text(
+                                            "Requested By: " +
+                                                Data[index]["requested_by"]
+                                                    .toString(),
+                                            style: const TextStyle(
+                                                color: Colors.black),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    const Spacer(),
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 15),
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            color: Colors.grey.shade200),
-                                        child: Text(
-                                          "Station: " +
-                                              Data[index]["station"]
-                                                  .toString(),
-                                          style: const TextStyle(
-                                              color: Colors.black),
+                                      const Spacer(),
+                                      Expanded(
+                                        flex: 3,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 8, horizontal: 15),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              color: Colors.grey.shade200),
+                                          child: Text(
+                                            "Station: " +
+                                                Data[index]["station"]
+                                                    .toString(),
+                                            style: const TextStyle(
+                                                color: Colors.black),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                )
-                              ],
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
                           );
                         },
