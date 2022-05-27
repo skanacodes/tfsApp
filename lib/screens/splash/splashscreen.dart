@@ -229,15 +229,15 @@ class _SplashScreenState extends State<SplashScreen> {
             width: 40.0.w,
             child: Image.asset(
               'assets/images/logo.png',
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
             ),
           ),
           SizedBox(
             height: 10.0.h,
           ),
-          SpinKitFadingCircle(
+          SpinKitSpinningLines(
             color: kPrimaryColor,
-            size: 35.0.sp,
+            size: 55.0.sp,
           )
         ],
       ),

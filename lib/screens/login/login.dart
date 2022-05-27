@@ -42,6 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
   var devId;
   final List<String> errors = [];
   var roles = [];
+  String role1 = "";
+  String role2 = "";
+  String role3 = "";
 
   Future<void> createUser(
       String token,
@@ -53,7 +56,10 @@ class _LoginScreenState extends State<LoginScreen> {
       String email,
       String phoneNumber,
       String stationName,
-      String checkpointName) async {
+      String checkpointName,
+      String role1,
+      String role2,
+      String role3) async {
     await SharedPreferences.getInstance().then((prefs) {
       prefs.setInt('user_id', userId);
       prefs.setString('token', token);
@@ -65,6 +71,9 @@ class _LoginScreenState extends State<LoginScreen> {
       prefs.setString('phoneNumber', phoneNumber);
       prefs.setString('checkpointId', checkpointId);
       prefs.setString('checkpointName', checkpointName);
+      prefs.setString("role1", role1);
+      prefs.setString("role2", role2);
+      prefs.setString("role3", role3);
     });
   }
 
@@ -89,19 +98,35 @@ class _LoginScreenState extends State<LoginScreen> {
             res = json.decode(response.body);
             print(res);
           });
-
+          for (var i = 0; i < res["roles"].length; i++) {
+            if (i == 0) {
+              role1 = res["roles"][i]["name"].toString();
+            }
+            if (i == 1) {
+              role2 = res["roles"][i]["name"].toString();
+            }
+            if (i == 2) {
+              role3 = res["roles"][i]["name"].toString();
+            }
+          }
+          print("sfsdg");
+          print(role1);
+          print(role2);
+          print(role3);
           await createUser(
-            res['access_token'],
-            res['user']['user_id'],
-            res['user']['station_id'],
-            res['user']['checkpoint_id'].toString(),
-            res['user']['first_name'],
-            res['user']['last_name'],
-            res['user']['email'].toString(),
-            res['user']['phone'].toString(),
-            res['user']['station'].toString(),
-            res['user']['checkpoint_name'].toString(),
-          );
+              res['access_token'],
+              res['user']['user_id'],
+              res['user']['station_id'],
+              res['user']['checkpoint_id'].toString(),
+              res['user']['first_name'],
+              res['user']['last_name'],
+              res['user']['email'].toString(),
+              res['user']['phone'].toString(),
+              res['user']['station'].toString(),
+              res['user']['checkpoint_name'].toString(),
+              role1.toString(),
+              role2.toString(),
+              role3.toString());
           return 'success';
           // ignore: dead_code
           break;
@@ -200,11 +225,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? removeError(
                             error: 'Server Or Network Connectivity Error')
                         : errors.contains('Incorrect Password or Email')
-                            ? removeError(
-                                error: 'Incorrect Password or Email')
+                            ? removeError(error: 'Incorrect Password or Email')
                             : removeError(
-                                error:
-                                    'Your Not Authourized To Use This App');
+                                error: 'Your Not Authourized To Use This App');
                   }
                   return;
                 },

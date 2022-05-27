@@ -1,3 +1,5 @@
+import 'package:tfsappv1/screens/ApprovalPermit/ApprovalDetails.dart';
+import 'package:tfsappv1/screens/ApprovalPermit/approvalPermit.dart';
 import 'package:tfsappv1/screens/ExportImport/InspectionForm.dart';
 import 'package:tfsappv1/screens/ExportImport/grading.dart';
 import 'package:tfsappv1/screens/ExportImport/permitList.dart';
@@ -47,7 +49,6 @@ final Map<String, WidgetBuilder> routes = {
   InspectionForm.routeName: (context) => const InspectionForm(),
   ExpiredBills.routeName: (context) => const ExpiredBills(''),
   SealScreen.routeName: (context) => const SealScreen(''),
-
   BillsDashBoard.routeName: (context) => const BillsDashBoard(''),
   PosReg.routeName: (context) => const PosReg(),
   Otp.routeName: (context) => const Otp(),
@@ -66,5 +67,8 @@ final Map<String, WidgetBuilder> routes = {
   ExpectedTP.routeName: ((context) => const ExpectedTP()),
   TPEditing.routeName: ((context) => const TPEditing()),
   ExtensionApproval.routeName: ((context) => const ExtensionApproval()),
-  ExyensionApprovalWidget.routeName:(context) => const ExyensionApprovalWidget()
+  ExyensionApprovalWidget.routeName: (context) =>
+      const ExyensionApprovalWidget(),
+  ApprovalPermitt.routeName: (context) => const ApprovalPermitt(),
+  ApprovalDetails.routeName: (context) => const ApprovalDetails()
 };

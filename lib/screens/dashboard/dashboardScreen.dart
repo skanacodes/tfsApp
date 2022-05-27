@@ -1,5 +1,7 @@
 // ignore_for_file: unused_import, file_names, prefer_typing_uninitialized_variables
 
+import 'dart:convert';
+
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -11,7 +13,10 @@ import 'package:tfsappv1/screens/ExportImport/permitList.dart';
 import 'package:tfsappv1/screens/Inventory/forestInventoryScreen.dart';
 import 'package:tfsappv1/screens/NfrScreen/nfrScreen.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
+import 'package:tfsappv1/screens/dashboard/card_list.dart';
 import 'package:tfsappv1/screens/dashboard/drawer.dart';
+import 'package:tfsappv1/screens/dashboard/managementOperations.dart';
+import 'package:tfsappv1/screens/dashboard/managementscreen.dart';
 import 'package:tfsappv1/screens/illegalproduct/illegal_product_screen.dart';
 import 'package:tfsappv1/screens/payments/billsDashboard.dart';
 
@@ -21,6 +26,8 @@ import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
 import 'package:sizer/sizer.dart';
+
+import 'appBarItem.dart';
 
 class DashboardScreen extends StatefulWidget {
   static String routeName = "/dashboard";
@@ -34,6 +41,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String? usernames;
   String? stationName;
   String? checkpoint;
+  List roles = [];
+  String? role1;
+  String? role2;
+  String? role3;
   var userId;
   var devId;
 
@@ -78,7 +89,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+// This function will convert a valid input to a list
+// In case the input is invalid, it will print out a message
+  List? convert(String input) {
+    List output;
+    try {
+      output = json.decode(input);
+      return output;
+    } catch (err) {
+      print(err.toString());
+      print('The input is not a string representation of a list');
+      return null;
+    }
+  }
+
   Future getData() async {
+    String? rol;
     var fname = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('fname'));
     var lname = await SharedPreferences.getInstance()
@@ -87,6 +113,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
         .then((prefs) => prefs.getString('StationName'));
     checkpoint = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('checkpointName'));
+
+    role1 = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getString('role1'));
+    role2 = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getString('role2'));
+    role3 = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getString('role3'));
+    setState(() {
+      roles = [role1 ?? "", role2 ?? "", role3 ?? ""];
+    });
+
     setState(() {
       usernames = "$fname  $lname";
     });
@@ -156,366 +193,405 @@ class _DashboardScreenState extends State<DashboardScreen> {
           backgroundColor: Colors.white,
           appBar: AppBar(
             backgroundColor: kPrimaryColor,
-            title: const Text(
-              '',
-              style: TextStyle(color: Colors.black, fontFamily: 'Ubuntu'),
-            ),
             actions: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Badge(
-                    badgeColor: Colors.white,
-                    animationType: BadgeAnimationType.scale,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                    badgeContent: const Padding(
-                      padding: EdgeInsets.all(1.0),
-                      child: Text(
-                        "1",
-                        style: TextStyle(color: Colors.red, fontSize: 15),
-                      ),
-                    ),
-                    child: const Icon(Icons.notifications)),
+              AppBarActionItems(
+                checkpoint: checkpoint,
+                roles: roles,
+                username: usernames,
+                station: stationName,
               )
             ],
           ),
           drawer: const CustomDrawer(),
-          body: SizedBox(
-            height: height,
-            child: Column(
-              children: <Widget>[
-                Stack(
-                  children: [
-                    Container(
-                      height: getProportionateScreenHeight(70),
-                      color: Colors.white,
-                      // decoration: BoxDecoration(color: Colors.white),
-                    ),
-                    Container(
-                      height: getProportionateScreenHeight(50),
-                      decoration: const BoxDecoration(color: kPrimaryColor),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Card(
-                          elevation: 10,
-                          child: ListTile(
-                            leading: const CircleAvatar(
-                              foregroundColor: kPrimaryColor,
-                              backgroundColor: Colors.black12,
-                              child: Icon(Icons.verified_user_rounded),
+          body: SingleChildScrollView(
+            child: SizedBox(
+              height: height,
+              child: Column(
+                children: <Widget>[
+                  Stack(
+                    children: [
+                      Container(
+                        height: getProportionateScreenHeight(70),
+                        color: Colors.white,
+                        // decoration: BoxDecoration(color: Colors.white),
+                      ),
+                      Container(
+                        height: getProportionateScreenHeight(50),
+                        decoration: const BoxDecoration(color: kPrimaryColor),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Card(
+                            elevation: 10,
+                            child: ListTile(
+                              leading: const CircleAvatar(
+                                foregroundColor: kPrimaryColor,
+                                backgroundColor: Colors.black12,
+                                child: Icon(Icons.verified_user_rounded),
+                              ),
+                              title: _title(),
+                              subtitle: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  const Divider(
+                                    color: Colors.purple,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Station: $stationName",
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                      const Spacer()
+                                    ],
+                                  ),
+                                  roles.contains("HQ Officer")
+                                      ? Container()
+                                      : checkpoint == "null"
+                                          ? Container()
+                                          : Row(
+                                              children: [
+                                                Text("CheckPoint: $checkpoint"),
+                                                const Spacer()
+                                              ],
+                                            )
+                                ],
+                              ),
+                              // trailing: Icon(
+                              //   Icons.person,
+                              //   color: Colors.black,
+                              // ),
+                              tileColor: Colors.white,
                             ),
-                            title: _title(),
-                            subtitle: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const Divider(
-                                  color: Colors.purple,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Station: $stationName",
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w400),
-                                    ),
-                                    const Spacer()
-                                  ],
-                                ),
-                                checkpoint == "null"
-                                    ? Container()
-                                    : Row(
-                                        children: [
-                                          Text("CheckPoint: $checkpoint"),
-                                          const Spacer()
-                                        ],
-                                      )
-                              ],
-                            ),
-                            // trailing: Icon(
-                            //   Icons.person,
-                            //   color: Colors.black,
-                            // ),
-                            tileColor: Colors.white,
                           ),
                         ),
-                      ),
-                    )
-                  ],
-                ),
-                // _divider(),
-                Padding(
-                  padding: const EdgeInsets.all(0.0),
-                  child: Container(
-                    color: Colors.transparent,
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: AnimationLimiter(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: AnimationConfiguration.toStaggeredList(
-                          duration: const Duration(milliseconds: 1375),
-                          childAnimationBuilder: (widget) => SlideAnimation(
-                            horizontalOffset: 50.0,
-                            child: FadeInAnimation(
-                              child: widget,
-                            ),
-                          ),
-                          children: <Widget>[
-                            Container(
-                                height: getProportionateScreenHeight(514),
-                                color: Colors.transparent,
-                                child: GridView.extent(
-                                  padding: const EdgeInsets.all(16),
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10,
-                                  maxCrossAxisExtent: 200.0,
-                                  children: <Widget>[
-                                    InkWell(
-                                      onTap: () {
-                                        showModal();
-                                      },
-                                      child: Container(
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xfff3f3f4),
-                                              boxShadow: const [
-                                                BoxShadow(
-                                                    color: Colors.grey,
-                                                    offset: Offset.zero,
-                                                    blurRadius: 2)
-                                              ],
-                                              borderRadius:
-                                                  BorderRadius.circular(20)),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.payment_rounded,
-                                                size: 40.sp,
-                                                color: Colors.purple,
-                                              ),
-                                              Text(
-                                                "Bills And Payments",
-                                                style: TextStyle(
-                                                    color: Colors.black87,
-                                                    fontSize: 10.sp,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              )
-                                            ],
-                                          )),
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.pushNamed(
-                                          context,
-                                          VerificationScreen.routeName,
-                                        ).then((_) => RealTimeCommunication()
-                                            .createConnection("3"));
-                                      },
-                                      child: Container(
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xfff3f3f4),
-                                              boxShadow: const [
-                                                BoxShadow(
-                                                    color: Colors.grey,
-                                                    offset: Offset.zero,
-                                                    blurRadius: 2)
-                                              ],
-                                              borderRadius:
-                                                  BorderRadius.circular(20)),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.qr_code,
-                                                size: 40.sp,
-                                                color: Colors.green,
-                                              ),
-                                              Text(
-                                                "Verifications",
-                                                style: TextStyle(
-                                                    color: Colors.black87,
-                                                    fontSize: 10.sp,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              )
-                                            ],
-                                          )),
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.pushNamed(
-                                          context,
-                                          IllegalProductScreen.routeName,
-                                        ).then((_) => RealTimeCommunication()
-                                            .createConnection("3"));
-                                      },
-                                      child: Container(
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xfff3f3f4),
-                                              boxShadow: const [
-                                                BoxShadow(
-                                                    color: Colors.grey,
-                                                    offset: Offset.zero,
-                                                    blurRadius: 3)
-                                              ],
-                                              borderRadius:
-                                                  BorderRadius.circular(20)),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.do_not_disturb_alt_sharp,
-                                                color: Colors.cyan,
-                                                size: 40.sp,
-                                              ),
-                                              Text(
-                                                "Illegal Product",
-                                                style: TextStyle(
-                                                    color: Colors.black87,
-                                                    fontSize: 10.sp,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              )
-                                            ],
-                                          )),
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.pushNamed(
-                                          context,
-                                          NFRScreen.routeName,
-                                        ).then((_) => RealTimeCommunication()
-                                            .createConnection("3"));
-                                      },
-                                      child: Container(
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xfff3f3f4),
-                                              boxShadow: const [
-                                                BoxShadow(
-                                                    color: Colors.grey,
-                                                    offset: Offset.zero,
-                                                    blurRadius: 2)
-                                              ],
-                                              // border:
-                                              //     Border.all(color: Colors.grey),
-                                              borderRadius:
-                                                  BorderRadius.circular(20)),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.animation_outlined,
-                                                size: 40.sp,
-                                                color: Colors.pink,
-                                              ),
-                                              Text(
-                                                " Tourism",
-                                                style: TextStyle(
-                                                    fontSize: 10.sp,
-                                                    color: Colors.black87,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              )
-                                            ],
-                                          )),
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.pushNamed(
-                                          context,
-                                          PermittList.routeName,
-                                        ).then((_) => RealTimeCommunication()
-                                            .createConnection("3"));
-                                      },
-                                      child: Container(
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xfff3f3f4),
-                                              boxShadow: const [
-                                                BoxShadow(
-                                                    color: Colors.grey,
-                                                    offset: Offset.zero,
-                                                    blurRadius: 3)
-                                              ],
-                                              borderRadius:
-                                                  BorderRadius.circular(20)),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.import_export_outlined,
-                                                color: Colors.brown,
-                                                size: 40.sp,
-                                              ),
-                                              Center(
-                                                child: Text(
-                                                  "Export & Import",
-                                                  style: TextStyle(
-                                                      color: Colors.black87,
-                                                      fontSize: 10.sp,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                              )
-                                            ],
-                                          )),
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        // Navigator.pushNamed(
-                                        //   context,
-                                        //   ForestInventoryScreen.routeName,
-                                        // ).then((_) => RealTimeCommunication()
-                                        //     .createConnection("3"));
-                                      },
-                                      child: Container(
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xfff3f3f4),
-                                              boxShadow: const [
-                                                BoxShadow(
-                                                    color: Colors.grey,
-                                                    offset: Offset.zero,
-                                                    blurRadius: 2)
-                                              ],
-                                              borderRadius:
-                                                  BorderRadius.circular(20)),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.nature_outlined,
-                                                color: kPrimaryColor,
-                                                size: 40.sp,
-                                              ),
-                                              Text(
-                                                "Mensuration",
-                                                style: TextStyle(
-                                                    color: Colors.black87,
-                                                    fontSize: 10.sp,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              )
-                                            ],
-                                          )),
-                                    ),
-                                  ],
-                                )),
-                          ],
-                        ),
-                      ),
-                    ),
+                      )
+                    ],
                   ),
-                )
-              ],
+                  // _divider(),
+                  roles.contains("HQ Officer")
+                      ? Column(
+                          children: const [
+                            ManagementOperation(),
+                            ManagementScreen(),
+                            CardList(),
+                          ],
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.all(0.0),
+                          child: Container(
+                            color: Colors.transparent,
+                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                            child: AnimationLimiter(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children:
+                                    AnimationConfiguration.toStaggeredList(
+                                  duration: const Duration(milliseconds: 1375),
+                                  childAnimationBuilder: (widget) =>
+                                      SlideAnimation(
+                                    horizontalOffset: 50.0,
+                                    child: FadeInAnimation(
+                                      child: widget,
+                                    ),
+                                  ),
+                                  children: <Widget>[
+                                    Container(
+                                        height:
+                                            getProportionateScreenHeight(514),
+                                        color: Colors.transparent,
+                                        child: GridView.extent(
+                                          padding: const EdgeInsets.all(16),
+                                          crossAxisSpacing: 10,
+                                          mainAxisSpacing: 10,
+                                          maxCrossAxisExtent: 200.0,
+                                          children: <Widget>[
+                                            InkWell(
+                                              onTap: () {
+                                                showModal();
+                                              },
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      color: const Color(
+                                                          0xfff3f3f4),
+                                                      boxShadow: const [
+                                                        BoxShadow(
+                                                            color: Colors.grey,
+                                                            offset: Offset.zero,
+                                                            blurRadius: 2)
+                                                      ],
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20)),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.payment_rounded,
+                                                        size: 40.sp,
+                                                        color: Colors.purple,
+                                                      ),
+                                                      Text(
+                                                        "Bills And Payments",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black87,
+                                                            fontSize: 10.sp,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      )
+                                                    ],
+                                                  )),
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.pushNamed(
+                                                  context,
+                                                  VerificationScreen.routeName,
+                                                ).then((_) =>
+                                                    RealTimeCommunication()
+                                                        .createConnection("3"));
+                                              },
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      color: const Color(
+                                                          0xfff3f3f4),
+                                                      boxShadow: const [
+                                                        BoxShadow(
+                                                            color: Colors.grey,
+                                                            offset: Offset.zero,
+                                                            blurRadius: 2)
+                                                      ],
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20)),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.qr_code,
+                                                        size: 40.sp,
+                                                        color: Colors.green,
+                                                      ),
+                                                      Text(
+                                                        "Verifications",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black87,
+                                                            fontSize: 10.sp,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      )
+                                                    ],
+                                                  )),
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.pushNamed(
+                                                  context,
+                                                  IllegalProductScreen
+                                                      .routeName,
+                                                ).then((_) =>
+                                                    RealTimeCommunication()
+                                                        .createConnection("3"));
+                                              },
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      color: const Color(
+                                                          0xfff3f3f4),
+                                                      boxShadow: const [
+                                                        BoxShadow(
+                                                            color: Colors.grey,
+                                                            offset: Offset.zero,
+                                                            blurRadius: 3)
+                                                      ],
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20)),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        Icons
+                                                            .do_not_disturb_alt_sharp,
+                                                        color: Colors.cyan,
+                                                        size: 40.sp,
+                                                      ),
+                                                      Text(
+                                                        "Illegal Product",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black87,
+                                                            fontSize: 10.sp,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      )
+                                                    ],
+                                                  )),
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.pushNamed(
+                                                  context,
+                                                  NFRScreen.routeName,
+                                                ).then((_) =>
+                                                    RealTimeCommunication()
+                                                        .createConnection("3"));
+                                              },
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      color: const Color(
+                                                          0xfff3f3f4),
+                                                      boxShadow: const [
+                                                        BoxShadow(
+                                                            color: Colors.grey,
+                                                            offset: Offset.zero,
+                                                            blurRadius: 2)
+                                                      ],
+                                                      // border:
+                                                      //     Border.all(color: Colors.grey),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20)),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        Icons
+                                                            .animation_outlined,
+                                                        size: 40.sp,
+                                                        color: Colors.pink,
+                                                      ),
+                                                      Text(
+                                                        " Tourism",
+                                                        style: TextStyle(
+                                                            fontSize: 10.sp,
+                                                            color:
+                                                                Colors.black87,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      )
+                                                    ],
+                                                  )),
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.pushNamed(
+                                                  context,
+                                                  PermittList.routeName,
+                                                ).then((_) =>
+                                                    RealTimeCommunication()
+                                                        .createConnection("3"));
+                                              },
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      color: const Color(
+                                                          0xfff3f3f4),
+                                                      boxShadow: const [
+                                                        BoxShadow(
+                                                            color: Colors.grey,
+                                                            offset: Offset.zero,
+                                                            blurRadius: 3)
+                                                      ],
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20)),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        Icons
+                                                            .import_export_outlined,
+                                                        color: Colors.brown,
+                                                        size: 40.sp,
+                                                      ),
+                                                      Center(
+                                                        child: Text(
+                                                          "Export & Import",
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .black87,
+                                                              fontSize: 10.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  )),
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                // Navigator.pushNamed(
+                                                //   context,
+                                                //   ForestInventoryScreen.routeName,
+                                                // ).then((_) => RealTimeCommunication()
+                                                //     .createConnection("3"));
+                                              },
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      color: const Color(
+                                                          0xfff3f3f4),
+                                                      boxShadow: const [
+                                                        BoxShadow(
+                                                            color: Colors.grey,
+                                                            offset: Offset.zero,
+                                                            blurRadius: 2)
+                                                      ],
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20)),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.nature_outlined,
+                                                        color: kPrimaryColor,
+                                                        size: 40.sp,
+                                                      ),
+                                                      Text(
+                                                        "Mensuration",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black87,
+                                                            fontSize: 10.sp,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      )
+                                                    ],
+                                                  )),
+                                            ),
+                                          ],
+                                        )),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                ],
+              ),
             ),
           )),
     );

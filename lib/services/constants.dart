@@ -43,6 +43,12 @@ const kPrimaryLightColor = Color(0xFF960000);
 // );
 const kSecondaryColor = Color(0xFF979797);
 const kTextColor = Color(0xFF757575);
+Color kLinearOne = const Color(0xffffb507);
+Color kLinearTwo = const Color(0xfffb2a02);
+Color kPercentUp = const Color(0xff00fbd3);
+Color kPercentDown = const Color(0xffff8484);
+Color kGradientColorOne = Color.fromARGB(255, 249, 241, 16);
+Color kGradientColorTwo = Color.fromARGB(255, 4, 127, 41);
 
 const kAnimationDuration = Duration(milliseconds: 200);
 var baseUrl = "https://mis.tfs.go.tz/fremis-test";
@@ -84,3 +90,58 @@ OutlineInputBorder outlineInputBorder() {
     borderSide: const BorderSide(color: Colors.cyan),
   );
 }
+
+TextStyle kSFUI16 = TextStyle(
+  fontSize: 16,
+  fontWeight: FontWeight.w500,
+  color: kTextColor,
+);
+
+TextStyle kName = TextStyle(
+  fontSize: 27,
+  fontWeight: FontWeight.bold,
+  color: kTextColor,
+);
+
+TextStyle kBalance = TextStyle(
+  fontSize: 37,
+  fontWeight: FontWeight.bold,
+  color: kTextColor,
+);
+
+TextStyle kPercent = const TextStyle(
+  fontSize: 10,
+  fontWeight: FontWeight.w500,
+);
+
+TextStyle kSectionTitle = TextStyle(
+  fontSize: 20,
+  fontWeight: FontWeight.bold,
+  color: kTextColor,
+);
+
+TextStyle kCardNumber = TextStyle(
+  fontSize: 14,
+  fontWeight: FontWeight.w400,
+  color: kTextColor,
+);
+
+TextStyle kCardHolder = const TextStyle(
+  // fontFamily: 'Inter',
+  fontSize: 9,
+  fontWeight: FontWeight.w400,
+  color: Colors.white30,
+);
+
+TextStyle kCardName = TextStyle(
+//  fontFamily: 'Inter',
+  fontSize: 14,
+  fontWeight: FontWeight.w400,
+  color: kTextColor,
+);
+
+TextStyle kInfo = TextStyle(
+  fontSize: 11,
+  fontWeight: FontWeight.w500,
+  color: kTextColor,
+);

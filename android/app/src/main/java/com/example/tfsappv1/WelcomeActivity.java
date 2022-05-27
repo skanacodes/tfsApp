@@ -670,10 +670,10 @@ if (type.equals("receipt")){
 
     for (int i = 0; i < itemsAmount.toArray().length; i++) {
 
-        printer.printText(itemsDesc.get(i) +" "+    itemsAmount.get(i)      ,1,false);
+        printer.printText(itemsDesc.get(i) +" "+    itemsAmount.get(i)+" TZS"      ,1,false);
     }
     printer.printText("---------------",2,false);
-    printer.printText("Total  Amount :  "+ amount,1,false);
+    printer.printText("Total  Amount :  "+ amount+"TZS",1,false);
     printer.printText("---------------",2,false);
     printer.printText("Signature: __________________",1,false);
 
@@ -886,7 +886,7 @@ if (type.equals("receipt")){
 
 
                     }
-                    printer.printText("Total Bill: "+ total,1,false);
+                    printer.printText("Total Bill: "+ total + "TZS",1,false);
 
 
 
@@ -1051,7 +1051,7 @@ if (type.equals("receipt")){
 
                         for (int i = 0; i < itemsAmount.toArray().length; i++) {
                             usbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_LEFT);
-                            usbThermalPrinter.addString(itemsDesc.get(i)+ "  " + itemsAmount.get(i));
+                            usbThermalPrinter.addString(itemsDesc.get(i)+ "  " + itemsAmount.get(i)+" TZS");
 
                         }
 
@@ -1059,7 +1059,7 @@ if (type.equals("receipt")){
 
                         usbThermalPrinter.printString();
                         usbThermalPrinter.addString("--------------------------------\n"
-                                + "Total: "+amount+"\n"
+                                + "Total: "+amount+ " TZS"+"\n"
                                 +  "--------------------------------");
                         usbThermalPrinter.printString();
 
@@ -1107,7 +1107,7 @@ if (type.equals("receipt")){
                       
 
                         usbThermalPrinter.addString("--------------------------------\n"
-                                + "Total: "+amount+"\n"
+                                + "Total: "+amount+" TZS"+"\n"
                                 +  "--------------------------------");
                         usbThermalPrinter.printString();
 
