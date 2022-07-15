@@ -1,10 +1,7 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
-import 'package:tfsappv1/screens/payments/billsDashboard.dart';
-import 'package:tfsappv1/screens/payments/paymentList.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:sizer/sizer.dart';
 import 'package:tfsappv1/services/size_config.dart';

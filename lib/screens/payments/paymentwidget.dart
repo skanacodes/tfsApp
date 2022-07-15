@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print, library_private_types_in_public_api, use_build_context_synchronously
 
 import 'dart:convert';
 import 'dart:io';
@@ -14,6 +14,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizer/sizer.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/deletefile.dart';
 import 'package:tfsappv1/services/mail.dart';
@@ -50,6 +51,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
   List dataItems = [];
   Uint8List? _imageFile;
   Uint8List? _imageFile1;
+  String? systemtype;
   String? payerMail;
   final _formKey = GlobalKey<FormState>();
   //Create an instance of ScreenshotController
@@ -60,30 +62,33 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       isLoading = true;
     });
     try {
-      String email = await SharedPreferences.getInstance()
-          .then((prefs) => prefs.getString('email').toString());
+      // String email = await SharedPreferences.getInstance()
+      //     .then((prefs) => prefs.getString('email').toString());
       //       String id = await SharedPreferences.getInstance()
       // .then((prefs) => prefs.getInt('email').toString());
 
-      print(email);
+      //print(email);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
-      var url =
-          Uri.parse('http://mis.tfs.go.tz/fremis-test/api/v1/print_status');
-      print(billId);
+      var headers = {"Authorization": "Bearer ${tokens!}"};
+      var url = systemtype == "honeytraceability"
+          ? Uri.parse('$baseUrlHoneyTraceability/api/v1/updatePrintStatus')
+          : systemtype == "seedmis"
+              ? Uri.parse('$baseUrlSeed/api/v1/updatePrintStatus')
+              : Uri.parse('$baseUrlTest/api/v1/print_status');
+      //print(billId);
       // var url =
       //     Uri.parse('http://mis.tfs.go.tz/e-auction/api/v1/Bill/PrintReceipt');
       final response = await http.post(url,
           body: {"control_number": controlNumber}, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             data = res['message'].toString();
           });
 
@@ -92,7 +97,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
 
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -101,7 +106,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        //print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -111,32 +116,44 @@ class _PaymentWidgetState extends State<PaymentWidget> {
     setState(() {
       isLoading = true;
       billId = billId;
+      systemtype = system;
     });
     try {
       // String stationId = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getInt('station_id').toString());
 
-      //print(stationId);
+      ////print(stationId);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       print(billId);
       print(system);
       var url = system == "E-Auction"
           ? Uri.parse(
               'https://mis.tfs.go.tz/e-auction/api/Bill/GetPriceDistribution/$billId')
-          : Uri.parse('$baseUrlTest/api/v1/bill-items/$billId');
+          : system == "PMIS"
+              ? Uri.parse("$baseUrlPMIS/api/Bill/GetPriceDistribution/$billId")
+              : system == "honeytraceability"
+                  ? Uri.parse(
+                      "$baseUrlHoneyTraceability/api/v1/bill-items/$billId")
+                  : system == "seedmis"
+                      ? Uri.parse('$baseUrlSeed/api/v1/bill-items/$billId')
+                      : Uri.parse('$baseUrlTest/api/v1/bill-items/$billId');
+      print(url);
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
+      print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             isItems = true;
-            dataItems = res['data'];
+            system == "PMIS"
+                ? dataItems = res['Result']
+                : dataItems = res['data'];
             //dataItems = [];
           });
 
@@ -146,7 +163,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
           setState(() {
             isItems = true;
             res = json.decode(response.body);
-            print(res);
+            //print(res);
 
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -155,7 +172,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        //print(e);
         isItems = true;
         messages('Server Or Connectivity Error', 'error');
       });
@@ -166,12 +183,12 @@ class _PaymentWidgetState extends State<PaymentWidget> {
     return SizedBox(
       height: 100,
       child: Transform(
+        alignment: FractionalOffset.center,
+        transform: Matrix4.identity()..rotateZ(20 * 3.1420927 / 180),
         child: const Text(
           "87438823",
           style: TextStyle(color: Colors.black45, fontSize: 20),
         ),
-        alignment: FractionalOffset.center,
-        transform: Matrix4.identity()..rotateZ(20 * 3.1420927 / 180),
       ),
     );
   }
@@ -196,19 +213,19 @@ class _PaymentWidgetState extends State<PaymentWidget> {
 
     for (var i = 0; i < dataItems.length; i++) {
       desc.add(dataItems[i]["ItemDescr"]);
-      print(dataItems[i]["BillItemAmt"]);
-      print(dataItems[i]["BillItemAmt"].runtimeType);
+      //print(dataItems[i]["BillItemAmt"]);
+      //print(dataItems[i]["BillItemAmt"].runtimeType);
       amounts.add(formatNumber.format(dataItems[i]["BillItemAmt"]));
     }
-    // print(desc);
-    // print(amounts);
+    //print(desc);
+    //print(amounts);
     await screenshotController.capture().then((Uint8List? image) {
       //Capture Done
       setState(() {
         _imageFile = image!;
       });
     }).catchError((onError) {
-      print(onError);
+      //print(onError);
     });
     await screenshotController1.capture().then((Uint8List? image) {
       //Capture Done
@@ -216,7 +233,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         _imageFile1 = image!;
       });
     }).catchError((onError) {
-      print(onError);
+      //print(onError);
     });
 
     try {
@@ -225,7 +242,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
           content: Text("Starting Printer"),
         ),
       );
-      // print(_imageFile1);
+      // //print(_imageFile1);
       final String result = await platform.invokeMethod('getBatteryLevel', {
         "imageData": base64Encode(_imageFile!),
         "brand": brand,
@@ -245,7 +262,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         "type": isBill! ? "bill" : "receipt"
       });
 
-      print(result);
+      //print(result);
       if (result == "Successfully Printed") {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -267,7 +284,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         );
       }
     } on PlatformException catch (e) {
-      print(e);
+      //print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("$e"),
@@ -277,53 +294,6 @@ class _PaymentWidgetState extends State<PaymentWidget> {
 
     setState(() {
       isPrinting = false;
-    });
-  }
-
-  Future getData() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      // var tokens = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
-      // var headers = {"Authorization": "Bearer " + tokens!};
-      var url = Uri.parse('http://mis.tfs.go.tz/fremis-test/api/v1/paid-bills');
-      final response = await http.get(
-        url,
-      );
-      var res;
-      //final sharedP prefs=await
-      print(response.statusCode);
-      switch (response.statusCode) {
-        case 201:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            data = res['data'];
-            print(data[0].toString());
-          });
-
-          break;
-
-        default:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            messages('Ohps! Something Went Wrong', 'error');
-          });
-
-          break;
-      }
-    } catch (e) {
-      setState(() {
-        print(e);
-        messages('Server Or Connectivity Error', 'error');
-      });
-    }
-    setState(() {
-      isLoading = false;
     });
   }
 
@@ -338,10 +308,6 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -350,6 +316,10 @@ class _PaymentWidgetState extends State<PaymentWidget> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -378,9 +348,10 @@ class _PaymentWidgetState extends State<PaymentWidget> {
     setState(() {
       isPrinting = true;
     });
-    print(username);
+    //print(username);
     final args =
         ModalRoute.of(context)!.settings.arguments as ReceiptScreenArguments;
+    //print(args);
     isItems
         ? null
         : args.billId == null
@@ -641,7 +612,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                               child: ticketDetailsWidget(
                                   args.isBill ? 'Fee' : "",
                                   args.isBill
-                                      ? formatNumber.format(args.amount)
+                                      ? "${formatNumber.format(args.amount)} ${args.currency!}"
                                       : " ",
                                   "",
                                   ""),
@@ -701,7 +672,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                       children: [
                         Expanded(
                             flex: 6,
-                            child: Text(dataItems[i]['ItemDescr'],
+                            child: Text(dataItems[i]['ItemDescr'].toString(),
                                 style: const TextStyle(
                                   color: Colors.black,
                                 ))),
@@ -735,7 +706,8 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                                   fontWeight: FontWeight.bold))),
                       Expanded(
                         flex: 3,
-                        child: Text(formatNumber.format(args.amount),
+                        child: Text(
+                            "${formatNumber.format(args.amount)} ${args.currency!}",
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold)),
@@ -866,7 +838,8 @@ class _PaymentWidgetState extends State<PaymentWidget> {
 
     const double inch = 72.0;
     doc.addPage(pw.Page(
-        pageFormat: const PdfPageFormat(7 * inch, double.infinity, marginLeft: 5),
+        pageFormat:
+            const PdfPageFormat(7 * inch, double.infinity, marginLeft: 5),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
@@ -1017,7 +990,8 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                     ),
                     pw.Expanded(
                       flex: 5,
-                      child: pw.Text(args.amount.toString(),
+                      child: pw.Text(
+                          "${formatNumber.format(args.amount)} ${args.currency!}",
                           style: pw.TextStyle(
                               fontSize: 20, font: ttf, color: PdfColors.black)),
                     ),
@@ -1111,7 +1085,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       final File file = File(paths);
       var x = await file.writeAsBytes(await doc.save());
       print(x);
-      print(paths);
+      //print(paths);
       Future.delayed(const Duration(milliseconds: 500), () async {
         var emailRes = await MailSending().sendMails(paths, userEmail);
         if (emailRes == "Email Sent Successfull") {
@@ -1121,7 +1095,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
           });
 
           var del = await FilesManupalation().deleteFile(File(paths));
-          print(del);
+          //print(del);
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -1142,7 +1116,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
   }
 
   userMail(ReceiptScreenArguments args) {
-    // print(args.);
+    // //print(args.);
     return isEmail || isSms
         ? Padding(
             padding: const EdgeInsets.fromLTRB(13, 8, 13, 0),
@@ -1178,9 +1152,8 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                     Padding(
                       padding: const EdgeInsets.only(top: 5, right: 5, left: 5),
                       child: TextFormField(
-                        keyboardType: isEmail
-                            ? TextInputType.text
-                            : TextInputType.number,
+                        keyboardType:
+                            isEmail ? TextInputType.text : TextInputType.number,
                         key: const Key(""),
                         onSaved: (val) => payerMail = val!,
                         decoration: InputDecoration(
@@ -1213,7 +1186,8 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                             ),
                           ),
                           isDense: true,
-                          contentPadding: const EdgeInsets.fromLTRB(30, 10, 20, 10),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(30, 10, 20, 10),
                         ),
 
                         // onChanged: (val) {
@@ -1238,112 +1212,120 @@ class _PaymentWidgetState extends State<PaymentWidget> {
 
   popBar(ReceiptScreenArguments args) {
     return Padding(
-      padding: const EdgeInsets.only(right: 10.0),
+      padding: const EdgeInsets.only(right: 1.0),
       child: PopupMenuButton(
-        tooltip: 'Menu',
-        child: const Icon(
-          Icons.more_vert,
-          size: 28.0,
-          color: Colors.black,
-        ),
-        offset: const Offset(20, 40),
-        itemBuilder: (context) => [
-          PopupMenuItem(
-            onTap: () async {
-              await _getPrinter(
-                  amount: formatNumber.format(args.amount),
-                  controlNo: args.controlNumber.toString(),
-                  issuer: args.issuer.toString(),
-                  name: args.payerName.toString(),
-                  paymentDate: args.payedDate.toString(),
-                  receiptNo: args.receiptNo.toString(),
-                  items: dataItems,
-                  description: args.desc.toString(),
-                  plotname: args.plotname.toString(),
-                  isBill: args.isBill ? true : false,
-                  station: args.station.toString());
-            },
-            child: Row(
-              children: [
-                Icon(
-                  Icons.print,
-                  color: kPrimaryColor,
-                  size: getProportionateScreenHeight(22),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(
-                    left: 5.0,
+          tooltip: 'Menu',
+          offset: const Offset(20, 40),
+          itemBuilder: (context) => [
+                PopupMenuItem(
+                  onTap: () async {
+                    // double amount= args.system== "PMIS"?double()
+                    // //print(args.amount.runtimeType);
+                    // //print(dataItems);
+
+                    await _getPrinter(
+                        amount:
+                            "${formatNumber.format(args.amount)} ${args.currency!}",
+                        controlNo: args.controlNumber.toString(),
+                        issuer: args.issuer.toString(),
+                        name: args.payerName.toString(),
+                        paymentDate: args.payedDate.toString(),
+                        receiptNo: args.receiptNo.toString(),
+                        items: dataItems,
+                        description: args.desc.toString(),
+                        plotname: args.plotname.toString(),
+                        isBill: args.isBill ? true : false,
+                        station: args.station.toString());
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.print,
+                        color: kPrimaryColor,
+                        size: getProportionateScreenHeight(22),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(
+                          left: 5.0,
+                        ),
+                        child: Text(
+                          "Printing",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    "Printing",
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
+                ),
+                PopupMenuItem(
+                  onTap: () {
+                    ////print("mail");
+                    setState(() {
+                      isEmail = true;
+                      isSms = false;
+                      //print(isEmail);
+                    });
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.email_outlined,
+                        color: kPrimaryColor,
+                        size: getProportionateScreenHeight(22),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(
+                          left: 5.0,
+                        ),
+                        child: Text(
+                          "Mail",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () {
+                    setState(() {
+                      isSms = true;
+                      isEmail = false;
+                    });
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.chat_bubble_outline,
+                        color: kPrimaryColor,
+                        size: getProportionateScreenHeight(22),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(
+                          left: 5.0,
+                        ),
+                        child: Text(
+                          "Sms",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
+          child: CircleAvatar(
+            radius: 20.sp,
+            backgroundColor: Colors.grey[400],
+            child: const Icon(
+              Icons.more_vert,
+              size: 28.0,
+              color: Colors.black,
             ),
-          ),
-          PopupMenuItem(
-            onTap: () {
-              //print("mail");
-              setState(() {
-                isEmail = true;
-                isSms = false;
-                print(isEmail);
-              });
-            },
-            child: Row(
-              children: [
-                Icon(
-                  Icons.email_outlined,
-                  color: kPrimaryColor,
-                  size: getProportionateScreenHeight(22),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(
-                    left: 5.0,
-                  ),
-                  child: Text(
-                    "Mail",
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          PopupMenuItem(
-            onTap: () {
-              setState(() {
-                isSms = true;
-                isEmail = false;
-              });
-            },
-            child: Row(
-              children: [
-                Icon(
-                  Icons.chat_bubble_outline,
-                  color: kPrimaryColor,
-                  size: getProportionateScreenHeight(22),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(
-                    left: 5.0,
-                  ),
-                  child: Text(
-                    "Sms",
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+          )),
     );
   }
 
@@ -1369,7 +1351,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
             'Accept': 'application/json',
           });
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           ScaffoldMessenger.of(context).showSnackBar(

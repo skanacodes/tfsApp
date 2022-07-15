@@ -10,9 +10,11 @@ import 'package:tfsappv1/screens/NfrScreen/generateQr.dart';
 import 'package:tfsappv1/screens/NfrScreen/nfrScreen.dart';
 import 'package:tfsappv1/screens/NfrScreen/toursList.dart';
 import 'package:tfsappv1/screens/POSmanagement/posRegistration.dart';
+import 'package:tfsappv1/screens/charts/charts_screen.dart';
 import 'package:tfsappv1/screens/dashboard/dashboardScreen.dart';
 import 'package:tfsappv1/screens/illegalproduct/illegal_product_screen.dart';
 import 'package:tfsappv1/screens/login/login.dart';
+import 'package:tfsappv1/screens/loginway.dart/loginway.dart';
 import 'package:tfsappv1/screens/otp/otp.dart';
 import 'package:tfsappv1/screens/payments/billForm.dart';
 import 'package:tfsappv1/screens/payments/billManagement.dart';
@@ -29,6 +31,9 @@ import 'package:tfsappv1/screens/updates/updates.dart';
 import 'package:tfsappv1/screens/verification/expectedTpHistory.dart';
 import 'package:tfsappv1/screens/verification/extensionApprovalWidget.dart';
 import 'package:tfsappv1/screens/verification/extension_approvalscreen.dart';
+import 'package:tfsappv1/screens/verification/licence_edit_details.dart';
+import 'package:tfsappv1/screens/verification/license_screen.dart';
+import 'package:tfsappv1/screens/verification/tpEditview.dart';
 import 'package:tfsappv1/screens/verification/tpTimeline.dart';
 import 'package:tfsappv1/screens/verification/tp_editing.dart';
 import 'package:tfsappv1/screens/verification/verificationScreen.dart';
@@ -70,5 +75,10 @@ final Map<String, WidgetBuilder> routes = {
   ExyensionApprovalWidget.routeName: (context) =>
       const ExyensionApprovalWidget(),
   ApprovalPermitt.routeName: (context) => const ApprovalPermitt(),
-  ApprovalDetails.routeName: (context) => const ApprovalDetails()
+  ApprovalDetails.routeName: (context) => const ApprovalDetails(),
+  ChartsScreen.routeName: ((context) => const ChartsScreen()),
+  LicenseEditiScreen.routeName: (context) => const LicenseEditiScreen(),
+  LicenseEditShow.routeName: ((context) => const LicenseEditShow()),
+  ExtensionView.routeName: (context) => const ExtensionView(),
+  LoginWay.routeName: ((context) => const LoginWay())
 };

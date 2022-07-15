@@ -1,10 +1,10 @@
-// ignore_for_file: unused_import, prefer_typing_uninitialized_variables, deprecated_member_use, avoid_print
+// ignore_for_file: prefer_typing_uninitialized_variables, depend_on_referenced_packages
 
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:io';
-import 'package:basic_utils/basic_utils.dart';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -19,7 +19,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
-import 'package:tfsappv1/screens/verification/scanQr.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
@@ -28,14 +27,19 @@ class AfterVerification extends StatefulWidget {
   final previousCheckpoint;
   final tpProduct;
   final bool isAlreadyVerified;
+  final bool isForestProduce;
   final String? verificationCode;
   const AfterVerification(
-      {Key? key, required this.tpData,
+      {Key? key,
+      required this.tpData,
       required this.previousCheckpoint,
       required this.tpProduct,
+      required this.isForestProduce,
       required this.isAlreadyVerified,
-      this.verificationCode}) : super(key: key);
+      this.verificationCode})
+      : super(key: key);
   @override
+  // ignore: library_private_types_in_public_api
   _AfterVerificationState createState() => _AfterVerificationState();
 }
 
@@ -66,57 +70,57 @@ class _AfterVerificationState extends State<AfterVerification> {
   final formKey = GlobalKey<FormState>();
   final List<DropdownMenuItem<String>> _qnType = [
     const DropdownMenuItem(
-      child: Text("Laggage As Per TP"),
       value: "Laggage As Per TP",
+      child: Text("Laggage As Per TP"),
     ),
     const DropdownMenuItem(
-      child: Text("TP Offence"),
       value: "TP Offence",
+      child: Text("TP Offence"),
     ),
   ];
   final List<DropdownMenuItem<int>> _compoundingTimes = [
     const DropdownMenuItem(
-      child: Text("1"),
       value: 1,
+      child: Text("1"),
     ),
     const DropdownMenuItem(
-      child: Text("2"),
       value: 2,
+      child: Text("2"),
     ),
     const DropdownMenuItem(
-      child: Text("3"),
       value: 3,
+      child: Text("3"),
     ),
     const DropdownMenuItem(
-      child: Text("4"),
       value: 4,
+      child: Text("4"),
     ),
     const DropdownMenuItem(
-      child: Text("5"),
       value: 5,
+      child: Text("5"),
     ),
   ];
   final List<DropdownMenuItem<String>> offenceType = [
     const DropdownMenuItem(
-      child: Text("Laggage Exceed TP"),
       value: "Laggage Exceed TP",
+      child: Text("Laggage Exceed TP"),
     ),
     const DropdownMenuItem(
-      child: Text("Other, Specify"),
       value: "Other",
+      child: Text("Other, Specify"),
     ),
   ];
-  Future<void> retriveLostData(var _imageFile) async {
+  Future<void> retriveLostData(var imageFile) async {
     final LostData response = await _picker.getLostData();
     if (response.isEmpty) {
       return;
     }
     if (response.file != null) {
       setState(() {
-        _imageFile = response.file!;
+        imageFile = response.file!;
       });
     } else {
-      print('Retrieve error ' + response.exception!.code);
+      ////print(('Retrieve error ${response.exception!.code}');
     }
   }
 
@@ -130,10 +134,6 @@ class _AfterVerificationState extends State<AfterVerification> {
         DialogButton(
           color: kPrimaryColor,
           radius: const BorderRadius.all(Radius.circular(10)),
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () async {
             Navigator.pop(context);
             setState(() {
@@ -147,18 +147,22 @@ class _AfterVerificationState extends State<AfterVerification> {
             });
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         ),
         DialogButton(
           color: Colors.red,
           radius: const BorderRadius.all(Radius.circular(10)),
-          child: const Text(
-            "Cancel",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () async {
             Navigator.pop(context);
           },
           width: 120,
+          child: const Text(
+            "Cancel",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -182,31 +186,31 @@ class _AfterVerificationState extends State<AfterVerification> {
         final File file = File(numb == 1 ? _imageFile.path : _imageFile1.path);
         // getting a directory path for saving
         Directory appDocDir = await getApplicationDocumentsDirectory();
-        print(appDocDir);
+        ////print((appDocDir);
         String appDocPath = appDocDir.path;
-        print(appDocPath);
+        ////print((appDocPath);
         final fileName =
             path.basename(numb == 1 ? _imageFile.path : _imageFile1.path);
-        print(fileName);
+        ////print((fileName);
 // copy the file to a new path
         final File newImage = await file.copy('$appDocPath/$fileName');
-        print(newImage);
+        ////print((newImage);
         setState(() {
           numb == 1 ? img1 = newImage.path : img2 = newImage.path;
         });
-        print(img1);
+        ////print((img1);
       } else {
-        print("Error While Taking Picture");
+        ////print(("Error While Taking Picture");
       }
     } catch (e) {
-      print("Image picker error " + e.toString());
+      ////print(("Image picker error $e");
     }
   }
 
-  Widget _previewImage(var _imageFile) {
+  Widget _previewImage(var imageFile) {
     // ignore: unnecessary_null_comparison
-    if (_imageFile != null) {
-      return Image.file(File(_imageFile.path));
+    if (imageFile != null) {
+      return Image.file(File(imageFile.path));
     } else {
       return const Text(
         'You have not yet picked an image.',
@@ -256,9 +260,9 @@ class _AfterVerificationState extends State<AfterVerification> {
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
 
-    // print(tokens);
-    var headers = {"Authorization": "Bearer " + tokens!};
-    print("nipo");
+    // ////print((tokens);
+    var headers = {"Authorization": "Bearer ${tokens!}"};
+    ////print(("nipo");
     //var username = fname! + " " + lname!;
     try {
       var url = Uri.parse('$baseUrlTest/api/v1/tp-offense/store');
@@ -280,12 +284,12 @@ class _AfterVerificationState extends State<AfterVerification> {
       );
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      ////print((response.statusCode);
       switch (response.statusCode) {
         case 201:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print((res);
             message('success', 'The Case Has Been Reported');
           });
 
@@ -296,7 +300,7 @@ class _AfterVerificationState extends State<AfterVerification> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print((res);
 
             isLoading = false;
           });
@@ -306,7 +310,7 @@ class _AfterVerificationState extends State<AfterVerification> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        ////print((e);
 
         isLoading = false;
       });
@@ -315,7 +319,7 @@ class _AfterVerificationState extends State<AfterVerification> {
   }
 
   Future<String> uploadTPData() async {
-    // print("am here");
+    // ////print(("am here");
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
@@ -323,15 +327,27 @@ class _AfterVerificationState extends State<AfterVerification> {
           .then((prefs) => prefs.getString('checkpointId').toString());
       String userId = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getInt('user_id').toString());
-      print(tokens);
-      print(checkpointId);
-      print(userId);
-      print(widget.tpData['tp_number'].toString());
+      String? fname = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('fname'));
+      String? lname = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('lname'));
 
-      var headers = {"Authorization": "Bearer " + tokens!};
+      String? checkpointcode = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('checkpointcode'));
+      String username = "$fname $lname";
+      // //print((widget.isForestProduce);
+      // //print((checkpointcode);
+      // //print((username);
+
+      ////print((widget.tpData['tp_number'].toString());
+      String verPath = widget.isForestProduce
+          ? '$baseUrlTest/api/v1/verify-tp'
+          : '$baseUrlHoneyTraceability/api/v1/verify-tp';
+      ////print((verPath);
+      var headers = {"Authorization": "Bearer ${tokens!}"};
 
       BaseOptions options = BaseOptions(
-          baseUrl: "https://mis.tfs.go.tz/fremis-test",
+          baseUrl: baseUrlTest,
           connectTimeout: 50000,
           receiveTimeout: 50000,
           headers: headers);
@@ -341,6 +357,8 @@ class _AfterVerificationState extends State<AfterVerification> {
         "user_id": userId.toString(),
         "checkpoint_id": checkpointId.toString(),
         "is_valid": "true",
+        "name": username.toString(),
+        "checkpoint_code": checkpointcode,
         "consignment_image[]": [
           await MultipartFile.fromFile(
             img1,
@@ -353,19 +371,18 @@ class _AfterVerificationState extends State<AfterVerification> {
         ],
       });
 
-      var response =
-          await dio.post('https://mis.tfs.go.tz/fremis-test/api/v1/verify-tp',
-              // options: Options(headers: headers),
-              data: formData, onSendProgress: (int sent, int total) {
+      var response = await dio.post(verPath,
+          // options: Options(headers: headers),
+          data: formData, onSendProgress: (int sent, int total) {
         // setState(() {
         //   uploadMessage = sent.toString();
         // });
-        print('$sent $total');
+        // //print(('$sent $total');
       });
-      print(response.statusCode);
-      print(response.statusMessage);
+      //print((response.statusCode);
+      //print((response.statusMessage);
       var res = response.data;
-      print(res);
+      //print((res);
       if (response.statusCode == 201) {
         //var res = json.decode(response.data);
         setState(() {
@@ -375,15 +392,15 @@ class _AfterVerificationState extends State<AfterVerification> {
         message('success', 'Successfull!.. Verification Code is $verCode');
         return 'success';
       } else {
-        message('fail', 'Failed To Save Data');
+        message(res['message'].toString(), 'Failed');
         return 'fail';
       }
     } on DioError catch (e) {
-      print('dio package');
+      ////print(('dio package');
       if (DioErrorType.receiveTimeout == e.type ||
           DioErrorType.connectTimeout == e.type) {
-        message('error', 'Server Can Not Be Reached.');
-        print(e.message);
+        message('error', e.message.toString());
+        ////print((e.message);
         // throw Exception('Server Can Not Be Reached');
 
         setState(() {
@@ -391,22 +408,17 @@ class _AfterVerificationState extends State<AfterVerification> {
         });
         return 'fail';
       } else if (DioErrorType.response == e.type) {
-        // throw Exception('Server Can Not Be Reached');
-        // print(e.message);
-        // print("qerqf");
-        message('error', 'Already Verified At This Checkpoint.');
-        // throw Exception('Server Can Not Be Reached');
-        print(e);
         setState(() {
           isLoading = false;
         });
+        message('error', e.message.toString());
         return 'fail';
       } else if (DioErrorType.other == e.type) {
         if (e.message.contains('SocketException')) {
           // throw Exception('Server Can Not Be Reached');
-          message('error', 'Network Connectivity Problem.');
-          print(e.message);
-          print(e);
+          message('error', e.message.toString());
+          ////print((e.message);
+          ////print((e);
           setState(() {
             isLoading = false;
           });
@@ -414,11 +426,7 @@ class _AfterVerificationState extends State<AfterVerification> {
         }
       } else {
         //  throw Exception('Server Can Not Be Reached');
-        message('error',
-            'Network Connectivity Problem. Data Has Been Stored Localy');
-        // throw Exception('Server Can Not Be Reached');
-        print(e);
-        print(e.message);
+        message('error', e.message.toString());
         setState(() {
           isLoading = false;
         });
@@ -436,16 +444,16 @@ class _AfterVerificationState extends State<AfterVerification> {
       desc: message,
       buttons: [
         DialogButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          width: 120,
           child: const Text(
             "Ok",
             style: TextStyle(
               color: Colors.white,
             ),
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          width: 120,
         )
       ],
     ).show();
@@ -543,15 +551,15 @@ class _AfterVerificationState extends State<AfterVerification> {
 
   @override
   Widget build(BuildContext context) {
-    // print(qn! + " shbdfhb");
-    // print(widget.tpData);
-    // print(widget.tpProduct);
-    // print(widget.previousCheckpoint);
+    // ////print((qn! + " shbdfhb");
+    // ////print((widget.tpData);
+    // ////print((widget.tpProduct);
+    // ////print((widget.previousCheckpoint);
     int len = widget.previousCheckpoint == null
         ? 0
         : widget.previousCheckpoint.length;
 
-    print(len);
+    ////print((len);
     final ButtonStyle flatButtonStyle = TextButton.styleFrom(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(4.0)),
@@ -690,7 +698,8 @@ class _AfterVerificationState extends State<AfterVerification> {
                                 Icons.location_city_rounded,
                                 color: kPrimaryColor,
                               )),
-                          const Expanded(flex: 3, child: Text('Destination : ')),
+                          const Expanded(
+                              flex: 3, child: Text('Destination : ')),
                           Expanded(
                               flex: 4,
                               child:
@@ -706,7 +715,8 @@ class _AfterVerificationState extends State<AfterVerification> {
                                 Icons.car_rental,
                                 color: Colors.brown,
                               )),
-                          const Expanded(flex: 3, child: Text('Vehicle Number : ')),
+                          const Expanded(
+                              flex: 3, child: Text('Vehicle Number : ')),
                           Expanded(
                               flex: 4,
                               child:
@@ -767,10 +777,8 @@ class _AfterVerificationState extends State<AfterVerification> {
                                     child: Text('Vehicle Capacity : ')),
                                 Expanded(
                                     flex: 4,
-                                    child: Text(widget
-                                            .tpData['vehicle_capacity']
-                                            .toString() +
-                                        " Tons"))
+                                    child: Text(
+                                        "${widget.tpData['vehicle_capacity']} Tons"))
                               ],
                             ),
                       widget.tpData['transport_mode'].toString() == "null"
@@ -841,7 +849,8 @@ class _AfterVerificationState extends State<AfterVerification> {
                                       Icons.supervised_user_circle_outlined,
                                       color: Colors.red,
                                     )),
-                                const Expanded(flex: 3, child: Text('Issued By : ')),
+                                const Expanded(
+                                    flex: 3, child: Text('Issued By : ')),
                                 Expanded(
                                     flex: 4,
                                     child: Text(widget.tpData['issued_by']
@@ -863,8 +872,7 @@ class _AfterVerificationState extends State<AfterVerification> {
                               children: const <Widget>[
                                 Icon(Icons.arrow_upward),
                                 Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(vertical: 2.0),
+                                  padding: EdgeInsets.symmetric(vertical: 2.0),
                                 ),
                                 Text('Close'),
                               ],
@@ -880,8 +888,7 @@ class _AfterVerificationState extends State<AfterVerification> {
                               children: const <Widget>[
                                 Icon(Icons.swap_vert),
                                 Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(vertical: 2.0),
+                                  padding: EdgeInsets.symmetric(vertical: 2.0),
                                 ),
                                 Text('Next Card'),
                               ],
@@ -969,7 +976,8 @@ class _AfterVerificationState extends State<AfterVerification> {
                                       Icons.star_outline_sharp,
                                       color: Colors.cyan,
                                     )),
-                                const Expanded(flex: 3, child: Text('Status : ')),
+                                const Expanded(
+                                    flex: 3, child: Text('Status : ')),
                                 Expanded(
                                     flex: 4,
                                     child: Text(
@@ -1058,8 +1066,7 @@ class _AfterVerificationState extends State<AfterVerification> {
                               children: const <Widget>[
                                 Icon(Icons.arrow_upward),
                                 Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(vertical: 2.0),
+                                  padding: EdgeInsets.symmetric(vertical: 2.0),
                                 ),
                                 Text('Close'),
                               ],
@@ -1074,8 +1081,7 @@ class _AfterVerificationState extends State<AfterVerification> {
                               children: const <Widget>[
                                 Icon(Icons.swap_vert),
                                 Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(vertical: 2.0),
+                                  padding: EdgeInsets.symmetric(vertical: 2.0),
                                 ),
                                 Text('Toggle'),
                               ],
@@ -1163,12 +1169,8 @@ class _AfterVerificationState extends State<AfterVerification> {
                                           flex: 3, child: Text('Quantity : ')),
                                       Expanded(
                                           flex: 4,
-                                          child: Text(widget.tpProduct[i]
-                                                      ['quantity']
-                                                  .toString() +
-                                              " " +
-                                              widget.tpProduct[i]['unit']
-                                                  .toString()))
+                                          child: Text(
+                                              "${widget.tpProduct[i]['quantity']} ${widget.tpProduct[i]['unit']}"))
                                     ],
                                   ),
                             widget.tpProduct[i]['volume'].toString() == 'null'
@@ -1211,8 +1213,7 @@ class _AfterVerificationState extends State<AfterVerification> {
                               children: const <Widget>[
                                 Icon(Icons.arrow_upward),
                                 Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(vertical: 2.0),
+                                  padding: EdgeInsets.symmetric(vertical: 2.0),
                                 ),
                                 Text('Close'),
                               ],
@@ -1227,8 +1228,7 @@ class _AfterVerificationState extends State<AfterVerification> {
                               children: const <Widget>[
                                 Icon(Icons.swap_vert),
                                 Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(vertical: 2.0),
+                                  padding: EdgeInsets.symmetric(vertical: 2.0),
                                 ),
                                 Text('Toggle'),
                               ],
@@ -1304,7 +1304,8 @@ class _AfterVerificationState extends State<AfterVerification> {
                           labelText: "Capture Type Of Offence",
                           border: InputBorder.none,
                           isDense: true,
-                          contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(30, 10, 15, 10),
                         ),
                         items: offenceType,
                         value: offenceTypeVal,
@@ -1318,9 +1319,9 @@ class _AfterVerificationState extends State<AfterVerification> {
                             // otherOffence = null;
                             offenceTypeVal = value!;
 
-                            print(offenceTypeVal);
-                            print(_compoundingTimes);
-                            print(otherOffence);
+                            ////print((offenceTypeVal);
+                            ////print((_compoundingTimes);
+                            ////print((otherOffence);
                           });
                         }),
                   ),
@@ -1355,7 +1356,8 @@ class _AfterVerificationState extends State<AfterVerification> {
                           labelText: "Quantity Exceeded",
                           border: InputBorder.none,
                           isDense: true,
-                          contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(30, 10, 15, 10),
                         ),
                         validator: (value) {
                           if (value == '') return "This Field Is Required";
@@ -1463,8 +1465,8 @@ class _AfterVerificationState extends State<AfterVerification> {
                                       fillColor: const Color(0xfff3f3f4),
                                       filled: true,
                                       isDense: true,
-                                      contentPadding:
-                                          const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                      contentPadding: const EdgeInsets.fromLTRB(
+                                          30, 10, 15, 10),
                                       labelText: "Times",
                                       border: InputBorder.none),
                                   isExpanded: true,
@@ -1505,11 +1507,8 @@ class _AfterVerificationState extends State<AfterVerification> {
                       enabled: false,
                       fillColor: const Color(0xfff3f3f4),
                       filled: true,
-                      labelText: "Compounding Fee: " +
-                          (_compoundingTimesVal == null
-                                  ? 1
-                                  : _compoundingTimesVal! * marketValue)
-                              .toString(),
+                      labelText:
+                          "Compounding Fee: ${_compoundingTimesVal == null ? 1 : _compoundingTimesVal! * marketValue}",
                       //hintText: verCode,
                       border: InputBorder.none,
                       isDense: true,
@@ -1540,8 +1539,7 @@ class _AfterVerificationState extends State<AfterVerification> {
                       fillColor: const Color(0xfff3f3f4),
                       filled: true,
                       labelText: widget.isAlreadyVerified
-                          ? "Verification Code: " +
-                              widget.verificationCode.toString()
+                          ? "Verification Code: ${widget.verificationCode}"
                           : "Verification Code: $verCode",
                       //hintText: verCode,
                       border: InputBorder.none,

@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print, library_private_types_in_public_api
 
 import 'dart:convert';
 import 'dart:io';
@@ -55,12 +55,12 @@ class _BillFormState extends State<BillForm> {
   final formKey = GlobalKey<FormState>();
   final List<DropdownMenuItem<String>> _currencyType = [
     const DropdownMenuItem(
-      child: Text("USD"),
       value: "USD",
+      child: Text("USD"),
     ),
     const DropdownMenuItem(
-      child: Text("TSH"),
       value: "TSH",
+      child: Text("TSH"),
     ),
   ];
   getSum() {
@@ -80,12 +80,12 @@ class _BillFormState extends State<BillForm> {
       desc: message,
       buttons: [
         DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
           child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          onPressed: () => Navigator.pop(context),
-          width: 120,
         )
       ],
     ).show();
@@ -156,7 +156,7 @@ class _BillFormState extends State<BillForm> {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
       print(tokens);
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('https://mis.tfs.go.tz/fremis-test/api/v1/dealers');
       final response = await http.get(url, headers: headers);
       var res;
@@ -744,19 +744,13 @@ class _BillFormState extends State<BillForm> {
                                         setState(() {
                                           dealerName = data!.companyName ==
                                                   "null"
-                                              ? " " + data.fname.toString() ==
+                                              ? " ${data.fname}" ==
                                                       "null"
                                                   ? ""
-                                                  : data.fname.toString() +
-                                                              " " +
-                                                              data.mname
-                                                                  .toString() ==
+                                                  : "${data.fname} ${data.mname}" ==
                                                           "null"
                                                       ? ""
-                                                      : data.mname.toString() +
-                                                                  " " +
-                                                                  data.lname
-                                                                      .toString() ==
+                                                      : "${data.mname} ${data.lname}" ==
                                                               "null"
                                                           ? "null"
                                                           : data.lname
@@ -1067,7 +1061,7 @@ class _BillFormState extends State<BillForm> {
         child: ListTile(
           selected: isSelected,
           title: Text(item.description),
-          subtitle: Text("GFS - CODE: " + item.gfsCode),
+          subtitle: Text("GFS - CODE: ${item.gfsCode}"),
           tileColor: const Color(0xfff3f3f4),
           leading: const CircleAvatar(
             backgroundColor: Colors.pink,
@@ -1107,7 +1101,7 @@ class _BillFormState extends State<BillForm> {
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
     print(tokens);
-    var headers = {"Authorization": "Bearer " + tokens!};
+    var headers = {"Authorization": "Bearer ${tokens!}"};
     // BaseOptions options = new BaseOptions(
     //     baseUrl: "https://mis.tfs.go.tz/fremis-test/",
     //     connectTimeout: 50000,
@@ -1147,12 +1141,12 @@ class _BillFormState extends State<BillForm> {
         child: ListTile(
           selected: isSelected,
           title: Text(item.companyName == "null"
-              ? " " + item.fname.toString() == "null"
+              ? " ${item.fname}" == "null"
                   ? ""
-                  : item.fname.toString() + " " + item.mname.toString() ==
+                  : "${item.fname} ${item.mname}" ==
                           "null"
                       ? ""
-                      : item.mname.toString() + " " + item.lname.toString() ==
+                      : "${item.mname} ${item.lname}" ==
                               "null"
                           ? "null"
                           : item.lname.toString()

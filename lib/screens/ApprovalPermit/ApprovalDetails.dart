@@ -1,6 +1,7 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables
 
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/material.dart';
@@ -87,8 +88,8 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
                 _formKey.currentState!.save();
                 // print(comment);
                 // print(id);
-                await getApprovalRejectStatus("reject", id);
                 Navigator.pop(context);
+                await getApprovalRejectStatus("reject", id);
               }
             },
             child: const Text(
@@ -107,6 +108,48 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
         ]).show();
   }
 
+  verificationMessage(String hint, String message, {int? id}) {
+    return Alert(
+      context: context,
+      type: hint == "info" ? AlertType.info : AlertType.success,
+      title: "",
+      desc: message,
+      buttons: [
+        DialogButton(
+          color: kPrimaryColor,
+          radius: const BorderRadius.all(Radius.circular(10)),
+          onPressed: () async {
+            Navigator.pop(context);
+
+            getApprovalRejectStatus("approve", id!);
+          },
+          width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        ),
+        DialogButton(
+          color: Colors.red,
+          radius: const BorderRadius.all(Radius.circular(10)),
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          width: 120,
+          child: const Text(
+            "Cancel",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        )
+      ],
+    ).show();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   Future getApprovalRejectStatus(String operation, int id) async {
     try {
       setState(() {
@@ -114,12 +157,12 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
       });
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = operation == "approve"
           ? Uri.parse(
               'https://mis.tfs.go.tz/fremis-test/api/v1/exp_appr_req/approve/$id')
           : Uri.parse(
-              'https://mis.tfs.go.tz/fremis-test/api/v1/xp_appr_req/reject/$id');
+              'https://mis.tfs.go.tz/fremis-test/api/v1/exp_appr_req/reject');
 
       final response = operation == "approve"
           ? await http.get(url, headers: headers)
@@ -128,14 +171,22 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
               body: {"id": id.toString(), "reject_comment": comment});
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
-      print("bhjbn");
+      // print(response.statusCode);
+      // print("bhjbn");
       switch (response.statusCode) {
-        case 201:
+        case 200:
           setState(() {
             res = json.decode(response.body);
+            if (res["message"].toString() == "Request is Already Reviewed") {
+              message("error", "Request is Already Reviewed");
+            }
 
-            print(res);
+            isLoading = false;
+          });
+          break;
+
+        case 201:
+          setState(() {
             isLoading = false;
           });
           operation == "approve"
@@ -148,7 +199,7 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+           // print(res);
 
             isLoading = false;
 
@@ -159,13 +210,16 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+      //  print(e);
 
         isLoading = false;
       });
       message("error", "Something Went Wrong");
       return 'fail';
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   message(String hint, String message) {
@@ -176,14 +230,14 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
       desc: message,
       buttons: [
         DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
           child: const Text(
             "Ok",
             style: TextStyle(
               color: Colors.white,
             ),
           ),
-          onPressed: () => Navigator.pop(context),
-          width: 120,
         )
       ],
     ).show();
@@ -191,11 +245,6 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
 
   @override
   Widget build(BuildContext context) {
-    final ButtonStyle flatButtonStyle = TextButton.styleFrom(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(4.0)),
-      ),
-    );
     // print(widget.data.toString());
 
     return Scaffold(
@@ -458,12 +507,8 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
                                     flex: 4, child: Text("Quantity: ")),
                                 Expanded(
                                   flex: 4,
-                                  child: Text(widget.data![0]["exp_products"][i]
-                                              ["quantity"]
-                                          .toString() +
-                                      " " +
-                                      widget.data![0]["exp_products"][i]["unit"]
-                                          .toString()),
+                                  child: Text("${widget.data![0]["exp_products"][i]
+                                              ["quantity"]} ${widget.data![0]["exp_products"][i]["unit"]}"),
                                 ),
                               ],
                             ),
@@ -632,25 +677,38 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
           SizedBox(
             height: getProportionateScreenHeight(20),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                  onPressed: () async {
-                    getApprovalRejectStatus("approve", widget.data![0]["id"]);
-                  },
-                  child: const Text("Accept")),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    primary: Colors.red,
-                    textStyle: const TextStyle(fontWeight: FontWeight.normal)),
-                onPressed: () {
-                  comments(widget.data![0]["id"]);
-                },
-                child: const Text("Decline"),
-              )
-            ],
-          )
+          isLoading
+              ? const Center(
+                  child: CupertinoActivityIndicator(
+                    animating: true,
+                    radius: 25,
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () async {
+                          verificationMessage(
+                              "info", "Are You Sure You Want To Approve ?",
+                              id: widget.data![0]["id"]);
+                          // getApprovalRejectStatus(
+                          //     "approve", widget.data![0]["id"]);
+                        },
+                        child: const Text("Accept")),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Colors.red,
+                          textStyle: const TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontFamily: "Ubuntu")),
+                      onPressed: () {
+                        comments(widget.data![0]["id"]);
+                      },
+                      child: const Text("Decline"),
+                    )
+                  ],
+                )
         ],
       ),
     );

@@ -184,10 +184,6 @@ class _VisitorServicesState extends State<VisitorServices> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -196,6 +192,10 @@ class _VisitorServicesState extends State<VisitorServices> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();

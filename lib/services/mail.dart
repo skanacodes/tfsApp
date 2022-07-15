@@ -33,7 +33,7 @@ class MailSending {
         ];
 
       final sendReport = await send(message, smtpServer);
-      print('Message sent: ' + sendReport.toString());
+      print('Message sent: $sendReport');
       return "Email Sent Successfull";
     } on MailerException catch (e) {
       print('Message not sent. $e');

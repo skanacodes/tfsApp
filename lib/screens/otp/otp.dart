@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, library_private_types_in_public_api
 
 import 'dart:async';
 import 'dart:convert';
@@ -60,10 +60,10 @@ class _OtpState extends State<Otp> {
             'Accept': 'application/json',
           });
       //final sharedP prefs=await
-      print(response.statusCode);
+      // print(response.statusCode);
       switch (response.statusCode) {
         case 200:
-          print("Sms sent");
+          //  print("Sms sent");
           setState(() {
             codeVerify = codes;
           });
@@ -82,9 +82,8 @@ class _OtpState extends State<Otp> {
       }
     } on SocketException {
       setState(() {
-        var res = 'Server Error';
         message("error", "Something Went Wrong");
-        print(res);
+        // print(res);
       });
     }
     setState(() {
@@ -100,12 +99,12 @@ class _OtpState extends State<Otp> {
       desc: message,
       buttons: [
         DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
           child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          onPressed: () => Navigator.pop(context),
-          width: 120,
         )
       ],
     ).show();
@@ -135,7 +134,8 @@ class _OtpState extends State<Otp> {
           : SingleChildScrollView(
               child: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
                   child: Column(
                     children: [
                       Align(
@@ -283,7 +283,7 @@ class _OtpState extends State<Otp> {
               FocusScope.of(context).nextFocus();
             }
             if (value.isEmpty && first == false) {
-              print(value);
+              // print(value);
               FocusScope.of(context).previousFocus();
             }
             if (value.length == 1 && last == true) {
@@ -291,7 +291,7 @@ class _OtpState extends State<Otp> {
                   code2.toString() +
                   code3.toString() +
                   code4.toString();
-              print(ver);
+              //  print(ver);
               if (codeVerify == ver) {
                 FocusScope.of(context).unfocus();
                 Future.delayed(const Duration(seconds: 1), () {});
@@ -302,8 +302,6 @@ class _OtpState extends State<Otp> {
               } else {
                 message("error", "Please Enter Correct Code");
               }
-
-              print("jhcjkjl");
             }
           },
           showCursor: true,

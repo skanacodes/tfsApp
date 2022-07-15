@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field, avoid_print
+// ignore_for_file: unused_field, avoid_print, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
 
@@ -153,16 +153,16 @@ class _IllegalProductScreenState extends State<IllegalProductScreen> {
 
   final List<DropdownMenuItem<String>> _permitType = [
     const DropdownMenuItem(
-      child: Text("Export"),
       value: "Export",
+      child: Text("Export"),
     ),
     const DropdownMenuItem(
-      child: Text("Import"),
       value: "Import",
+      child: Text("Import"),
     ),
     const DropdownMenuItem(
-      child: Text("Internal Market"),
       value: "Internal Market",
+      child: Text("Internal Market"),
     ),
   ];
   stepp() {
@@ -207,6 +207,7 @@ class _IllegalProductScreenState extends State<IllegalProductScreen> {
                         items: vehicleInvolved
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem(
+                            value: value,
                             child: Container(
                               width: double.infinity,
                               decoration: const BoxDecoration(
@@ -221,7 +222,6 @@ class _IllegalProductScreenState extends State<IllegalProductScreen> {
                                 style: const TextStyle(color: Colors.black),
                               ),
                             ),
-                            value: value,
                           );
                         }).toList(),
                         validator: (value) {
@@ -347,8 +347,8 @@ class _IllegalProductScreenState extends State<IllegalProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.list),
           onPressed: switchStepType,
+          child: const Icon(Icons.list),
         ),
         appBar: AppBar(
           backgroundColor: kPrimaryColor,

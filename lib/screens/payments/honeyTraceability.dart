@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, use_key_in_widget_constructors, avoid_print, prefer_typing_uninitialized_variables
+// ignore_for_file: file_names, use_key_in_widget_constructors, avoid_print, prefer_typing_uninitialized_variables, library_private_types_in_public_api
 
 import 'dart:convert';
 import 'package:flutter/services.dart';
@@ -78,7 +78,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
     try {
       print(honeyId);
       print(quantities);
-      var headers = {"Authorization": "Bearer " + widget.token};
+      var headers = {"Authorization": "Bearer ${widget.token}"};
       BaseOptions options = BaseOptions(
           baseUrl: "https://mis.tfs.go.tz/honey-traceability",
           connectTimeout: 50000,
@@ -326,10 +326,6 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () async {
             if (index != null) {
               setState(() {
@@ -342,17 +338,21 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
             isBillMessage! ? await uploadData() : "";
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         ),
         DialogButton(
           color: Colors.red,
-          child: const Text(
-            "Cancel",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () async {
             Navigator.pop(context);
           },
           width: 120,
+          child: const Text(
+            "Cancel",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -567,10 +567,6 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -579,6 +575,10 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -910,7 +910,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
 
   Future<List<CustomerModel>> getData(filter, level) async {
     String url;
-    var headers = {"Authorization": "Bearer " + widget.token};
+    var headers = {"Authorization": "Bearer ${widget.token}"};
     url = "http://41.59.227.103:9092/api/v1/customers";
     var response = await Dio().get(url,
         queryParameters: {
@@ -933,7 +933,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
   Future<List<AccessionNumberModel>> getDataAccessionNumber(
       filter, seedId) async {
     String url;
-    var headers = {"Authorization": "Bearer " + widget.token};
+    var headers = {"Authorization": "Bearer ${widget.token}"};
     url = "http://41.59.227.103:9092/api/v1/accession-number/$seedId";
     var response = await Dio().get(url,
         queryParameters: {
@@ -955,7 +955,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
 
   Future<List<SeedModel>> getDataSeed(filter, level) async {
     String url;
-    var headers = {"Authorization": "Bearer " + widget.token};
+    var headers = {"Authorization": "Bearer ${widget.token}"};
     url = "http://41.59.227.103:9092/api/v1/seeds";
     var response = await Dio().get(url,
         queryParameters: {"filter": filter},
@@ -975,7 +975,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
 
   Future<List<SeedlingModel>> getDataSeedling(filter, level) async {
     String url;
-    var headers = {"Authorization": "Bearer " + widget.token};
+    var headers = {"Authorization": "Bearer ${widget.token}"};
     url = "http://41.59.227.103:9092/api/v1/seedlings";
     var response = await Dio().get(url,
         queryParameters: {"filter": filter},
@@ -1002,7 +1002,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
       //     .then((prefs) => prefs.getString('token'));
       print(id);
       print("djvnjdw");
-      var headers = {"Authorization": "Bearer " + widget.token};
+      var headers = {"Authorization": "Bearer ${widget.token}"};
       var url = Uri.parse('http://41.59.227.103:9092/api/v1/bills/$id');
       final response = await http.get(url, headers: headers);
       var res;
@@ -1043,7 +1043,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
     });
     try {
       print("Bills");
-      var headers = {"Authorization": "Bearer " + widget.token};
+      var headers = {"Authorization": "Bearer ${widget.token}"};
       var url = Uri.parse(
           'https://mis.tfs.go.tz/honey-traceability/api/v1/controlnumber/$billId');
       final response = await http.get(url, headers: headers);
@@ -1057,7 +1057,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
             print(res);
             //widget.callback(jsonEncode(res["data"]));
             messages(
-                "success", "C/N:  " + res["data"]["control_number"].toString());
+                "success", "C/N:  ${res["data"]["control_number"]}");
           });
 
           break;

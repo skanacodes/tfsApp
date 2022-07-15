@@ -14,6 +14,7 @@ class ReceiptScreenArguments {
   final String? station;
   final String? system;
   bool? isPrinted;
+  final String? currency;
   final String? billId;
 
   ReceiptScreenArguments(this.payerName, this.controlNumber, this.receiptNo,
@@ -24,5 +25,6 @@ class ReceiptScreenArguments {
       this.system,
       this.billId,
       this.station,
-      this.plotname});
+      this.plotname,
+      this.currency});
 }

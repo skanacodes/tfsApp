@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, use_key_in_widget_constructors, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: file_names, use_key_in_widget_constructors, prefer_typing_uninitialized_variables, avoid_//print, library_private_types_in_public_api, prefer_interpolation_to_compose_strings
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -35,13 +35,17 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
     return RichText(
       textAlign: TextAlign.start,
       text: TextSpan(
-          text: widget.system == "seedMIS"
-              ? ' SeedMIS'
-              : widget.system == "HoneyTraceability"
-                  ? "Honey-TraceAbility"
-                  : widget.system == "E-Auction"
-                      ? "E-Auction"
-                      : "Fremis",
+          text: widget.system == "honeytraceability"
+              ? ' HoneyTraceability'
+              : widget.system == "seedmis"
+                  ? ' SeedMIS'
+                  : widget.system == "HoneyTraceability"
+                      ? "Honey-TraceAbility"
+                      : widget.system == "E-Auction"
+                          ? "E-Auction"
+                          : widget.system == "PMIS"
+                              ? "PMIS"
+                              : "Fremis",
           style: GoogleFonts.portLligatSlab(
             textStyle: Theme.of(context).textTheme.bodyText1,
             fontSize: 13.sp,
@@ -82,8 +86,8 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
 
   @override
   void initState() {
-    widget.system == "seedMIS"
-        ? getUserDetails()
+    widget.system == "seedmis"
+        ? getDataSeed()
         : widget.system == "HoneyTraceability"
             ? getUserDetails()
             : widget.system == "E-Auction"
@@ -175,7 +179,11 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                 children: <Widget>[
                                   InkWell(
                                     onTap: () {
-                                      widget.system == "E-Auction"
+                                      // //print(widget.system);
+                                      widget.system == "E-Auction" ||
+                                              widget.system == "PMIS" ||
+                                              widget.system ==
+                                                  "honeytraceability"
                                           ? ""
                                           : Navigator.push(
                                               context,
@@ -183,8 +191,8 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                   builder: (context) =>
                                                       BillManagement(
                                                         widget.system ==
-                                                                "seedMIS"
-                                                            ? "seedMIS"
+                                                                "seedmis"
+                                                            ? "seedmis"
                                                             : widget.system ==
                                                                     "HoneyTraceability"
                                                                 ? "HoneyTraceability"
@@ -223,10 +231,10 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                       animationType:
                                                           BadgeAnimationType
                                                               .scale,
-                                                      padding:
-                                                          const EdgeInsets.symmetric(
-                                                              horizontal: 5,
-                                                              vertical: 1),
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 5,
+                                                          vertical: 1),
                                                       badgeContent: Padding(
                                                           padding:
                                                               const EdgeInsets
@@ -243,9 +251,10 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                                             [
                                                                             "totalBillCreated"]
                                                                         .toString(),
-                                                            style: const TextStyle(
-                                                                color: Colors
-                                                                    .black),
+                                                            style:
+                                                                const TextStyle(
+                                                                    color: Colors
+                                                                        .black),
                                                           )),
                                                       child: SvgPicture.asset(
                                                         "assets/icons/kyc.svg",
@@ -270,18 +279,22 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ListPendingBills(widget
-                                                              .system ==
-                                                          "seedMIS"
-                                                      ? "seedMIS"
+                                              builder: (context) => ListPendingBills(widget
+                                                          .system ==
+                                                      "honeytraceability"
+                                                  ? "honeytraceability"
+                                                  : widget.system == "seedmis"
+                                                      ? "seedmis"
                                                       : widget.system ==
                                                               "HoneyTraceability"
                                                           ? "HoneyTraceability"
                                                           : widget.system ==
                                                                   "E-Auction"
                                                               ? "E-Auction"
-                                                              : "Fremis"))).then(
+                                                              : widget.system ==
+                                                                      "PMIS"
+                                                                  ? "PMIS"
+                                                                  : "Fremis"))).then(
                                           (_) => RealTimeCommunication()
                                               .createConnection("3"));
                                     },
@@ -313,10 +326,10 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                       animationType:
                                                           BadgeAnimationType
                                                               .scale,
-                                                      padding:
-                                                          const EdgeInsets.symmetric(
-                                                              horizontal: 5,
-                                                              vertical: 1),
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 5,
+                                                          vertical: 1),
                                                       badgeContent: Padding(
                                                         padding:
                                                             const EdgeInsets
@@ -333,9 +346,10 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                                           [
                                                                           "totalPending"]
                                                                       .toString(),
-                                                          style: const TextStyle(
-                                                              color:
-                                                                  Colors.black),
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .black),
                                                         ),
                                                       ),
                                                       child: SvgPicture.asset(
@@ -361,16 +375,22 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => PaymentList(
-                                                  widget.system == "seedMIS"
-                                                      ? "seedMIS"
+                                              builder: (context) => PaymentList(widget
+                                                          .system ==
+                                                      "honeytraceability"
+                                                  ? "honeytraceability"
+                                                  : widget.system == "seedmis"
+                                                      ? "seedmis"
                                                       : widget.system ==
                                                               "HoneyTraceability"
                                                           ? "HoneyTraceability"
                                                           : widget.system ==
                                                                   "E-Auction"
                                                               ? "E-Auction"
-                                                              : "Fremis"))).then(
+                                                              : widget.system ==
+                                                                      "PMIS"
+                                                                  ? "PMIS"
+                                                                  : "Fremis"))).then(
                                           (_) => RealTimeCommunication()
                                               .createConnection("3"));
                                     },
@@ -402,10 +422,10 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                       animationType:
                                                           BadgeAnimationType
                                                               .scale,
-                                                      padding:
-                                                          const EdgeInsets.symmetric(
-                                                              horizontal: 5,
-                                                              vertical: 1),
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 5,
+                                                          vertical: 1),
                                                       badgeContent: Padding(
                                                         padding:
                                                             const EdgeInsets
@@ -422,9 +442,10 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                                           [
                                                                           "totalPaid"]
                                                                       .toString(),
-                                                          style: const TextStyle(
-                                                              color:
-                                                                  Colors.black),
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .black),
                                                         ),
                                                       ),
                                                       child: SvgPicture.asset(
@@ -450,17 +471,22 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ExpiredBills(widget.system ==
-                                                          "seedMIS"
-                                                      ? "seedMIS"
+                                              builder: (context) => ExpiredBills(widget
+                                                          .system ==
+                                                      "honeytraceability"
+                                                  ? "honeytraceability"
+                                                  : widget.system == "seedmis"
+                                                      ? "seedmis"
                                                       : widget.system ==
                                                               "HoneyTraceability"
                                                           ? "HoneyTraceability"
                                                           : widget.system ==
                                                                   "E-Auction"
                                                               ? "E-Auction"
-                                                              : "Fremis"))).then(
+                                                              : widget.system ==
+                                                                      "PMIS"
+                                                                  ? "PMIS"
+                                                                  : "Fremis"))).then(
                                           (_) => RealTimeCommunication()
                                               .createConnection("3"));
                                     },
@@ -492,10 +518,10 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                       animationType:
                                                           BadgeAnimationType
                                                               .scale,
-                                                      padding:
-                                                          const EdgeInsets.symmetric(
-                                                              horizontal: 5,
-                                                              vertical: 1),
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 5,
+                                                          vertical: 1),
                                                       badgeContent: Padding(
                                                         padding:
                                                             const EdgeInsets
@@ -512,9 +538,10 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                                           [
                                                                           "totalExpired"]
                                                                       .toString(),
-                                                          style: const TextStyle(
-                                                              color:
-                                                                  Colors.black),
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .black),
                                                         ),
                                                       ),
                                                       child: SvgPicture.asset(
@@ -553,23 +580,21 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
       // isLoading = true;
     });
     try {
-      // var tokens = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
-      var headers = {"Authorization": "Bearer " + seedToken};
-      var url = widget.system == "seedMIS"
-          ? Uri.parse('$baseUrlSeed/api/v1/bill-statistics/30')
-          : Uri.parse(
-              'https://mis.tfs.go.tz/honey-traceability/api/v1/bill-statistics/30');
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      ////print(tokens);
+      var headers = {"Authorization": "Bearer " + tokens!};
+      var url = Uri.parse('$baseUrlSeed/api/v1/bill-statistics/30');
+
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             dataStats = res['data'];
           });
 
@@ -578,7 +603,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             isLoading = false;
           });
 
@@ -587,7 +612,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        //print(e);
         //messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -601,7 +626,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
     try {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
+      // //print(tokens);
       var url =
           Uri.parse('https://mis.tfs.go.tz/e-auction-v2/api/bill/GetPaidBills');
       final response = await http.get(
@@ -609,12 +634,12 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
       );
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             dataStats = res['data'];
           });
 
@@ -623,7 +648,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             isLoading = false;
           });
 
@@ -632,7 +657,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        //print(e);
         //messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -646,23 +671,22 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
     String stationId = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getInt('station_id').toString());
 
-    print(stationId);
+    //print(stationId);
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      print(tokens);
-      var headers = {"Authorization": "Bearer " + tokens!};
-      var url = Uri.parse(
-          'http://mis.tfs.go.tz/fremis-test/api/v1/bill-stats/$stationId');
+      //print(tokens);
+      var headers = {"Authorization": "Bearer ${tokens!}"};
+      var url = Uri.parse('$baseUrlTest/api/v1/bill-stats/$stationId');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             dataStats = res['data'];
           });
 
@@ -671,7 +695,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             isLoading = false;
           });
 
@@ -680,7 +704,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        //print(e);
         //messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -700,20 +724,20 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
           : 'admin@localhost';
       String password =
           widget.system == "HoneyTraceability" ? '12345678' : 'muyenjwa';
-      print(email);
-      print(password);
+      //print(email);
+      //print(password);
       final response = await http.post(
         url,
         body: {'email': email, 'password': password},
       );
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             seedToken = res["token"];
           });
           await getDataSeed();
@@ -723,7 +747,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
         case 403:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
           });
           return 'fail';
           // ignore: dead_code
@@ -732,7 +756,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
         case 1200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             // addError(
             //     error:
             //         'Your Device Is Locked Please Contact User Support Team');
@@ -744,7 +768,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             // addError(error: 'Something Went Wrong');
             // isLoading = false;
           });
@@ -754,7 +778,7 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        //print(e);
 
         // addError(error: 'Server Or Network Connectivity Error');
         // isLoading = false;

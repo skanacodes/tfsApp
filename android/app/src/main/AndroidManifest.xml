@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.tfsappv1">
+  
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -15,6 +16,24 @@
     <uses-permission android:name="android.permission.CLEAR_APP_CACHE" />
 
   <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+  <!-- Provide required visibility configuration for API level 30 and above -->
+<queries>
+  <!-- If your app checks for SMS support -->
+  <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:scheme="sms" />
+  </intent>
+  <!-- If your app checks for call support -->
+  <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:scheme="tel" />
+  </intent>
+   <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <data android:scheme="https" />
+    </intent>
+</queries>
    <application
         android:label="TFSApp"
         android:icon="@mipmap/ic_launcher"

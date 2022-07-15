@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print, use_build_context_synchronously, prefer_interpolation_to_compose_strings
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -31,19 +31,19 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
-      var url = Uri.parse('https://mis.tfs.go.tz/fremis-test/api/v1/tp_extend');
+      var headers = {"Authorization": "Bearer ${tokens!}"};
+      var url = Uri.parse('$baseUrlTest/api/v1/tp_extend');
 
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      ////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
             Data = res["data"];
-            print(res);
+            ////print(res);
             isLoading = false;
           });
 
@@ -54,7 +54,7 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
 
             isLoading = false;
           });
@@ -63,7 +63,7 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        ////print(e);
 
         isLoading = false;
       });
@@ -79,14 +79,14 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
       desc: message,
       buttons: [
         DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
           child: const Text(
             "Ok",
             style: TextStyle(
               color: Colors.white,
             ),
           ),
-          onPressed: () => Navigator.pop(context),
-          width: 120,
         )
       ],
     ).show();
@@ -99,12 +99,10 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
       });
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = operation == "approve"
-          ? Uri.parse(
-              'https://mis.tfs.go.tz/fremis-test/api/v1/tp_extend/authorize/$id')
-          : Uri.parse(
-              'https://mis.tfs.go.tz/fremis-test/api/v1/tp_extend/reject/$id');
+          ? Uri.parse('$baseUrlTest/api/v1/tp_extend/authorize/$id')
+          : Uri.parse('$baseUrlTest/api/v1/tp_extend/reject/$id');
 
       final response = operation == "approve"
           ? await http.get(url, headers: headers)
@@ -112,13 +110,13 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
               .post(url, headers: headers, body: {"reject_comment": "dfefe"});
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      ////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
 
-            print(res);
+            ////print(res);
             isLoading = false;
           });
           operation == "approve"
@@ -131,7 +129,7 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
 
             isLoading = false;
 
@@ -142,7 +140,7 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        ////print(e);
 
         isLoading = false;
       });
@@ -210,8 +208,8 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                // print(comment);
-                // print(id);
+                // ////print(comment);
+                // ////print(id);
                 await getApprovalRejectStatus("reject", id);
                 Navigator.pop(context);
               }
@@ -344,10 +342,7 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                      "TP Number: " +
-                                                          Data[index]
-                                                                  ["tp_number"]
-                                                              .toString(),
+                                                      "TP Number: ${Data[index]["tp_number"]}",
                                                       style: const TextStyle(
                                                           color: Colors.black,
                                                           fontSize: 15,
@@ -357,9 +352,7 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
                                                     height: 5,
                                                   ),
                                                   Text(
-                                                      "Reason: " +
-                                                          Data[index]["reason"]
-                                                              .toString(),
+                                                      "Reason: ${Data[index]["reason"]}",
                                                       style: TextStyle(
                                                           color: Colors
                                                               .grey[500])),
@@ -386,9 +379,7 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
                                                   BorderRadius.circular(12),
                                               color: Colors.grey.shade200),
                                           child: Text(
-                                            "Requested By: " +
-                                                Data[index]["requested_by"]
-                                                    .toString(),
+                                            "Requested By: ${Data[index]["requested_by"]}",
                                             style: const TextStyle(
                                                 color: Colors.black),
                                           ),
@@ -405,9 +396,7 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
                                                   BorderRadius.circular(12),
                                               color: Colors.grey.shade200),
                                           child: Text(
-                                            "Station: " +
-                                                Data[index]["station"]
-                                                    .toString(),
+                                            "Station: ${Data[index]["station"]}",
                                             style: const TextStyle(
                                                 color: Colors.black),
                                           ),
@@ -439,10 +428,6 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
         DialogButton(
           color: kPrimaryColor,
           radius: const BorderRadius.all(Radius.circular(10)),
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () async {
             Navigator.pop(context);
             setState(() {
@@ -456,18 +441,22 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
             });
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         ),
         DialogButton(
           color: Colors.red,
           radius: const BorderRadius.all(Radius.circular(10)),
-          child: const Text(
-            "Cancel",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () async {
             Navigator.pop(context);
           },
           width: 120,
+          child: const Text(
+            "Cancel",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -478,11 +467,6 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
       padding: const EdgeInsets.only(right: 10.0),
       child: PopupMenuButton(
         tooltip: 'Menu',
-        child: const Icon(
-          Icons.more_vert,
-          size: 28.0,
-          color: Colors.black,
-        ),
         offset: const Offset(20, 40),
         itemBuilder: (context) => [
           PopupMenuItem(
@@ -537,6 +521,11 @@ class _ExtensionApprovalState extends State<ExtensionApproval> {
             ),
           ),
         ],
+        child: const Icon(
+          Icons.more_vert,
+          size: 28.0,
+          color: Colors.black,
+        ),
       ),
     );
   }

@@ -14,9 +14,9 @@ class SeedlingModel {
 
   factory SeedlingModel.fromJson(Map<String, dynamic> json) {
     return SeedlingModel(
-        name: json["seedling"]["seedling_name"].toString(),
-        price: json["seedling"]["price"].toString(),
-        id: json["seedling_id"].toString(),
+        name: json["seedling_name"].toString(),
+        price: json["price"].toString(),
+        id: json["id"].toString(),
         balance: json["balance"].toString());
   }
 

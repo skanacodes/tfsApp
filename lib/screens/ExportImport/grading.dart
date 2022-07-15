@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print, library_private_types_in_public_api, use_build_context_synchronously
 
 import 'dart:convert';
 import 'dart:io';
@@ -69,39 +69,38 @@ class _GradingState extends State<Grading> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('$baseUrl/api/v1/export/grade-cats');
 
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
             data = res['categories'];
-            print(res);
+            //print(res);
           });
           break;
 
         case 401:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
           });
           break;
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
           });
           break;
       }
     } on SocketException {
       setState(() {
-        var res = 'Server Error';
-        print(res);
+        //print(res);
       });
     }
   }
@@ -116,9 +115,9 @@ class _GradingState extends State<Grading> {
     print(path);
     // getting a directory path for saving
     Directory appDocDir = await getApplicationDocumentsDirectory();
-    print(appDocDir);
+    //print(appDocDir);
     String appDocPath = appDocDir.path;
-    print(appDocPath);
+    //print(appDocPath);
     String imageName = 'mark';
     setState(() {
       bytes = byte!.buffer.asUint8List();
@@ -126,10 +125,9 @@ class _GradingState extends State<Grading> {
 
     File('$appDocPath/$imageName.png')
         .writeAsBytesSync(byte!.buffer.asInt8List());
-    var tokens = await SharedPreferences.getInstance()
-        .then((prefs) => prefs.getString('token'));
-    print(tokens);
-    print(bytes);
+
+    //print(tokens);
+    //print(bytes);
 
     Navigator.pop(context);
   }
@@ -151,6 +149,8 @@ class _GradingState extends State<Grading> {
               child: Container(
                   height: getProportionateScreenHeight(160),
                   width: double.infinity,
+                  decoration:
+                      BoxDecoration(border: Border.all(color: Colors.grey)),
                   child: SfSignaturePad(
                       key: signatureGlobalKey,
                       backgroundColor: Colors.white,
@@ -164,9 +164,7 @@ class _GradingState extends State<Grading> {
                         });
                       },
                       minimumStrokeWidth: 1.0,
-                      maximumStrokeWidth: 2.0),
-                  decoration:
-                      BoxDecoration(border: Border.all(color: Colors.grey))),
+                      maximumStrokeWidth: 2.0)),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -252,12 +250,12 @@ class _GradingState extends State<Grading> {
       desc: message,
       buttons: [
         DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
           child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          onPressed: () => Navigator.pop(context),
-          width: 120,
         )
       ],
     ).show();
@@ -265,15 +263,15 @@ class _GradingState extends State<Grading> {
 
   Future<String> uploadData(jobId, exportId) async {
     try {
-      // print(jobId);
-      // print(exportId);
-      // print(bytes);
-      // print("am here");
+      // //print(jobId);
+      // //print(exportId);
+      // //print(bytes);
+      // //print("am here");
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      print(tokens);
+      //print(tokens);
 
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       BaseOptions options = BaseOptions(
           baseUrl: baseUrl,
           connectTimeout: 50000,
@@ -291,16 +289,14 @@ class _GradingState extends State<Grading> {
         // setState(() {
         //   uploadMessage = sent.toString();
         // });
-        print('$sent $total');
+        //print('$sent $total');
       });
-      print(response.statusCode);
-      print(response.statusMessage);
-      var res = response.data;
-      print(res);
+      //print(response.statusCode);
+      //print(response.statusMessage);
+      //print(res);
       if (response.statusCode == 201) {
         //var res = json.decode(response.data);
-        var res = response.data;
-        print(res);
+        //print(res);
         setState(() {
           classy = null;
         });
@@ -311,12 +307,12 @@ class _GradingState extends State<Grading> {
         return 'fail';
       }
     } on DioError catch (e) {
-      print('dio package');
+      //print('dio package');
       if (DioErrorType.receiveTimeout == e.type ||
           DioErrorType.connectTimeout == e.type) {
         message('error', 'Server Can Not Be Reached.');
         // throw Exception('Server Can Not Be Reached');
-        print(e);
+        //print(e);
 
         setState(() {
           isLoading = false;
@@ -327,7 +323,7 @@ class _GradingState extends State<Grading> {
 
         message('error', 'Failed To Get Response From Server.');
         // throw Exception('Server Can Not Be Reached');
-        print(e);
+        //print(e);
         setState(() {
           isLoading = false;
         });
@@ -337,7 +333,7 @@ class _GradingState extends State<Grading> {
           // throw Exception('Server Can Not Be Reached');
           message('error', 'Network Connectivity Problem.');
 
-          print(e);
+          //print(e);
           setState(() {
             isLoading = false;
           });
@@ -348,7 +344,7 @@ class _GradingState extends State<Grading> {
         message('error',
             'Network Connectivity Problem. Data Has Been Stored Localy');
         // throw Exception('Server Can Not Be Reached');
-        print(e);
+        //print(e);
         setState(() {
           isLoading = false;
         });
@@ -363,6 +359,7 @@ class _GradingState extends State<Grading> {
         context: context,
         isScrollControlled: true,
         isDismissible: true,
+        enableDrag: false,
         builder: (context) {
           return SingleChildScrollView(
             child: Column(
@@ -428,6 +425,8 @@ class _GradingState extends State<Grading> {
                   child: Container(
                       height: getProportionateScreenHeight(550),
                       width: double.infinity,
+                      decoration:
+                          BoxDecoration(border: Border.all(color: Colors.grey)),
                       child: SfSignaturePad(
                           key: signatureGlobalKey,
                           backgroundColor: Colors.white,
@@ -441,9 +440,7 @@ class _GradingState extends State<Grading> {
                             });
                           },
                           minimumStrokeWidth: 1.0,
-                          maximumStrokeWidth: 2.0),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey))),
+                          maximumStrokeWidth: 2.0)),
                 ),
                 Container(
                   height: getProportionateScreenHeight(50),
@@ -465,10 +462,6 @@ class _GradingState extends State<Grading> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -477,6 +470,10 @@ class _GradingState extends State<Grading> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -492,11 +489,11 @@ class _GradingState extends State<Grading> {
             isLoading = true;
           });
 
-          var x = await uploadData(jobid, exportId);
+          await uploadData(jobid, exportId);
 
           ask1 = null;
           setState(() {
-            print(x);
+            //print(x);
 
             isLoading = false;
           });
@@ -546,8 +543,8 @@ class _GradingState extends State<Grading> {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as GradingArguments;
-    print(args.id);
-    // print(args.personId);
+    //print(args.id);
+    // //print(args.personId);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
@@ -679,7 +676,7 @@ class _GradingState extends State<Grading> {
                     //             onChanged: (newVal) {
                     //               setState(() {
                     //                 classy = newVal.toString();
-                    //                 print(classy);
+                    //                 //print(classy);
                     //               });
                     //             },
                     //             value: classy,
@@ -719,6 +716,7 @@ class _GradingState extends State<Grading> {
                           items:
                               ask.map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem(
+                              value: value,
                               child: Container(
                                 width: double.infinity,
                                 decoration: const BoxDecoration(
@@ -733,7 +731,6 @@ class _GradingState extends State<Grading> {
                                   style: const TextStyle(color: Colors.black),
                                 ),
                               ),
-                              value: value,
                             );
                           }).toList(),
                           validator: (value) {

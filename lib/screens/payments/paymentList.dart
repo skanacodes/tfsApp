@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print, library_private_types_in_public_api, prefer_interpolation_to_compose_strings, use_build_context_synchronously
 
 import 'dart:convert';
 
@@ -10,6 +10,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:intl/intl.dart';
+import 'package:sizer/sizer.dart';
 import 'package:tfsappv1/screens/payments/payments.dart';
 
 import 'package:tfsappv1/services/constants.dart';
@@ -51,31 +52,44 @@ class _PaymentListState extends State<PaymentList> {
       String stationId = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getInt('station_id').toString());
 
-      print(stationId);
+      ////print(stationId);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
-      var url = Uri.parse(
-          'http://mis.tfs.go.tz/fremis-test/api/v1/paid-bills/$stationId');
+      var headers = {"Authorization": "Bearer ${tokens!}"};
+      var url;
+      widget.system == "PMIS"
+          ? url =
+              Uri.parse('https://mis.tfs.go.tz/pmis/api/Bill/AccountsPayments')
+          : url = Uri.parse('$baseUrlTest/api/v1/paid-bills/$stationId');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
+      print(response.body);
       switch (response.statusCode) {
         case 201:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             data = res['data'];
             isLoading = false;
           });
 
           break;
 
+        case 200:
+          setState(() {
+            res = json.decode(response.body);
+            ////print(res);
+            widget.system == "PMIS" ? data = res["Result"]["data"] : null;
+            isLoading = false;
+          });
+          break;
+
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -85,7 +99,7 @@ class _PaymentListState extends State<PaymentList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -107,13 +121,13 @@ class _PaymentListState extends State<PaymentList> {
       );
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      ////print(response.statusCode);
 
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -123,7 +137,7 @@ class _PaymentListState extends State<PaymentList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -133,7 +147,7 @@ class _PaymentListState extends State<PaymentList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -145,24 +159,22 @@ class _PaymentListState extends State<PaymentList> {
       isLoading = true;
     });
     try {
-      // var tokens = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
-      var url = widget.system == "seedMIS"
-          ? Uri.parse('http://41.59.227.103:9092/api/v1/paid-bills')
-          : Uri.parse(
-              'https://mis.tfs.go.tz/honey-traceability/api/v1/paid-bills');
-      var headers = {"Authorization": "Bearer " + seedToken};
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      ////print(tokens);
+      var url = Uri.parse('$baseUrlSeed/api/v1/paid-bills');
+
+      var headers = {"Authorization": "Bearer " + tokens!};
 
       final response = await http.get(url, headers: headers);
       var res;
 
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -172,7 +184,7 @@ class _PaymentListState extends State<PaymentList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -182,7 +194,57 @@ class _PaymentListState extends State<PaymentList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print(e);
+        messages('Server Or Connectivity Error', 'error');
+      });
+    }
+    _refreshController.refreshCompleted();
+  }
+
+  Future getDataHoneyTraceability() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      String stationId = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getInt('station_id').toString());
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      ////print(tokens);
+      var headers = {"Authorization": "Bearer " + tokens!};
+      var url =
+          Uri.parse('$baseUrlHoneyTraceability/api/v1/paid-bills/$stationId');
+
+      final response = await http.get(url, headers: headers);
+      var res;
+      //final sharedP prefs=await
+      //print(response.statusCode);
+      //print(response.body);
+      switch (response.statusCode) {
+        case 200:
+          setState(() {
+            res = json.decode(response.body);
+            ////print(res);
+            data = res['data'];
+            isLoading = false;
+          });
+
+          break;
+
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            ////print(res);
+            isLoading = false;
+            messages('Ohps! Something Went Wrong', 'error');
+          });
+
+          break;
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        ////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -194,10 +256,10 @@ class _PaymentListState extends State<PaymentList> {
       isLoading = true;
     });
     try {
-      print(duration);
+      ////print(duration);
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
+      // ////print(tokens);
       var headers = {"Authorization": "Bearer " + seedToken};
       var url = widget.system == "seedMIS"
           ? Uri.parse(
@@ -208,12 +270,12 @@ class _PaymentListState extends State<PaymentList> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -223,7 +285,7 @@ class _PaymentListState extends State<PaymentList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -233,7 +295,7 @@ class _PaymentListState extends State<PaymentList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -247,7 +309,7 @@ class _PaymentListState extends State<PaymentList> {
     try {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
+      // ////print(tokens);
       var headers = {"Authorization": "Bearer " + seedToken};
       var url = widget.system == "seedMIS"
           ? Uri.parse(
@@ -258,12 +320,12 @@ class _PaymentListState extends State<PaymentList> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -273,7 +335,7 @@ class _PaymentListState extends State<PaymentList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -283,7 +345,7 @@ class _PaymentListState extends State<PaymentList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -297,7 +359,7 @@ class _PaymentListState extends State<PaymentList> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
 
       var url = Uri.parse('$baseUrlTest/api/v1/search-bills/$controlNo');
 
@@ -305,6 +367,7 @@ class _PaymentListState extends State<PaymentList> {
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
+      print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
@@ -319,7 +382,7 @@ class _PaymentListState extends State<PaymentList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -329,7 +392,7 @@ class _PaymentListState extends State<PaymentList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -349,21 +412,17 @@ class _PaymentListState extends State<PaymentList> {
     String desc,
   ) {
     return Alert(
-      style: const AlertStyle(descStyle: TextStyle(fontSize: 17)),
+      style: AlertStyle(descStyle: TextStyle(fontSize: 13.sp)),
       context: context,
       type: type == 'success'
           ? AlertType.success
           : type == "info"
-              ? AlertType.info
+              ? AlertType.success
               : AlertType.error,
-      // title: 'Information',
+      title: 'Status: Printed',
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -372,6 +431,10 @@ class _PaymentListState extends State<PaymentList> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -406,7 +469,7 @@ class _PaymentListState extends State<PaymentList> {
                           onTap: () async {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              //print(controlNo);
+                              //////print(controlNo);
                               widget.system == "Fremis"
                                   ? await searchDataFremis()
                                   : await searchData();
@@ -419,7 +482,8 @@ class _PaymentListState extends State<PaymentList> {
                           ),
                         ),
                         isDense: true,
-                        contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(20, 10, 20, 10),
                         border: InputBorder.none,
                         fillColor: const Color(0xfff3f3f4),
                         label: const Text(
@@ -439,10 +503,10 @@ class _PaymentListState extends State<PaymentList> {
 
   @override
   void initState() {
-    widget.system == "seedMIS"
-        ? getUserDetails()
-        : widget.system == "HoneyTraceability"
-            ? getUserDetails()
+    widget.system == "seedmis"
+        ? getDataSeed()
+        : widget.system == "honeytraceability"
+            ? getDataHoneyTraceability()
             : widget.system == "E-Auction"
                 ? getDataEAuction()
                 : getData();
@@ -492,10 +556,10 @@ class _PaymentListState extends State<PaymentList> {
             ),
             controller: _refreshController,
             onRefresh: () {
-              widget.system == "seedMIS"
-                  ? getUserDetails()
-                  : widget.system == "HoneyTraceability"
-                      ? getUserDetails()
+              widget.system == "seedmis"
+                  ? getDataSeed()
+                  : widget.system == "honeytraceability"
+                      ? getDataHoneyTraceability()
                       : widget.system == "E-Auction"
                           ? getDataEAuction()
                           : getData();
@@ -583,20 +647,19 @@ class _PaymentListState extends State<PaymentList> {
                                                             .toString() ==
                                                         "1"
                                                     ? messages("info",
-                                                        "control No:  ${data[index]["ControlNumber"]} \nReceipt No:  ${data[index]["ReceiptNumber"]} \nPayer Name:  ${data[index]["DealerName"]} \nBill Amount:  ${data[index]["BillAmount"]} \nBill Desc:  ${data[index]["BillDesc"]} \n ${data[index]["Status: Printed"]}")
+                                                        "control No:  ${data[index]["ControlNumber"]} \nReceipt No:  ${data[index]["ReceiptNumber"]} \nPayer Name:  ${data[index]["DealerName"]} \nBill Amount:  ${data[index]["BillAmount"]} \nBill Desc:  ${data[index]["BillDesc"]} \n")
                                                     : Navigator.pushNamed(
-                                                            context, Payments.routeName,
+                                                            context,
+                                                            Payments.routeName,
                                                             arguments: ReceiptScreenArguments(
-                                                                data[index]["DealerName"]
-                                                                    .toString(),
-                                                                data[index]["ControlNumber"]
-                                                                    .toString(),
-                                                                data[index]["ReceiptNumber"]
-                                                                    .toString(),
-                                                                widget.system == "E-Auction"
-                                                                    ? data[index]
-                                                                        ["BillAmount"]
-                                                                    : double.parse(data[index]["BillAmount"]),
+                                                                data[index]["DealerName"].toString(),
+                                                                data[index]["ControlNumber"].toString(),
+                                                                data[index]["ReceiptNumber"].toString(),
+                                                                widget.system == "E-Auction" || widget.system == "PMIS"
+                                                                    ? data[index]["BillAmount"]
+                                                                    : widget.system == "honeytraceability"
+                                                                        ? data[index]["BillAmount"].toDouble()
+                                                                        : double.parse(data[index]["BillAmount"]),
                                                                 false,
                                                                 data[index]["BillDesc"].toString(),
                                                                 data[index]["issuer"].toString(),
@@ -606,17 +669,18 @@ class _PaymentListState extends State<PaymentList> {
                                                                 station: widget.system == "E-Auction" ? data[index]["Station"].toString() : station,
                                                                 isPrinted: data[index]["IsPrinted"] == 0 ? false : true,
                                                                 system: widget.system,
+                                                                currency: data[index]["currency"].toString(),
                                                                 billId: data[index]["BillId"].toString()))
                                                         .then((value) async {
                                                         setState(() {
                                                           isLoading = true;
                                                         });
                                                         widget.system ==
-                                                                "seedMIS"
-                                                            ? getUserDetails()
+                                                                "seedmis"
+                                                            ? getDataSeed()
                                                             : widget.system ==
-                                                                    "HoneyTraceability"
-                                                                ? getUserDetails()
+                                                                    "honeytraceability"
+                                                                ? getDataHoneyTraceability()
                                                                 : widget.system ==
                                                                         "E-Auction"
                                                                     ? getDataEAuction()
@@ -641,33 +705,26 @@ class _PaymentListState extends State<PaymentList> {
                                               ),
                                               leading: IntrinsicHeight(
                                                   child: SizedBox(
-                                                      height:
-                                                          double.maxFinite,
+                                                      height: double.maxFinite,
                                                       width:
                                                           getProportionateScreenHeight(
                                                               50),
                                                       child: Row(
                                                         children: [
                                                           VerticalDivider(
-                                                            color: index
-                                                                    .isEven
+                                                            color: index.isEven
                                                                 ? kPrimaryColor
-                                                                : Colors.green[
-                                                                    200],
+                                                                : Colors
+                                                                    .green[200],
                                                             thickness: 5,
                                                           )
                                                         ],
                                                       ))),
                                               title: Text(
-                                                "Name: " +
-                                                    data[index]["DealerName"]
-                                                        .toString(),
+                                                "Name: ${data[index]["DealerName"]}",
                                               ),
                                               subtitle: Text(
-                                                "Control #: " +
-                                                    data[index]
-                                                            ["ControlNumber"]
-                                                        .toString(),
+                                                "Control #: ${data[index]["ControlNumber"]}",
                                               ),
                                             ),
                                           ),
@@ -687,99 +744,12 @@ class _PaymentListState extends State<PaymentList> {
     );
   }
 
-  Future<String> getUserDetails() async {
-    try {
-      setState(() {
-        isLoading = true;
-      });
-      var url = Uri.parse(widget.system == "HoneyTraceability"
-          ? "https://mis.tfs.go.tz/honey-traceability/api/v1/login"
-          : '$baseUrlSeed/api/v1/login');
-      String email = widget.system == "HoneyTraceability"
-          ? 'onestpaul8@gmail.com'
-          : 'admin@localhost';
-      String password =
-          widget.system == "HoneyTraceability" ? '12345678' : 'muyenjwa';
-      print(email);
-      print(password);
-      final response = await http.post(
-        url,
-        body: {'email': email, 'password': password},
-      );
-      var res;
-      //final sharedP prefs=await
-      print(response.statusCode);
-      switch (response.statusCode) {
-        case 200:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            seedToken = res["token"];
-          });
-          await getDataSeed();
-          return 'success';
-          // ignore: dead_code
-          break;
-        case 403:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-          });
-          return 'fail';
-          // ignore: dead_code
-          break;
-
-        case 1200:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            // addError(
-            //     error:
-            //         'Your Device Is Locked Please Contact User Support Team');
-          });
-          return 'fail';
-          // ignore: dead_code
-          break;
-
-        default:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            // addError(error: 'Something Went Wrong');
-            // isLoading = false;
-          });
-          return 'fail';
-          // ignore: dead_code
-          break;
-      }
-    } catch (e) {
-      setState(() {
-        print(e);
-
-        // addError(error: 'Server Or Network Connectivity Error');
-        // isLoading = false;
-      });
-      return 'fail';
-    }
-  }
-
   popBar() {
     return Padding(
       padding: const EdgeInsets.only(right: 10.0),
       child: PopupMenuButton(
         tooltip: 'Sort',
         color: const Color(0xfff3f3f4),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Text("Sort"),
-            Icon(
-              Icons.sort_outlined,
-              size: 28.0,
-              color: Colors.black,
-            ),
-          ],
-        ),
         offset: const Offset(20, 40),
         itemBuilder: (context) => [
           PopupMenuItem(
@@ -880,6 +850,17 @@ class _PaymentListState extends State<PaymentList> {
             ),
           ),
         ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Text("Sort"),
+            Icon(
+              Icons.sort_outlined,
+              size: 28.0,
+              color: Colors.black,
+            ),
+          ],
+        ),
       ),
     );
   }

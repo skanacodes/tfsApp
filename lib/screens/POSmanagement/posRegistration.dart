@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print, library_private_types_in_public_api
 
 import 'dart:convert';
 import 'dart:io';
@@ -100,7 +100,7 @@ class _PosRegState extends State<PosReg> {
           .then((prefs) => prefs.getInt('station_id'));
       var checkpoint = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('checkpointId'));
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('$baseUrl/api/v1/pos-reg');
 
       final response = await http.post(url,
@@ -193,12 +193,12 @@ class _PosRegState extends State<PosReg> {
       desc: message,
       buttons: [
         DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
           child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          onPressed: () => Navigator.pop(context),
-          width: 120,
         )
       ],
     ).show();
@@ -215,10 +215,6 @@ class _PosRegState extends State<PosReg> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -227,6 +223,10 @@ class _PosRegState extends State<PosReg> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -519,6 +519,7 @@ class _PosRegState extends State<PosReg> {
                           items: ask
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem(
+                              value: value,
                               child: Container(
                                 width: double.infinity,
                                 decoration: const BoxDecoration(
@@ -533,7 +534,6 @@ class _PosRegState extends State<PosReg> {
                                   style: const TextStyle(color: Colors.black),
                                 ),
                               ),
-                              value: value,
                             );
                           }).toList(),
                           validator: (value) {

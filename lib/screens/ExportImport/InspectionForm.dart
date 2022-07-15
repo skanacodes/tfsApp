@@ -1,4 +1,4 @@
-// ignore_for_file: body_might_complete_normally_nullable, file_names, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: body_might_complete_normally_nullable, file_names, prefer_typing_uninitialized_variables, avoid_print, depend_on_referenced_packages, library_private_types_in_public_api, deprecated_member_use, use_build_context_synchronously
 
 import 'dart:convert';
 import 'dart:io';
@@ -80,17 +80,17 @@ class _InspectionFormState extends State<InspectionForm> {
   final ImagePicker _picker = ImagePicker();
   //DateTime now = DateTime.now();
   String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-  Future<void> retriveLostData(var _imageFile) async {
+  Future<void> retriveLostData(var imageFile) async {
     final LostData response = await _picker.getLostData();
     if (response.isEmpty) {
       return;
     }
     if (response.file != null) {
       setState(() {
-        _imageFile = response.file!;
+        imageFile = response.file!;
       });
     } else {
-      print('Retrieve error ' + response.exception!.code);
+      // //print('Retrieve error ' + response.exception!.code);
     }
   }
 
@@ -98,40 +98,39 @@ class _InspectionFormState extends State<InspectionForm> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('$baseUrl/api/v1/get-units');
 
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
             data1 = res['units'];
 
-            print(res);
+            //print(res);
           });
           break;
 
         case 401:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
           });
           break;
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
           });
           break;
       }
     } on SocketException {
       setState(() {
-        var res = 'Server Error';
-        print(res);
+        //print(res);
       });
     }
   }
@@ -146,9 +145,9 @@ class _InspectionFormState extends State<InspectionForm> {
     print(path);
     // getting a directory path for saving
     Directory appDocDir = await getApplicationDocumentsDirectory();
-    print(appDocDir);
+    //print(appDocDir);
     String appDocPath = appDocDir.path;
-    print(appDocPath);
+    //print(appDocPath);
     String imageName = 'mark';
     setState(() {
       bytes = byte!.buffer.asUint8List();
@@ -158,8 +157,8 @@ class _InspectionFormState extends State<InspectionForm> {
         .writeAsBytesSync(byte!.buffer.asInt8List());
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
-    print(tokens);
-    print(bytes);
+    //print(tokens);
+    //print(bytes);
 
     Navigator.pop(context);
   }
@@ -181,6 +180,8 @@ class _InspectionFormState extends State<InspectionForm> {
               child: Container(
                   height: getProportionateScreenHeight(160),
                   width: double.infinity,
+                  decoration:
+                      BoxDecoration(border: Border.all(color: Colors.grey)),
                   child: SfSignaturePad(
                       key: signatureGlobalKey,
                       backgroundColor: Colors.white,
@@ -194,9 +195,7 @@ class _InspectionFormState extends State<InspectionForm> {
                         });
                       },
                       minimumStrokeWidth: 1.0,
-                      maximumStrokeWidth: 2.0),
-                  decoration:
-                      BoxDecoration(border: Border.all(color: Colors.grey))),
+                      maximumStrokeWidth: 2.0)),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -244,10 +243,10 @@ class _InspectionFormState extends State<InspectionForm> {
         ]).show();
   }
 
-  Widget _previewImage(var _imageFile) {
+  Widget _previewImage(var imageFile) {
     // ignore: unnecessary_null_comparison
-    if (_imageFile != null) {
-      return Image.file(File(_imageFile.path));
+    if (imageFile != null) {
+      return Image.file(File(imageFile.path));
     } else {
       return const Text(
         'You have not yet picked an image.',
@@ -274,24 +273,24 @@ class _InspectionFormState extends State<InspectionForm> {
         final File file = File(numb == 1 ? _imageFile.path : _imageFile1.path);
         // getting a directory path for saving
         Directory appDocDir = await getApplicationDocumentsDirectory();
-        print(appDocDir);
+        //print(appDocDir);
         String appDocPath = appDocDir.path;
-        print(appDocPath);
+        //print(appDocPath);
         final fileName =
             path.basename(numb == 1 ? _imageFile.path : _imageFile1.path);
-        print(fileName);
+        //print(fileName);
 // copy the file to a new path
         final File newImage = await file.copy('$appDocPath/$fileName');
-        print(newImage);
+        //print(newImage);
         setState(() {
           numb == 1 ? img1 = newImage.path : img2 = newImage.path;
         });
-        print(img1);
+        //print(img1);
       } else {
-        print("Error While Taking Picture");
+        //print("Error While Taking Picture");
       }
     } catch (e) {
-      print("Image picker error " + e.toString());
+      //print("Image picker error $e");
     }
   }
 
@@ -333,12 +332,12 @@ class _InspectionFormState extends State<InspectionForm> {
       desc: message,
       buttons: [
         DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
           child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          onPressed: () => Navigator.pop(context),
-          width: 120,
         )
       ],
     ).show();
@@ -354,9 +353,9 @@ class _InspectionFormState extends State<InspectionForm> {
       var lname = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('lname'));
 
-      print(tokens);
+      //print(tokens);
 
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       BaseOptions options = BaseOptions(
           baseUrl: baseUrl,
           connectTimeout: 50000,
@@ -425,7 +424,7 @@ class _InspectionFormState extends State<InspectionForm> {
         // setState(() {
         //   uploadMessage = sent.toString();
         // });
-        print('$sent $total');
+        //print('$sent $total');
       });
       print(response.statusCode);
       print(response.statusMessage);
@@ -433,13 +432,13 @@ class _InspectionFormState extends State<InspectionForm> {
       print(res);
       if (response.statusCode == 201) {
         var res = response.data;
-        print(res);
+        //print(res);
         counter++;
         setState(() {
           data2 = res['inspProd'];
           isProductset = true;
           ask1 = null;
-          print(data);
+          //print(data);
           isLoading = false;
         });
 
@@ -450,12 +449,12 @@ class _InspectionFormState extends State<InspectionForm> {
         return 'fail';
       }
     } on DioError catch (e) {
-      print('dio package');
+      //print('dio package');
       if (DioErrorType.receiveTimeout == e.type ||
           DioErrorType.connectTimeout == e.type) {
         message('error', 'Request Timeout..Please Try Again.');
         // throw Exception('Server Can Not Be Reached');
-        print(e);
+        //print(e);
 
         setState(() {
           isLoading = false;
@@ -466,7 +465,7 @@ class _InspectionFormState extends State<InspectionForm> {
 
         message('error', 'Failed To Get Response From Server.');
         // throw Exception('Server Can Not Be Reached');
-        print(e);
+        //print(e);
         setState(() {
           isLoading = false;
         });
@@ -476,7 +475,7 @@ class _InspectionFormState extends State<InspectionForm> {
           // throw Exception('Server Can Not Be Reached');
           message('error', 'Network Connectivity Problem.');
 
-          print(e);
+          //print(e);
           setState(() {
             isLoading = false;
           });
@@ -487,7 +486,7 @@ class _InspectionFormState extends State<InspectionForm> {
         message('error',
             'Network Connectivity Problem. Data Has Been Stored Localy');
         // throw Exception('Server Can Not Be Reached');
-        print(e);
+        //print(e);
         setState(() {
           isLoading = false;
         });
@@ -508,10 +507,6 @@ class _InspectionFormState extends State<InspectionForm> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -520,6 +515,10 @@ class _InspectionFormState extends State<InspectionForm> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -528,18 +527,18 @@ class _InspectionFormState extends State<InspectionForm> {
   Widget _submitButton(String jobid, String userId, String type) {
     return InkWell(
       onTap: () async {
-        //  print(_connectionStatus.toString());
+        //  //print(_connectionStatus.toString());
         if (_formKey.currentState!.validate()) {
           _formKey.currentState!.save();
 
           setState(() {
             isLoading = true;
           });
-          var x = await uploadData(jobid, userId, type);
+          await uploadData(jobid, userId, type);
 
           ask1 = null;
           setState(() {
-            print(x);
+            //print(x);
             isImageTaken = false;
             isImageTaken1 = false;
             isLoading = false;
@@ -597,8 +596,8 @@ class _InspectionFormState extends State<InspectionForm> {
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as InspectionArguments;
-    // print(data[''])
-    print(args.species.length);
+    // //print(data[''])
+    //print(args.species.length);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
@@ -742,9 +741,10 @@ class _InspectionFormState extends State<InspectionForm> {
                                 items: data.map((item) {
                                   // setState(() {
                                   //   // productId = item['id'].toString();
-                                  //   // print(productId);
+                                  //   // //print(productId);
                                   // });
                                   return DropdownMenuItem(
+                                    value: item['species_name'].toString(),
                                     child: Container(
                                       width: double.infinity,
                                       decoration: const BoxDecoration(
@@ -760,7 +760,6 @@ class _InspectionFormState extends State<InspectionForm> {
                                             color: Colors.black),
                                       ),
                                     ),
-                                    value: item['species_name'].toString(),
                                   );
                                 }).toList(),
                                 validator: (value) {
@@ -774,7 +773,7 @@ class _InspectionFormState extends State<InspectionForm> {
                                         .requestFocus(FocusNode());
                                     ask1 = value!;
 
-                                    print(ask1);
+                                    //print(ask1);
                                   });
 
                                   for (var i = 0; i < data.length; i++) {
@@ -890,6 +889,7 @@ class _InspectionFormState extends State<InspectionForm> {
                                           value == null ? "* Required" : null,
                                       items: data1.map((item) {
                                         return DropdownMenuItem(
+                                          value: item['name'].toString(),
                                           child: Container(
                                             width: double.infinity,
                                             decoration: const BoxDecoration(
@@ -904,7 +904,6 @@ class _InspectionFormState extends State<InspectionForm> {
                                               item['name'].toString(),
                                             ),
                                           ),
-                                          value: item['name'].toString(),
                                         );
                                       }).toList(),
                                       onChanged: (newVal) {
@@ -1119,8 +1118,8 @@ class _InspectionFormState extends State<InspectionForm> {
   //           options: Options(headers: headers));
 
   //   final data = response.data;
-  //   // print(data['species']);
-  //   // print('hfr');
+  //   // //print(data['species']);
+  //   // //print('hfr');
   //   if (data != null) {
   //     return SpeciesModel.fromJsonList(data['species']);
   //   }

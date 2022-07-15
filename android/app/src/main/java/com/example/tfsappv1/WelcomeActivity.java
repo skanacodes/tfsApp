@@ -234,7 +234,7 @@ public class WelcomeActivity extends FlutterActivity {
                                         result.success(res);
                                     } else if (parameter2.equals("MobiIoT")) {
 
-                                        String res = print(image);
+                                        String res = printIot(type,image,name,controlNo,receiptNo,amount,issuer,itemsAmount,itemsDesc,desc,paidDate,qr,plotname,station);
                                         System.out.println(res);
                                         result.success(res);
 
@@ -345,34 +345,107 @@ public class WelcomeActivity extends FlutterActivity {
 
 
 
-    public String print(byte[] image) {
+    public String printIot(String type,byte[] image,String name,String controlNo,String receiptNo,String amount,String issuer,List itemsAmount,List itemsDesc,String desc,String paidDate,byte[] qr,String plotname,String station) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String currentDateandTime = sdf.format(new Date());
+        String[] splitName = name.split(" ");
+        String[] dateMonths = currentDateandTime.split(" ");
+        String[] firstPartOfYear=dateMonths[0].split("-");
+        String[] secondPartOfYear = dateMonths[1].split(":");
+        int sumOfTheYear = Integer.parseInt(firstPartOfYear[0])+Integer.parseInt(firstPartOfYear[1])+Integer.parseInt(firstPartOfYear[2])+Integer.parseInt(secondPartOfYear[0])+Integer.parseInt(secondPartOfYear[1])+Integer.parseInt(secondPartOfYear[2]);
+        StringBuilder code1 = new StringBuilder((controlNo.substring(controlNo.length()-3)));
 
+        StringBuilder code2= new StringBuilder((receiptNo.substring(receiptNo.length()-3)));
+        // System.out.println(splitName);
+        char fchar ;
+        char Schar ;
+
+        if (splitName.length>1){
+            fchar = splitName[0].charAt(0);
+//            Schar = splitName[1].charAt(0);
+
+        }
+        else {
+            fchar = splitName[0].charAt(0);
+            Schar = splitName[0].charAt(splitName[0].length()-1);
+        }
+
+        int fnum = (Character.toLowerCase(fchar) - 'a' + 1);
+       // int snum = Character.toLowerCase(Schar) - 'a' + 1;
         try {
 
             if (CsPrinter.getPrinterStatus()==0){
                 return "Printer Out Of Paper";
             }else if(CsPrinter.getPrinterStatus()==1){
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(image, 0, image.length);
+                Bitmap decodedQr = BitmapFactory.decodeByteArray(qr, 0, qr.length);
                 Log.e("click","click");
                 System.out.println("am Here");
                 // printContent(decodedByte);
                 CsPrinter printer=new CsPrinter();
+                if(type.equals("receipt")){
+                    printer.printBitmap(getContext(), decodedByte);
+                    printer.printText("-----------------------------");
+                    printer.printText("Tanzania Forest Services Agency (TFS).");
+                    printer.printText("-----------------------------");
+                    printer.printText("Client:"+name);
+                    printer.printText("Control No: "+controlNo);
+                    printer.printText("Receipt No: "+receiptNo);
+                    printer.printText("Description: "+desc);
+                    printer.printText("Station: "+station);
+                    printer.printText("Issuer: "+issuer);
+                    printer.printText("Paid On: "+paidDate);
+                    printer.printText("Printed On:"+currentDateandTime);
+                    printer.printText("-----------------------------");
+                    printer.printText("Description(s).");
+                    printer.printText("-----------------------------");
+                    for (int i = 0; i < itemsAmount.toArray().length; i++) {
 
-                printer.printText("-----------------------------");
-                printer.printText_FullParm("fdsgvdss",55,0,20,0,true,false);
-                printer.printBitmap(getContext(),decodedByte);
-                printer.printText("-----------------------------");
-                printer.printText_FullParm("fdsgvdss",55,0,20,0,true,false);
-                printer.printEndLine();
-                //   printer.addBitmapToPrint(decodedByte);
+                        printer.printText(itemsDesc.get(i) +" "+    itemsAmount.get(i));
+                    }
+                    printer.printText("-----------------------------");
+                    printer.printText("Total  Amount :  "+ amount);
+                    printer.printText("-----------------------------");
+                    printer.printText("Signature: ----------------");
+                    //printer.addBarQrCodeToPrint(controlNo, BarcodeFormat.QR_CODE,300,300);
+                    //printer.wait();
+                    printer.addBitmapToPrint( decodedQr);
 
-                printer.addTextToPrint("Draw Time","03:30 PM",25,true,false,1);
+                    printer.printText("\n"+Integer.toString(fnum)+"-"+sumOfTheYear+"-"+code2.reverse()+code1.reverse());
 
-                //printer.addBarQrCodeToPrint("TEST", BarcodeFormat.QR_CODE, 384, 280);
+                    printer.print(this);
 
-                printer.addTextToPrint("------------",null,25,true,false,1);
+                }
+                if(type.equals("bill")){
+                    printer.printBitmap(getContext(), decodedByte);
+                    printer.printText("-----------------------------");
+                    printer.printText("Tanzania Forest Services Agency (TFS).");
+                    printer.printText("-----------------------------");
+                    printer.printText("Client:"+name);
+                    printer.printText("Control No: "+controlNo);
+                    //printer.printText("Receipt No: "+receiptNo);
+                    printer.printText("Description: "+desc);
+                    printer.printText("Station: "+station);
+                    printer.printText("Issuer: "+issuer);
+                   // printer.printText("Paid On: "+paidDate);
+                    printer.printText("Printed On:"+currentDateandTime);
 
-                printer.print(this);
+                    printer.printText("-----------------------------");
+                    printer.printText("Total  Amount :  "+ amount);
+                    printer.printText("-----------------------------");
+                   // printer.printText("Signature: ----------------");
+                    //printer.addBarQrCodeToPrint(controlNo, BarcodeFormat.QR_CODE,300,300);
+                    //printer.wait();
+                    printer.addBitmapToPrint( decodedQr);
+
+                   // printer.printText("\n"+Integer.toString(fnum)+Integer.toString(snum)+"-"+sumOfTheYear+"-"+code2.reverse()+code1.reverse());
+
+                    printer.print(this);
+
+                }
+
+
+
                 return "Successfully Printed";
             }
             else if(CsPrinter.getPrinterStatus()==-1){
@@ -629,16 +702,16 @@ public class WelcomeActivity extends FlutterActivity {
 
         if (splitName.length>1){
             fchar = splitName[0].charAt(0);
-            Schar = splitName[1].charAt(1);
+          //  Schar = splitName[1].charAt(1);
 
         }
         else {
             fchar = splitName[0].charAt(0);
-            Schar = splitName[0].charAt(splitName[0].length()-1);
+           // Schar = splitName[0].charAt(splitName[0].length()-1);
         }
 
         int fnum = (Character.toLowerCase(fchar) - 'a' + 1);
-        int snum = Character.toLowerCase(Schar) - 'a' + 1;
+       // int snum = Character.toLowerCase(Schar) - 'a' + 1;
         new Thread(new Runnable() {
             @Override
             public void run()
@@ -670,15 +743,15 @@ if (type.equals("receipt")){
 
     for (int i = 0; i < itemsAmount.toArray().length; i++) {
 
-        printer.printText(itemsDesc.get(i) +" "+    itemsAmount.get(i)+" TZS"      ,1,false);
+        printer.printText(itemsDesc.get(i) +" "+    itemsAmount.get(i)      ,1,false);
     }
     printer.printText("---------------",2,false);
-    printer.printText("Total  Amount :  "+ amount+"TZS",1,false);
+    printer.printText("Total  Amount :  "+ amount,1,false);
     printer.printText("---------------",2,false);
     printer.printText("Signature: __________________",1,false);
 
     printer.printBitmap(qr,1);
-    printer.printText("__________________\n"+Integer.toString(fnum)+Integer.toString(snum)+"-"+sumOfTheYear+"-"+code2.reverse()+code1.reverse());
+    printer.printText("__________________\n"+Integer.toString(fnum)+"-"+sumOfTheYear+"-"+code2.reverse()+code1.reverse());
 
 
 
@@ -886,7 +959,7 @@ if (type.equals("receipt")){
 
 
                     }
-                    printer.printText("Total Bill: "+ total + "TZS",1,false);
+                    printer.printText("Total Bill: "+ total ,1,false);
 
 
 
@@ -1051,7 +1124,7 @@ if (type.equals("receipt")){
 
                         for (int i = 0; i < itemsAmount.toArray().length; i++) {
                             usbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_LEFT);
-                            usbThermalPrinter.addString(itemsDesc.get(i)+ "  " + itemsAmount.get(i)+" TZS");
+                            usbThermalPrinter.addString(itemsDesc.get(i)+ "  " + itemsAmount.get(i));
 
                         }
 
@@ -1059,7 +1132,7 @@ if (type.equals("receipt")){
 
                         usbThermalPrinter.printString();
                         usbThermalPrinter.addString("--------------------------------\n"
-                                + "Total: "+amount+ " TZS"+"\n"
+                                + "Total: "+amount+"\n"
                                 +  "--------------------------------");
                         usbThermalPrinter.printString();
 
@@ -1107,7 +1180,7 @@ if (type.equals("receipt")){
                       
 
                         usbThermalPrinter.addString("--------------------------------\n"
-                                + "Total: "+amount+" TZS"+"\n"
+                                + "Total: "+amount+"\n"
                                 +  "--------------------------------");
                         usbThermalPrinter.printString();
 
@@ -1208,9 +1281,9 @@ if (type.equals("receipt")){
     protected void onDestroy() {
         // TODO Auto-generated method stub
         super.onDestroy();
-        unregisterReceiver(batteryReceiver);
-        batteryReceiver = null;
-        usbThermalPrinter.stop();
+        //unregisterReceiver(batteryReceiver);
+//        batteryReceiver = null;
+//        usbThermalPrinter.stop();
     }
 
 

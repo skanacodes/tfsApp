@@ -1,4 +1,4 @@
-// ignore_for_file: use_key_in_widget_constructors
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -31,7 +31,7 @@ class _ImageScreenState extends State<ImageScreen> {
               SizedBox(
                 height: getProportionateScreenHeight(20),
               ),
-              Text('Image Taken At ' + widget.checkpointname + ' Checkpoint'),
+              Text('Image Taken At ${widget.checkpointname} Checkpoint'),
               SizedBox(
                 height: getProportionateScreenHeight(20),
               ),

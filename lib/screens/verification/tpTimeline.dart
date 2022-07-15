@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, avoid_print, prefer_typing_uninitialized_variables
+// ignore_for_file: file_names, avoid_//print(, prefer_typing_uninitialized_variables
 
 import 'dart:convert';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -40,23 +40,25 @@ class _TPtimelineState extends State<TPtimeline> {
       isLoading = true;
     });
     try {
-      print(widget.tpNumber);
+      ////print((widget.tpNumber);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
       var checkpoint = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('checkpointId'));
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse(
-          'https://mis.tfs.go.tz/fremis-test/api/v1/expected-tp/routes/${widget.tpNumber}/$checkpoint');
+          '$baseUrlTest/api/v1/expected-tp/routes/${widget.tpNumber}/$checkpoint');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print((response.statusCode);
+      //print((response.body);
+      
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print((res);
 
             data = res['data'];
 
@@ -68,7 +70,7 @@ class _TPtimelineState extends State<TPtimeline> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print((res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -78,7 +80,7 @@ class _TPtimelineState extends State<TPtimeline> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print((e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -101,10 +103,6 @@ class _TPtimelineState extends State<TPtimeline> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -113,6 +111,10 @@ class _TPtimelineState extends State<TPtimeline> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -320,9 +322,7 @@ class _DeliveryProcesses extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        processes[index]["checkpoint"]["checkpoint_name"]
-                                .toString() +
-                            " Checkpoint",
+                        "${processes[index]["checkpoint"]["checkpoint_name"]} Checkpoint",
                         style: DefaultTextStyle.of(context).style.copyWith(
                             fontSize: 15.0,
                             color: Colors.black,
@@ -331,28 +331,17 @@ class _DeliveryProcesses extends StatelessWidget {
                       _InnerTimeline(messages: [
                         processes[index]["checkpoint"]["verification_time"] !=
                                 null
-                            ? "Verification-Time: " +
-                                processes[index]["checkpoint"]
-                                        ["verification_time"]
-                                    .toString()
+                            ? "Verification-Time: ${processes[index]["checkpoint"]["verification_time"]}"
                             : "",
                         processes[index]["checkpoint"]["verification_code"] !=
                                 null
-                            ? "Verification-Code: " +
-                                processes[index]["checkpoint"]
-                                        ["verification_code"]
-                                    .toString()
+                            ? "Verification-Code: ${processes[index]["checkpoint"]["verification_code"]}"
                             : "",
                         processes[index]["checkpoint"]["remarks"] != null
-                            ? "Status: " +
-                                processes[index]["checkpoint"]["remarks"]
-                                    .toString()
+                            ? "Status: ${processes[index]["checkpoint"]["remarks"]}"
                             : "",
                         processes[index]["checkpoint"]["verified_by"] != null
-                            ? "Verified By: " +
-                                processes[index]["checkpoint"]["verified_by"]
-                                    .toString()
-                                    .toUpperCase()
+                            ? "Verified By: ${processes[index]["checkpoint"]["verified_by"].toString().toUpperCase()}"
                             : "",
                       ]),
                     ],
@@ -396,7 +385,7 @@ class _DeliveryProcesses extends StatelessWidget {
                 return null;
               },
               connectorBuilder: (_, index, ___) {
-                // print(processes[0]["checkpoint"]["remarks"]);
+                // ////print((processes[0]["checkpoint"]["remarks"]);
 
                 if (processes[index]["checkpoint"]["remarks"].toString() ==
                     "Verified") {

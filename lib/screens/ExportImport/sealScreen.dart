@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, prefer_typing_uninitialized_variables, use_key_in_widget_constructors, avoid_print
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, use_key_in_widget_constructors, avoid_print, library_private_types_in_public_api
 
 import 'dart:convert';
 import 'dart:io';
@@ -539,9 +539,7 @@ class _SealScreenState extends State<SealScreen> {
                                             .toString() ==
                                         'null'
                                     ? ''
-                                    : widget.objectData['quantity'].toString() +
-                                        " " +
-                                        widget.objectData['unit'].toString()))
+                                    : "${widget.objectData['quantity']} ${widget.objectData['unit']}"))
                           ],
                         ),
                         const Divider(
@@ -613,14 +611,14 @@ class _SealScreenState extends State<SealScreen> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             Navigator.pop(context);
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -638,7 +636,7 @@ class _SealScreenState extends State<SealScreen> {
     var id = widget.objectData['id'].toString();
     print(widget.objectData['id'].toString());
     try {
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('https://mis.tfs.go.tz/fremis/api/v1/export/seal');
       final response = await http.post(url, headers: headers, body: {
         "export_id": id.toString(),

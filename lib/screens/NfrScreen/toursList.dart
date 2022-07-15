@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print, prefer_interpolation_to_compose_strings
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -9,7 +9,8 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:tfsappv1/screens/NfrScreen/generateQr.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tfsappv1/screens/NfrScreen/add_safari_details.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
@@ -24,7 +25,7 @@ class VisitorsList extends StatefulWidget {
 class _VisitorsListState extends State<VisitorsList> {
   String? type;
   List data = [];
-  var groupNo = "USR_";
+  var groupNo;
   var seedToken;
   bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
@@ -36,67 +37,17 @@ class _VisitorsListState extends State<VisitorsList> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  Future getDataEAuction() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      // var tokens = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
-      // var headers = {"Authorization": "Bearer " + tokens!};
-      var url = Uri.parse(
-          'https://mis.tfs.go.tz/e-auction/api/Bill/AccountsExpiredBill');
-      final response = await http.get(
-        url,
-      );
-      var res;
-      //final sharedP prefs=await
-      print(response.statusCode);
-      switch (response.statusCode) {
-        case 200:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            data = res['data'];
-            isLoading = false;
-          });
-
-          break;
-
-        default:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            isLoading = false;
-            messages('Ohps! Something Went Wrong', 'error');
-          });
-
-          break;
-      }
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-        print(e);
-        messages('Server Or Connectivity Error', 'error');
-      });
-    }
-    _refreshController.refreshCompleted();
-  }
-
   Future getData() async {
     setState(() {
       isLoading = true;
     });
     try {
-      // var tokens = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
-      // var headers = {"Authorization": "Bearer " + tokens!};
-      var url = Uri.parse('$baseUrlTest/api/v1/user_groups');
-      final response = await http.get(
-        url,
-      );
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      ////print(tokens);
+      var headers = {"Authorization": "Bearer " + tokens!};
+      var url = Uri.parse('$baseUrlTest/api/v1/safari_info');
+      final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
@@ -104,8 +55,10 @@ class _VisitorsListState extends State<VisitorsList> {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
-            data = res['groups'];
+           // print(res);
+            if (res["success"]) {
+              data = res['data'];
+            }
             isLoading = false;
           });
 
@@ -114,7 +67,7 @@ class _VisitorsListState extends State<VisitorsList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -124,7 +77,7 @@ class _VisitorsListState extends State<VisitorsList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -138,21 +91,21 @@ class _VisitorsListState extends State<VisitorsList> {
     try {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
+      // ////print(tokens);
       // var headers = {"Authorization": "Bearer " + seedToken};
-      var url = Uri.parse('$baseUrlTest/api/v1/user_groups/$groupNo');
+      var url = Uri.parse('$baseUrlTest/api/v1/safari_info/find/$groupNo');
 
       final response = await http.get(
         url,
       );
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      ////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             data = res['groups'];
             isLoading = false;
           });
@@ -162,7 +115,7 @@ class _VisitorsListState extends State<VisitorsList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -172,7 +125,7 @@ class _VisitorsListState extends State<VisitorsList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -198,10 +151,6 @@ class _VisitorsListState extends State<VisitorsList> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -210,6 +159,10 @@ class _VisitorsListState extends State<VisitorsList> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -232,20 +185,17 @@ class _VisitorsListState extends State<VisitorsList> {
                     validator: (value) =>
                         value == '' ? 'This  Field Is Required' : null,
                     onSaved: (value) {
-                      setState(() {
-                        groupNo = "USR_";
-                      });
-                      groupNo = groupNo + value!;
+                      groupNo = value!;
                     },
                     onFieldSubmitted: (value) async {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
-                        print(groupNo);
+                        ////print(groupNo);
                         await searchData();
                       }
-                      //print('Pressed via keypad');
+                      //////print('Pressed via keypad');
                     },
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.search,
                     cursorColor: kPrimaryColor,
                     decoration: InputDecoration(
@@ -253,7 +203,7 @@ class _VisitorsListState extends State<VisitorsList> {
                           onTap: () async {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              print(groupNo);
+                              ////print(groupNo);
                               await searchData();
                             }
                           },
@@ -264,11 +214,12 @@ class _VisitorsListState extends State<VisitorsList> {
                           ),
                         ),
                         isDense: true,
-                        contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(20, 10, 20, 10),
                         border: InputBorder.none,
                         fillColor: const Color(0xfff3f3f4),
                         label: const Text(
-                          "Search By Group Id",
+                          "Search By Group Name",
                           style: TextStyle(fontSize: 15, color: Colors.black),
                         ),
                         filled: true))),
@@ -405,10 +356,9 @@ class _VisitorsListState extends State<VisitorsList> {
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
-                                                          GenerateQrCode(
-                                                              id: data[index][
-                                                                      "ref_id"]
-                                                                  .toString())),
+                                                          AddSafariDetails(
+                                                            data: [data[index]],
+                                                          )),
                                                 );
                                               },
                                               trailing: Column(
@@ -425,28 +375,32 @@ class _VisitorsListState extends State<VisitorsList> {
                                               ),
                                               leading: IntrinsicHeight(
                                                   child: SizedBox(
-                                                      height:
-                                                          double.maxFinite,
+                                                      height: double.maxFinite,
                                                       width:
                                                           getProportionateScreenHeight(
                                                               50),
                                                       child: Row(
                                                         children: [
                                                           VerticalDivider(
-                                                            color: index
-                                                                    .isEven
+                                                            color: index.isEven
                                                                 ? kPrimaryColor
-                                                                : Colors.green[
-                                                                    200],
+                                                                : Colors
+                                                                    .green[200],
                                                             thickness: 5,
                                                           )
                                                         ],
                                                       ))),
-                                              title: Text("ID: " +
-                                                  data[index]["user_id"]),
-                                              subtitle: Text("Member(s): " +
-                                                  data[index]["members"]
-                                                      .toString()),
+                                              title: data[index]["group_name"]
+                                                          .toString() ==
+                                                      "null"
+                                                  ? Text("Name: " +
+                                                      data[index]["leader_name"]
+                                                          .toString())
+                                                  : Text("Group Name: " +
+                                                      data[index]["group_name"]
+                                                          .toString()),
+                                              subtitle: Text(
+                                                  "Tourist #: ${data[index]["no_of_tourist"].toString()}"),
                                             ),
                                           ),
                                         ),
@@ -471,17 +425,6 @@ class _VisitorsListState extends State<VisitorsList> {
       child: PopupMenuButton(
         tooltip: 'Sort',
         color: const Color(0xfff3f3f4),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Text("Sort"),
-            Icon(
-              Icons.sort_outlined,
-              size: 28.0,
-              color: Colors.black,
-            ),
-          ],
-        ),
         offset: const Offset(20, 40),
         itemBuilder: (context) => [
           PopupMenuItem(
@@ -582,6 +525,17 @@ class _VisitorsListState extends State<VisitorsList> {
             ),
           ),
         ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Text("Sort"),
+            Icon(
+              Icons.sort_outlined,
+              size: 28.0,
+              color: Colors.black,
+            ),
+          ],
+        ),
       ),
     );
   }

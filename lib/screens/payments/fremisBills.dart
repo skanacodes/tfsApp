@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, avoid_print
+// ignore_for_file: file_names, avoid_//print
 
 import 'package:dio/dio.dart';
 import 'package:dropdown_search/dropdown_search.dart';
@@ -31,6 +31,7 @@ class _FremisBillsState extends State<FremisBills> {
   String? desc;
   double? unitAmount;
   String? gfcCode;
+  String? levelTwoCode;
   bool isVerify = false;
   final value = NumberFormat("#,##0.00", "en_US");
   bool isLoading = false;
@@ -42,7 +43,7 @@ class _FremisBillsState extends State<FremisBills> {
   List<int> stationIds = [];
 
   bool isNewCustomer = false;
-  int quantity = 1;
+  double quantity = 1;
 
   String? fullname;
   String? mobileNumber;
@@ -52,10 +53,12 @@ class _FremisBillsState extends State<FremisBills> {
   final GlobalKey<ExpansionTileCardState> cardA = GlobalKey();
   final GlobalKey<ExpansionTileCardState> cardB = GlobalKey();
   final GlobalKey<ExpansionTileCardState> cardC = GlobalKey();
-  List<String> ask = ['Domestic Customer', 'Non Domestic Customer'];
+  List<String> ask = ['Registered Dealers', 'Non Registered Dealers'];
   List<String> typeseeds = ['Seed', 'Seedling'];
   String? type;
   int sum = 0;
+  String? ask1;
+  double? compountAmt;
   double total = 0;
   final _formKey = GlobalKey<FormState>();
   final _formKey1 = GlobalKey<FormState>();
@@ -63,11 +66,11 @@ class _FremisBillsState extends State<FremisBills> {
     double sumation = 0;
     for (var i = 0; i < billData.length; i++) {
       setState(() {
-        //print(amount);
+        //////print(amount);
         sumation = sumation + double.parse(billData[i]["amount"].toString());
         total = sumation;
       });
-      print(sumation);
+      ////print(sumation);
     }
     return sumation;
   }
@@ -83,15 +86,17 @@ class _FremisBillsState extends State<FremisBills> {
     setState(() {
       isLoading = true;
     });
-    print(total);
+    print(billData);
+
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
     var stationId = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getInt('station_id'));
     var checkpoint = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('checkpointId'));
+
     try {
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       BaseOptions options = BaseOptions(
           baseUrl: baseUrlTest,
           connectTimeout: 50000,
@@ -100,7 +105,7 @@ class _FremisBillsState extends State<FremisBills> {
       var dio = Dio(options);
       var formData = FormData.fromMap({
         "payer_id": customerId,
-        " payer_name": customerName,
+        "payer_name": customerName,
         "payer_cell_no": mobileNumber,
         "payer_email": email,
         "bill_desc": "bill",
@@ -115,44 +120,39 @@ class _FremisBillsState extends State<FremisBills> {
         // setState(() {
         //   uploadMessage = sent.toString();
         // });
-        print('$sent $total');
+        ////print('$sent $total');
       });
       print(response.statusCode);
       print(response.statusMessage);
+      print(response.data);
       var res = response.data;
       print(res);
       if (response.statusCode == 201) {
-        //var res = json.decode(response.data);
-        var res = response.data;
-        print(res);
-
         message(
           'Bill Generated Successfully',
           'success',
         );
-      } else if (response.statusCode == 201) {
-        if (res["message"] == "Failed! Insufficient balance for Honey") {
-          setState(() {
-            isLoading = false;
-          });
-          message("Failed! Insufficient balance for Honey", "error");
+      } else if (response.statusCode == 200) {
+        if (res["status"] == "Token is Expired") {
+          messages("error", "Token Expired.. Please Login Again");
+          return;
         }
       } else {
         message('Failed To Save Data', 'error');
       }
     } on DioError catch (e) {
-      print('dio package');
+      ////print('dio package');
       if (DioErrorType.receiveTimeout == e.type ||
           DioErrorType.connectTimeout == e.type) {
         message('Server Can Not Be Reached.', 'error');
         // throw Exception('Server Can Not Be Reached');
-        print(e);
+        ////print(e);
       } else if (DioErrorType.response == e.type) {
         // throw Exception('Server Can Not Be Reached');
 
         message('Failed To Get Response From Server.', 'error');
         // throw Exception('Server Can Not Be Reached');
-        print(e);
+        ////print(e);
       } else if (DioErrorType.other == e.type) {
         if (e.message.contains('SocketException')) {
           // throw Exception('Server Can Not Be Reached');
@@ -161,14 +161,14 @@ class _FremisBillsState extends State<FremisBills> {
             'error',
           );
 
-          print(e);
+          ////print(e);
         }
       } else {
         //  throw Exception('Server Can Not Be Reached');
         message('error',
             'Network Connectivity Problem. Data Has Been Stored Localy');
         // throw Exception('Server Can Not Be Reached');
-        print(e);
+        ////print(e);
       }
     }
     setState(() {
@@ -225,7 +225,6 @@ class _FremisBillsState extends State<FremisBills> {
     );
   }
 
-
   enterTpNoPrompt(String tokens) {
     return Alert(
         context: context,
@@ -235,7 +234,7 @@ class _FremisBillsState extends State<FremisBills> {
             TextField(
               onChanged: (value) {
                 // permitNumber = value;
-                // print(permitNumber);
+                // ////print(permitNumber);
               },
               cursorColor: kPrimaryColor,
               decoration: const InputDecoration(
@@ -285,10 +284,6 @@ class _FremisBillsState extends State<FremisBills> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () async {
             if (index != null) {
               setState(() {
@@ -301,17 +296,21 @@ class _FremisBillsState extends State<FremisBills> {
             isBillMessage! ? await uploadData() : "";
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         ),
         DialogButton(
           color: Colors.red,
-          child: const Text(
-            "Cancel",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () async {
             Navigator.pop(context);
           },
           width: 120,
+          child: const Text(
+            "Cancel",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -320,7 +319,7 @@ class _FremisBillsState extends State<FremisBills> {
   createUser() {
     return Alert(
         context: context,
-        title: "Register New User",
+        title: "Register New Dealer",
         content: Form(
           key: _formKey,
           child: Column(
@@ -432,14 +431,27 @@ class _FremisBillsState extends State<FremisBills> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                print(customerName);
 
-                print(mobileNumber);
+                setState(() {
+                  customerId = "11";
+                });
+
                 _dealerEditTextController.clear();
                 setState(() {
                   isCustomerRegistered = true;
                 });
 
+                cardB.currentState?.expand();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Dealer Registered Successfull"),
+                    //padding: EdgeInsets.all(10),
+                    margin: EdgeInsets.all(10),
+                    dismissDirection: DismissDirection.up,
+                    behavior: SnackBarBehavior.floating,
+                    duration: Duration(seconds: 5),
+                  ),
+                );
                 Navigator.pop(context);
               }
             },
@@ -478,7 +490,7 @@ class _FremisBillsState extends State<FremisBills> {
                   initialValue: quantit == null ? "0" : quantit.toString(),
                   keyboardType: TextInputType.number,
                   key: const Key(""),
-                  onSaved: (val) => quantity = int.parse(val!),
+                  onSaved: (val) => quantity = double.parse(val!),
                   decoration: InputDecoration(
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
@@ -518,15 +530,15 @@ class _FremisBillsState extends State<FremisBills> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                print(index);
+                ////print(index);
                 setState(() {
                   if (index != null) {
                     billData[index]["quantity"] = quantity;
                     // quantities[index] = quantity;
-                    // print(quantities);
+                    // ////print(quantities);
                   }
 
-                  print(billData);
+                  ////print(billData);
                 });
               }
               Navigator.pop(context);
@@ -558,10 +570,6 @@ class _FremisBillsState extends State<FremisBills> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -570,6 +578,10 @@ class _FremisBillsState extends State<FremisBills> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -588,7 +600,7 @@ class _FremisBillsState extends State<FremisBills> {
     return SingleChildScrollView(
         child: Column(children: [
       SizedBox(
-        height: getProportionateScreenHeight(800),
+        height: getProportionateScreenHeight(1100),
         child: Column(
           children: <Widget>[
             // Adding the form here
@@ -597,129 +609,165 @@ class _FremisBillsState extends State<FremisBills> {
               child: Expanded(
                 child: Column(
                   children: <Widget>[
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 10, right: 18, left: 18),
-                      child: DropdownSearch<DealerModel>(
-                        // showSelectedItem: true,
-                        showSearchBox: true,
-                        // validator: (v) => v == null
-                        //     ? "This Field Is required"
-                        //     : null,
-                        popupTitle: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Center(
-                              child: Text(
-                            'List Of Registered Customers',
-                          )),
-                        ),
-                        searchFieldProps: TextFieldProps(
-                          controller: _dealerEditTextController,
+                    SafeArea(
+                      child: Padding(
+                        padding:
+                            const EdgeInsets.only(top: 1, right: 16, left: 16),
+                        child: DropdownButtonFormField<String>(
+                          itemHeight: 50,
                           decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
+                                borderRadius: BorderRadius.circular(5.0),
                                 borderSide: const BorderSide(
                                   color: Colors.cyan,
                                 ),
                               ),
                               fillColor: const Color(0xfff3f3f4),
                               filled: true,
-                              labelText: "Search",
-                              border: InputBorder.none,
                               isDense: true,
                               contentPadding:
                                   const EdgeInsets.fromLTRB(30, 10, 15, 10),
-                              suffixIcon: IconButton(
-                                icon: const Icon(Icons.clear),
-                                color: Colors.red,
-                                onPressed: () {
-                                  _dealerEditTextController.clear();
-                                },
-                              )),
-                        ),
-                        mode: Mode.BOTTOM_SHEET,
-                        popupElevation: 20,
+                              labelText: "Select Type Of Dealer",
+                              border: InputBorder.none),
+                          isExpanded: true,
 
-                        dropdownSearchDecoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: const BorderSide(
-                                color: Colors.cyan,
-                              ),
-                            ),
-                            icon: isCustomerSelected
-                                ? const Icon(
-                                    Icons.verified_user_outlined,
-                                    color: Colors.green,
-                                  )
-                                : const Icon(
-                                    Icons.person_add_alt_1_outlined,
-                                    color: Colors.red,
+                          value: ask1,
+                          //elevation: 5,
+                          style: const TextStyle(
+                              color: Colors.white, fontFamily: 'Ubuntu'),
+                          iconEnabledColor: Colors.black,
+                          items:
+                              ask.map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem(
+                              value: value,
+                              child: Container(
+                                width: double.infinity,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xfff3f3f4),
+                                  border: Border(
+                                    bottom: BorderSide(
+                                        width: 1, color: kPrimaryColor),
                                   ),
-                            fillColor: const Color(0xfff3f3f4),
-                            filled: true,
-                            isDense: true,
-                            contentPadding: const EdgeInsets.fromLTRB(30, 5, 10, 5),
-                            hintText: "Select Customer",
-                            border: InputBorder.none),
-                        compareFn: (i, s) => i!.isEqual(s),
-
-                        onFind: (filter) => getDataDealer(filter, "1"),
-
-                        onChanged: (data) {
-                          setState(() {
-                            customerId = data!.id;
-                            customerName = data.companyName == "null"
-                                ? data.fname +
-                                    " " +
-                                    data.mname +
-                                    " " +
-                                    data.lname
-                                : data.companyName;
-                            mobileNumber = data.phoneNumber;
-                            email = data.email;
-
-                            isCustomerRegistered = false;
-                          });
-                        },
-
-                        popupItemBuilder: _customPopupItemBuilderCustomer,
+                                ),
+                                child: Text(
+                                  value,
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          validator: (value) {
+                            if (value == null) {
+                              return "This Field is required";
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            setState(() {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              ask1 = value!;
+                              ask1 != "Registered Dealers"
+                                  ? createUser()
+                                  : null;
+                            });
+                          },
+                        ),
                       ),
                     ),
                     SizedBox(
                       height: getProportionateScreenHeight(10),
                     ),
-                    InkWell(
-                      onTap: () {
-                        createUser();
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          const Expanded(
-                            flex: 4,
-                            child: Center(
-                              child: Text(
-                                "New Customer",
-                                style: TextStyle(color: Colors.blue),
+                    ask1 == "Registered Dealers"
+                        ? Padding(
+                            padding: const EdgeInsets.only(
+                                top: 1, right: 16, left: 16),
+                            child: DropdownSearch<DealerModel>(
+                              // showSelectedItem: true,
+                              showSearchBox: true,
+
+                              // validator: (v) => v == null
+                              //     ? "This Field Is required"
+                              //     : null,
+                              popupTitle: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Center(
+                                    child: Text(
+                                  'List Of Registered Dealers',
+                                )),
                               ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: isCustomerRegistered
-                                ? const Icon(Icons.verified_user_outlined,
-                                    color: Colors.green)
-                                : const Icon(
-                                    Icons.app_registration,
-                                    color: Colors.pink,
+                              searchFieldProps: TextFieldProps(
+                                controller: _dealerEditTextController,
+                                decoration: InputDecoration(
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.cyan,
+                                      ),
+                                    ),
+                                    fillColor: const Color(0xfff3f3f4),
+                                    filled: true,
+                                    labelText: "Search",
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.fromLTRB(
+                                        30, 10, 15, 10),
+                                    suffixIcon: IconButton(
+                                      icon: const Icon(Icons.clear),
+                                      color: Colors.red,
+                                      onPressed: () {
+                                        _dealerEditTextController.clear();
+                                      },
+                                    )),
+                              ),
+                              mode: Mode.BOTTOM_SHEET,
+                              popupElevation: 20,
+
+                              dropdownSearchDecoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.cyan,
+                                    ),
                                   ),
+                                  // icon: isCustomerSelected
+                                  //     ? const Icon(
+                                  //         Icons.verified_user_outlined,
+                                  //         color: Colors.green,
+                                  //       )
+                                  //     : const Icon(
+                                  //         Icons.person_add_alt_1_outlined,
+                                  //         color: Colors.red,
+                                  //       ),
+                                  fillColor: const Color(0xfff3f3f4),
+                                  filled: true,
+                                  isDense: true,
+                                  contentPadding:
+                                      const EdgeInsets.fromLTRB(30, 5, 10, 5),
+                                  hintText: "Select Customer",
+                                  border: InputBorder.none),
+                              compareFn: (i, s) => i!.isEqual(s),
+
+                              onFind: (filter) => getDataDealer(filter, "1"),
+
+                              onChanged: (data) {
+                                setState(() {
+                                  customerId = data!.id;
+                                  customerName = data.companyName == "null"
+                                      ? "${data.fname} ${data.mname} ${data.lname}"
+                                      : data.companyName;
+                                  mobileNumber = data.phoneNumber;
+                                  email = data.email;
+
+                                  isCustomerRegistered = false;
+                                });
+                              },
+
+                              popupItemBuilder: _customPopupItemBuilderCustomer,
+                            ),
                           )
-                        ],
-                      ),
-                    ),
+                        : Container(),
                     SizedBox(
-                      height: getProportionateScreenHeight(20),
+                      height: getProportionateScreenHeight(10),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 1.0),
@@ -778,8 +826,8 @@ class _FremisBillsState extends State<FremisBills> {
                                     labelText: "Search",
                                     border: InputBorder.none,
                                     isDense: true,
-                                    contentPadding:
-                                        const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                    contentPadding: const EdgeInsets.fromLTRB(
+                                        30, 10, 15, 10),
                                     suffixIcon: IconButton(
                                       icon: const Icon(Icons.clear),
                                       color: Colors.red,
@@ -810,47 +858,160 @@ class _FremisBillsState extends State<FremisBills> {
                               onFind: (filter) => getData(filter, "1"),
 
                               onChanged: (data) {
-                                desc = data!.description;
-                                unitAmount = double.parse(data.amount);
-                                gfcCode = data.gfsCode;
-
-                                //print(seedname);
-                                // print(amount);
+                                setState(() {
+                                  desc = data!.description;
+                                  unitAmount = double.parse(data.amount);
+                                  gfcCode = data.gfsCode;
+                                  levelTwoCode = data.levelTwoId;
+                                  //print(levelTwoCode);
+                                  //print(desc);
+                                });
+                                // ////print(amount);
                               },
 
                               popupItemBuilder: _customPopupItemBuilderGFSCode,
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 5, right: 5, left: 5),
-                            child: TextFormField(
-                              keyboardType: TextInputType.number,
-                              key: const Key(""),
-                              onSaved: (val) => quantity = int.parse(val!),
-                              decoration: InputDecoration(
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.cyan,
+                          levelTwoCode == "4"
+                              ? Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 5, right: 5, left: 5),
+                                  child: TextFormField(
+                                    keyboardType: TextInputType.number,
+                                    key: const Key(""),
+                                    onSaved: (val) =>
+                                        compountAmt = double.parse(val!),
+                                    decoration: InputDecoration(
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
+                                        borderSide: const BorderSide(
+                                          color: Colors.cyan,
+                                        ),
+                                      ),
+                                      fillColor: const Color(0xfff3f3f4),
+                                      filled: true,
+                                      labelText: "Compounding Amount",
+                                      border: InputBorder.none,
+                                      isDense: true,
+                                      contentPadding: const EdgeInsets.fromLTRB(
+                                          30, 10, 15, 10),
+                                    ),
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return "This Field Is Required";
+                                      }
+                                      return null;
+                                    },
                                   ),
-                                ),
-                                fillColor: const Color(0xfff3f3f4),
-                                filled: true,
-                                labelText: "Quantity",
-                                border: InputBorder.none,
-                                isDense: true,
-                                contentPadding:
-                                    const EdgeInsets.fromLTRB(30, 10, 15, 10),
-                              ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "This Field Is Required";
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
+                                )
+                              : levelTwoCode == "14" &&
+                                      (desc ==
+                                              "Receipts from sale of Confiscated Forest Products" ||
+                                          desc ==
+                                              "Inspection Fee For Private Planted Trees - 20% of original")
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 5, right: 5, left: 5),
+                                      child: TextFormField(
+                                        keyboardType: TextInputType.number,
+                                        key: const Key(""),
+                                        onSaved: (val) =>
+                                            compountAmt = double.parse(val!),
+                                        decoration: InputDecoration(
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5.0),
+                                            borderSide: const BorderSide(
+                                              color: Colors.cyan,
+                                            ),
+                                          ),
+                                          fillColor: const Color(0xfff3f3f4),
+                                          filled: true,
+                                          labelText: " Amount",
+                                          border: InputBorder.none,
+                                          isDense: true,
+                                          contentPadding:
+                                              const EdgeInsets.fromLTRB(
+                                                  30, 10, 15, 10),
+                                        ),
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return "This Field Is Required";
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    )
+                                  : unitAmount == 0
+                                      ? Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 5, right: 5, left: 5),
+                                          child: TextFormField(
+                                            keyboardType: TextInputType.number,
+                                            key: const Key(""),
+                                            onSaved: (val) => compountAmt =
+                                                double.parse(val!),
+                                            decoration: InputDecoration(
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(5.0),
+                                                borderSide: const BorderSide(
+                                                  color: Colors.cyan,
+                                                ),
+                                              ),
+                                              fillColor:
+                                                  const Color(0xfff3f3f4),
+                                              filled: true,
+                                              labelText: " Amount",
+                                              border: InputBorder.none,
+                                              isDense: true,
+                                              contentPadding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      30, 10, 15, 10),
+                                            ),
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return "This Field Is Required";
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                        )
+                                      : Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 5, right: 5, left: 5),
+                                          child: TextFormField(
+                                            keyboardType: TextInputType.number,
+                                            key: const Key(""),
+                                            onSaved: (val) =>
+                                                quantity = double.parse(val!),
+                                            decoration: InputDecoration(
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(5.0),
+                                                borderSide: const BorderSide(
+                                                  color: Colors.cyan,
+                                                ),
+                                              ),
+                                              fillColor:
+                                                  const Color(0xfff3f3f4),
+                                              filled: true,
+                                              labelText: "Quantity",
+                                              border: InputBorder.none,
+                                              isDense: true,
+                                              contentPadding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      30, 10, 15, 10),
+                                            ),
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return "This Field Is Required";
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                        ),
                           SizedBox(
                             height: getProportionateScreenHeight(10),
                           ),
@@ -1082,17 +1243,30 @@ class _FremisBillsState extends State<FremisBills> {
       onTap: () async {
         if (_formKey1.currentState!.validate()) {
           _formKey1.currentState!.save();
+          var amt;
+          levelTwoCode == "4"
+              ? amt = compountAmt
+              : levelTwoCode == "14" &&
+                      (desc ==
+                              "Receipts from sale of Confiscated Forest Products" ||
+                          desc ==
+                              "Inspection Fee For Private Planted Trees - 20% of original")
+                  ? amt = compountAmt
+                  : unitAmount == 0
+                      ? amt = compountAmt
+                      : amt = (unitAmount! * quantity);
+
           Map billElements = {
-            "amount": (unitAmount! * quantity),
+            "amount": amt,
             "product_name": desc,
             "gfs_code": gfcCode,
             "quantity": quantity,
             "prod_desc": desc
           };
-          print(billElements);
+          ////print(billElements);
 
           billData.add(billElements);
-          print(billData);
+          ////print(billData);
 
           setState(() {
             desc = null;
@@ -1161,8 +1335,8 @@ class _FremisBillsState extends State<FremisBills> {
         elevation: 5,
         child: ListTile(
           selected: isSelected,
-          title: Text("Description: " + item.description),
-          subtitle: Text("Bill Amount: " + item.amount),
+          title: Text("Description: ${item.description}"),
+          subtitle: Text("Bill Amount: ${item.amount}"),
           tileColor: const Color(0xfff3f3f4),
           leading: IntrinsicHeight(
               child: SizedBox(
@@ -1187,9 +1361,9 @@ class _FremisBillsState extends State<FremisBills> {
     String url;
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
-    print(tokens);
-    var headers = {"Authorization": "Bearer " + tokens!};
-    url = "https://mis.tfs.go.tz/fremis-test/api/v1/dealers";
+    ////print(tokens);
+    var headers = {"Authorization": "Bearer ${tokens!}"};
+    url = "$baseUrlTest/api/v1/dealers";
     var response = await Dio().get(url,
         queryParameters: {
           "filter": filter,
@@ -1197,7 +1371,7 @@ class _FremisBillsState extends State<FremisBills> {
         options: Options(headers: headers));
 
     final data = response.data;
-    print(data['dealers']);
+    ////print(data['dealers']);
 
     return DealerModel.fromJsonList(data['dealers']);
   }
@@ -1218,13 +1392,9 @@ class _FremisBillsState extends State<FremisBills> {
         child: ListTile(
           selected: isSelected,
           title: Text(item.companyName == "null"
-              ? (item.fname +
-                  " " +
-                  (item.mname == "null" ? " " : item.mname) +
-                  " " +
-                  item.lname)
+              ? ("${item.fname} ${item.mname == "null" ? " " : item.mname} ${item.lname}")
               : item.companyName),
-          subtitle: Text("Phone#: " + item.phoneNumber),
+          subtitle: Text("Phone#: ${item.phoneNumber}"),
           tileColor: const Color(0xfff3f3f4),
           leading: IntrinsicHeight(
               child: SizedBox(
@@ -1250,9 +1420,9 @@ class _FremisBillsState extends State<FremisBills> {
 
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
-    print(tokens);
-    var headers = {"Authorization": "Bearer " + tokens!};
-    url = "https://mis.tfs.go.tz/fremis-test/api/v1/gfs_codes/pos";
+    ////print(tokens);
+    var headers = {"Authorization": "Bearer ${tokens!}"};
+    url = "$baseUrlTest/api/v1/gfs_codes/pos";
     var response = await Dio().get(url,
         queryParameters: {
           "filter": filter,
@@ -1260,7 +1430,7 @@ class _FremisBillsState extends State<FremisBills> {
         options: Options(headers: headers));
 
     final data = response.data;
-    print(data['data']);
+    //print(data['data']);
     if (data != null) {
       return GfsModel.fromJsonList(data['data']);
     }

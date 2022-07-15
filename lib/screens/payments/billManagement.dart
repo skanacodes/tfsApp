@@ -1,13 +1,10 @@
-// ignore_for_file: file_names, avoid_print, prefer_typing_uninitialized_variables
+// ignore_for_file: file_names, avoid_print, prefer_typing_uninitialized_variables, library_private_types_in_public_api
 
-import 'dart:convert';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/material.dart';
 
-import 'package:http/http.dart' as http;
 import 'package:tfsappv1/screens/payments/fremisBills.dart';
 import 'package:tfsappv1/screens/payments/honeyTraceability.dart';
 import 'package:tfsappv1/screens/payments/seed.dart';
@@ -27,93 +24,84 @@ class BillManagement extends StatefulWidget {
 class _BillManagementState extends State<BillManagement> {
   String? seedToken;
 
-  Future<String> getUserDetails() async {
-    try {
-      var url = Uri.parse(widget.system == "HoneyTraceability"
-          ? "https://mis.tfs.go.tz/honey-traceability/api/v1/login"
-          : '$baseUrlSeed/api/v1/login');
-      String email = widget.system == "HoneyTraceability"
-          ? 'onestpaul8@gmail.com'
-          : 'admin@localhost';
-      String password =
-          widget.system == "HoneyTraceability" ? '12345678' : 'muyenjwa';
-      print(email);
-      print(password);
-      final response = await http.post(
-        url,
-        body: {'email': email, 'password': password},
-      );
-      var res;
-      //final sharedP prefs=await
-      print(response.statusCode);
-      switch (response.statusCode) {
-        case 200:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            seedToken = res["token"];
-          });
+  // Future<String> getUserDetails() async {
+  //   try {
+  //     var url = Uri.parse(widget.system == "HoneyTraceability"
+  //         ? "https://mis.tfs.go.tz/honey-traceability/api/v1/login"
+  //         : '$baseUrlSeed/api/v1/login');
+  //     String email = widget.system == "HoneyTraceability"
+  //         ? 'onestpaul8@gmail.com'
+  //         : 'admin@localhost';
+  //     String password =
+  //         widget.system == "HoneyTraceability" ? '12345678' : 'muyenjwa';
+  //     print(email);
+  //     print(password);
+  //     final response = await http.post(
+  //       url,
+  //       body: {'email': email, 'password': password},
+  //     );
+  //     var res;
+  //     //final sharedP prefs=await
+  //     print(response.statusCode);
+  //     switch (response.statusCode) {
+  //       case 200:
+  //         setState(() {
+  //           res = json.decode(response.body);
+  //           print(res);
+  //           seedToken = res["token"];
+  //         });
 
-          return 'success';
-          // ignore: dead_code
-          break;
-        case 403:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-          });
-          return 'fail';
-          // ignore: dead_code
-          break;
+  //         return 'success';
+  //         // ignore: dead_code
+  //         break;
+  //       case 403:
+  //         setState(() {
+  //           res = json.decode(response.body);
+  //           print(res);
+  //         });
+  //         return 'fail';
+  //         // ignore: dead_code
+  //         break;
 
-        case 1200:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            // addError(
-            //     error:
-            //         'Your Device Is Locked Please Contact User Support Team');
-          });
-          return 'fail';
-          // ignore: dead_code
-          break;
+  //       case 1200:
+  //         setState(() {
+  //           res = json.decode(response.body);
+  //           print(res);
+  //           // addError(
+  //           //     error:
+  //           //         'Your Device Is Locked Please Contact User Support Team');
+  //         });
+  //         return 'fail';
+  //         // ignore: dead_code
+  //         break;
 
-        default:
-          setState(() {
-            res = json.decode(response.body);
-            print(res);
-            // addError(error: 'Something Went Wrong');
-            // isLoading = false;
-          });
-          return 'fail';
-          // ignore: dead_code
-          break;
-      }
-    } catch (e) {
-      setState(() {
-        print(e);
+  //       default:
+  //         setState(() {
+  //           res = json.decode(response.body);
+  //           print(res);
+  //           // addError(error: 'Something Went Wrong');
+  //           // isLoading = false;
+  //         });
+  //         return 'fail';
+  //         // ignore: dead_code
+  //         break;
+  //     }
+  //   } catch (e) {
+  //     setState(() {
+  //       print(e);
 
-        // addError(error: 'Server Or Network Connectivity Error');
-        // isLoading = false;
-      });
-      return 'fail';
-    }
-  }
-
-  @override
-  void initState() {
-    // ignore: todo
-    // TODO: implement initState
-    // _handleRadioValueChange(0);
-    getUserDetails();
-    super.initState();
-  }
+  //       // addError(error: 'Server Or Network Connectivity Error');
+  //       // isLoading = false;
+  //     });
+  //     return 'fail';
+  //   }
+  // }
 
   Widget _title() {
     return RichText(
       textAlign: TextAlign.start,
       text: TextSpan(
-          text: widget.system == "seedMIS"
+          text: widget.system == "seedmis"
               ? ' SeedMIS'
               : widget.system == "HoneyTraceability"
                   ? "Honey-Traceability"
@@ -227,21 +215,16 @@ class _BillManagementState extends State<BillManagement> {
                           ),
                         ),
                         children: <Widget>[
-                          seedToken == null
-                              ? SpinKitFadingCircle(
-                                  color: kPrimaryColor,
-                                  size: 35.0.sp,
-                                )
-                              : Container(
-                                  height: getProportionateScreenHeight(550),
-                                  color: Colors.transparent,
-                                  child: widget.system == "HoneyTraceability"
-                                      ? HoneyTraceAbility(seedToken!)
-                                      : widget.system == "Fremis"
-                                          ? FremisBills()
-                                          : Seeds(
-                                              seedToken!,
-                                            )),
+                          Container(
+                              height: getProportionateScreenHeight(545),
+                              color: Colors.transparent,
+                              child: widget.system == "HoneyTraceability"
+                                  ? HoneyTraceAbility(seedToken!)
+                                  : widget.system == "Fremis"
+                                      ? const FremisBills()
+                                      : const Seeds(
+                                          "efwu",
+                                        )),
                         ],
                       ),
                     ),

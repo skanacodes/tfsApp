@@ -1,5 +1,6 @@
 import 'package:tfsappv1/screens/POSmanagement/posRegistration.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
+import 'package:tfsappv1/screens/loginway.dart/loginway.dart';
 import 'package:tfsappv1/screens/updates/updates.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
@@ -40,8 +41,8 @@ class CustomDrawer extends StatelessWidget {
               ),
             ),
             ListTile(
-              title:
-                  const Text('Register POS', style: TextStyle(color: Colors.black)),
+              title: const Text('Register POS',
+                  style: TextStyle(color: Colors.black)),
               leading: const Icon(
                 Icons.account_circle,
                 color: Colors.black,
@@ -59,7 +60,8 @@ class CustomDrawer extends StatelessWidget {
               color: Colors.black,
             ),
             ListTile(
-                title: const Text('Settings', style: TextStyle(color: Colors.black)),
+                title: const Text('Settings',
+                    style: TextStyle(color: Colors.black)),
                 leading: const Icon(
                   Icons.settings,
                   color: Colors.black,
@@ -71,7 +73,8 @@ class CustomDrawer extends StatelessWidget {
               color: Colors.black,
             ),
             ListTile(
-              title: const Text('Updates', style: TextStyle(color: Colors.black)),
+              title:
+                  const Text('Updates', style: TextStyle(color: Colors.black)),
               leading: const Icon(
                 Icons.update,
                 color: Colors.black,
@@ -92,7 +95,8 @@ class CustomDrawer extends StatelessWidget {
               color: Colors.black,
             ),
             ListTile(
-              title: const Text('Logout', style: TextStyle(color: Colors.black)),
+              title:
+                  const Text('Logout', style: TextStyle(color: Colors.black)),
               leading: const Icon(
                 Icons.arrow_forward,
                 color: Colors.black,
@@ -101,13 +105,14 @@ class CustomDrawer extends StatelessWidget {
                 // SharedPreferences.getInstance().then((prefs) {
                 //   prefs.clear();
                 // });
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    LoginWay.routeName, (Route<dynamic> route) => false);
                 var pref = await SharedPreferences.getInstance();
                 var userId = pref.getInt("user_id");
                 var devId = pref.getString("deviceId");
+
                 await RealTimeCommunication()
                     .createConnection('2', androidId: devId, id: userId);
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/login', (Route<dynamic> route) => false);
               },
             ),
             const Divider(

@@ -1,4 +1,4 @@
-// ignore_for_file: use_key_in_widget_constructors, avoid_print, unrelated_type_equality_checks, prefer_typing_uninitialized_variables
+// ignore_for_file: use_key_in_widget_constructors, avoid_print, unrelated_type_equality_checks, prefer_typing_uninitialized_variables, library_private_types_in_public_api
 
 import 'dart:convert';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:flutter/material.dart';
@@ -39,15 +40,17 @@ class _SeedsState extends State<Seeds> {
   bool isCustomerRegistered = false;
   String? categoryId;
   String? categoryName;
+  final _seedEditTextController = TextEditingController();
+  final _seedlingEditTextController = TextEditingController();
   bool isLoading = false;
   String? customerName;
   String? customerId;
   String? accessionNumber;
   bool isNewCustomer = false;
-  int quantity = 1;
-  int? price;
-  String? seedId;
-  String? seedlingId;
+  double quantity = 0.0;
+  double? price;
+  String seedId = "0";
+  String seedlingId = "0";
   bool isSeed = false;
   String? fullname;
   String? mobileNumber;
@@ -60,6 +63,7 @@ class _SeedsState extends State<Seeds> {
   List orderData = [];
   List<int> unitPrice = [];
   final _dealerEditTextController = TextEditingController();
+  final _accessionEditTextController = TextEditingController();
   final GlobalKey<ExpansionTileCardState> cardA = GlobalKey();
   final GlobalKey<ExpansionTileCardState> cardB = GlobalKey();
   final GlobalKey<ExpansionTileCardState> cardC = GlobalKey();
@@ -69,14 +73,14 @@ class _SeedsState extends State<Seeds> {
   int sum = 0;
   final _formKey = GlobalKey<FormState>();
   final _formKey1 = GlobalKey<FormState>();
-  int calculateSum() {
-    int sumation = 0;
+  double calculateSum() {
+    double sumation = 0.0;
     for (var i = 0; i < orderData.length; i++) {
-      int price = int.parse(orderData[i]["price"]) *
-          int.parse(orderData[i]["quantity"]);
+      double price = double.parse(orderData[i]["price"].toString()) *
+          double.parse(orderData[i]["quantity"].toString());
       print(price);
       setState(() {
-        //print(price);
+        //print(quantity);
         sumation = sumation + price;
         //sum = sumation;
       });
@@ -91,9 +95,11 @@ class _SeedsState extends State<Seeds> {
       print(orderData);
     });
     try {
-      print(widget.token);
+      // print(widget.token);
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
       var headers = {
-        "Authorization": "Bearer " + widget.token,
+        "Authorization": "Bearer $tokens",
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Credentials': 'true',
@@ -135,19 +141,23 @@ class _SeedsState extends State<Seeds> {
             'Bill Generated Successfully',
             'success',
           );
+        } else {
+          message("Problem While Processing Request", "error");
         }
       } else if (response.statusCode == 201) {
-        if (res["message"] == "Customer phone 764184955 exists") {
+        if (res["message"] == "Customer phone $mobileNumber exists") {
           setState(() {
             isLoading = false;
           });
-          message("Customer phone 764184955 exists", "error");
+          message(res["message"], "error");
         } else if (res["message"] ==
             "Seed not available in your current stock") {
           setState(() {
             isLoading = false;
           });
           message("Seed not available in your current stock", "error");
+        } else {
+          message("Problem while Processing", "error");
         }
       } else if (response.statusCode == "500") {
         print(res.toString());
@@ -195,16 +205,16 @@ class _SeedsState extends State<Seeds> {
     try {
       print(widget.token);
       var headers = {
-        "Authorization": "Bearer " + widget.token,
+        "Authorization": "Bearer ${widget.token}",
       };
       var url = Uri.parse('$baseUrlSeed/api/v1/generate-bill');
       print("yaaa");
       final response = await http.post(url, headers: headers, body: {
-        "customer_id": "276",
-        "full_name": "null",
-        "phone_number": "null",
-        "category_id": "null",
-        "address": "null",
+        "customer_id": customerId,
+        "full_name": fullname,
+        "phone_number": mobileNumber,
+        "category_id": categoryId,
+        "address": physicalAdress,
         "data": [
           {
             "order_item": "Seed",
@@ -313,7 +323,7 @@ class _SeedsState extends State<Seeds> {
   createUser() {
     return Alert(
         context: context,
-        title: "Register New User",
+        title: "Register New Dealer",
         content: Form(
           key: _formKey,
           child: Column(
@@ -338,18 +348,20 @@ class _SeedsState extends State<Seeds> {
                         fillColor: const Color(0xfff3f3f4),
                         filled: true,
                         isDense: true,
-                        contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(30, 10, 15, 10),
                         labelText: "Customer Category",
                         border: InputBorder.none),
                     isExpanded: true,
 
                     value: categoryName,
                     //elevation: 5,
-                    style:
-                        const TextStyle(color: Colors.white, fontFamily: 'Ubuntu'),
+                    style: const TextStyle(
+                        color: Colors.white, fontFamily: 'Ubuntu'),
                     iconEnabledColor: Colors.black,
                     items: ask.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem(
+                        value: value,
                         child: Container(
                           width: double.infinity,
                           decoration: const BoxDecoration(
@@ -364,7 +376,6 @@ class _SeedsState extends State<Seeds> {
                             style: const TextStyle(color: Colors.black),
                           ),
                         ),
-                        value: value,
                       );
                     }).toList(),
                     validator: (value) {
@@ -497,13 +508,20 @@ class _SeedsState extends State<Seeds> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                print(customerName);
-                print(physicalAdress);
-                print(mobileNumber);
-                print(categoryId);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Dealer Registered Successfull"),
+                    //padding: EdgeInsets.all(10),
+                    margin: EdgeInsets.all(10),
+                    dismissDirection: DismissDirection.up,
+                    behavior: SnackBarBehavior.floating,
+                    duration: Duration(seconds: 5),
+                  ),
+                );
                 customerId = null;
                 isCustomerRegistered = true;
                 isCustomerSelected = false;
+
                 Navigator.pop(context);
               }
             },
@@ -538,10 +556,6 @@ class _SeedsState extends State<Seeds> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -550,6 +564,10 @@ class _SeedsState extends State<Seeds> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -566,8 +584,8 @@ class _SeedsState extends State<Seeds> {
   forms() {
     return SingleChildScrollView(
       child: SizedBox(
-        height: getProportionateScreenHeight(700),
-        child: ListView(
+        height: getProportionateScreenHeight(1000),
+        child: Column(
           children: <Widget>[
             // Adding the form here
             Form(
@@ -612,8 +630,8 @@ class _SeedsState extends State<Seeds> {
                                     labelText: "Search",
                                     border: InputBorder.none,
                                     isDense: true,
-                                    contentPadding:
-                                        const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                    contentPadding: const EdgeInsets.fromLTRB(
+                                        30, 10, 15, 10),
                                     suffixIcon: IconButton(
                                       icon: const Icon(Icons.clear),
                                       color: Colors.red,
@@ -767,6 +785,7 @@ class _SeedsState extends State<Seeds> {
                               items: typeseeds.map<DropdownMenuItem<String>>(
                                   (String value) {
                                 return DropdownMenuItem(
+                                  value: value,
                                   child: Container(
                                     width: double.infinity,
                                     decoration: const BoxDecoration(
@@ -778,10 +797,10 @@ class _SeedsState extends State<Seeds> {
                                     ),
                                     child: Text(
                                       value,
-                                      style: const TextStyle(color: Colors.black),
+                                      style:
+                                          const TextStyle(color: Colors.black),
                                     ),
                                   ),
-                                  value: value,
                                 );
                               }).toList(),
                               validator: (value) {
@@ -818,11 +837,11 @@ class _SeedsState extends State<Seeds> {
                                     padding: EdgeInsets.all(8.0),
                                     child: Center(
                                         child: Text(
-                                      'List Of Seedlings',
+                                      'List Of Seeds',
                                     )),
                                   ),
                                   searchFieldProps: TextFieldProps(
-                                    controller: _dealerEditTextController,
+                                    controller: _seedEditTextController,
                                     decoration: InputDecoration(
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius:
@@ -837,12 +856,13 @@ class _SeedsState extends State<Seeds> {
                                         border: InputBorder.none,
                                         isDense: true,
                                         contentPadding:
-                                            const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                            const EdgeInsets.fromLTRB(
+                                                30, 10, 15, 10),
                                         suffixIcon: IconButton(
                                           icon: const Icon(Icons.clear),
                                           color: Colors.red,
                                           onPressed: () {
-                                            _dealerEditTextController.clear();
+                                            _seedEditTextController.clear();
                                           },
                                         )),
                                   ),
@@ -860,8 +880,8 @@ class _SeedsState extends State<Seeds> {
                                       fillColor: const Color(0xfff3f3f4),
                                       filled: true,
                                       isDense: true,
-                                      contentPadding:
-                                          const EdgeInsets.fromLTRB(30, 5, 10, 5),
+                                      contentPadding: const EdgeInsets.fromLTRB(
+                                          30, 5, 10, 5),
                                       hintText: "Select Seed",
                                       border: InputBorder.none),
                                   compareFn: (i, s) => i!.isEqual(s),
@@ -870,11 +890,11 @@ class _SeedsState extends State<Seeds> {
 
                                   onChanged: (data) {
                                     seedname = data!.name;
-                                    price = int.parse(data.price);
+                                    price = double.parse(data.price);
                                     seedId = data.id;
 
-                                    print(seedname);
-                                    print(price);
+                                    // print(seedname);
+                                    // print(price);
                                   },
 
                                   popupItemBuilder: _customPopupItemBuilderSeed,
@@ -897,7 +917,7 @@ class _SeedsState extends State<Seeds> {
                                     )),
                                   ),
                                   searchFieldProps: TextFieldProps(
-                                    controller: _dealerEditTextController,
+                                    controller: _seedlingEditTextController,
                                     decoration: InputDecoration(
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius:
@@ -912,12 +932,13 @@ class _SeedsState extends State<Seeds> {
                                         border: InputBorder.none,
                                         isDense: true,
                                         contentPadding:
-                                            const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                                            const EdgeInsets.fromLTRB(
+                                                30, 10, 15, 10),
                                         suffixIcon: IconButton(
                                           icon: const Icon(Icons.clear),
                                           color: Colors.red,
                                           onPressed: () {
-                                            _dealerEditTextController.clear();
+                                            _seedlingEditTextController.clear();
                                           },
                                         )),
                                   ),
@@ -935,8 +956,8 @@ class _SeedsState extends State<Seeds> {
                                       fillColor: const Color(0xfff3f3f4),
                                       filled: true,
                                       isDense: true,
-                                      contentPadding:
-                                          const EdgeInsets.fromLTRB(30, 5, 10, 5),
+                                      contentPadding: const EdgeInsets.fromLTRB(
+                                          30, 5, 10, 5),
                                       hintText: "Select Seedling",
                                       border: InputBorder.none),
                                   compareFn: (i, s) => i!.isEqual(s),
@@ -946,7 +967,7 @@ class _SeedsState extends State<Seeds> {
 
                                   onChanged: (data) {
                                     seedname = data!.name;
-                                    price = int.parse(data.price);
+                                    price = double.parse(data.price);
                                     seedlingId = data.id;
                                     print(seedlingId.toString());
                                     print(seedname);
@@ -957,13 +978,94 @@ class _SeedsState extends State<Seeds> {
                                       _customPopupItemBuilderSeedling,
                                 ),
                               ),
+                        isSeed
+                            ? Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 5, right: 5, left: 5),
+                                child: DropdownSearch<AccessionNumberModel>(
+                                  // showSelectedItem: true,
+                                  showSearchBox: true,
+                                  validator: (v) => v == null
+                                      ? "This Field Is required"
+                                      : null,
+                                  popupTitle: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Center(
+                                        child: Text(
+                                      'List Of Accession Number',
+                                    )),
+                                  ),
+                                  searchFieldProps: TextFieldProps(
+                                    controller: _accessionEditTextController,
+                                    decoration: InputDecoration(
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                          borderSide: const BorderSide(
+                                            color: Colors.cyan,
+                                          ),
+                                        ),
+                                        fillColor: const Color(0xfff3f3f4),
+                                        filled: true,
+                                        labelText: "Search",
+                                        border: InputBorder.none,
+                                        isDense: true,
+                                        contentPadding:
+                                            const EdgeInsets.fromLTRB(
+                                                30, 10, 15, 10),
+                                        suffixIcon: IconButton(
+                                          icon: const Icon(Icons.clear),
+                                          color: Colors.red,
+                                          onPressed: () {
+                                            _accessionEditTextController
+                                                .clear();
+                                          },
+                                        )),
+                                  ),
+                                  mode: Mode.BOTTOM_SHEET,
+                                  popupElevation: 20,
+
+                                  dropdownSearchDecoration: InputDecoration(
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
+                                        borderSide: const BorderSide(
+                                          color: Colors.cyan,
+                                        ),
+                                      ),
+                                      fillColor: const Color(0xfff3f3f4),
+                                      filled: true,
+                                      isDense: true,
+                                      contentPadding: const EdgeInsets.fromLTRB(
+                                          30, 5, 10, 5),
+                                      hintText: "Select Accession Number",
+                                      border: InputBorder.none),
+                                  compareFn: (i, s) => i!.isEqual(s),
+
+                                  onFind: (filter) =>
+                                      getDataAccessionNumber(filter, seedId),
+
+                                  onChanged: (data) {
+                                    accessionNumber = data!.id;
+                                    // acc = int.parse(data.price);
+                                    //seedId = data.id;
+
+                                    // print(seedname);
+                                    // print(price);
+                                  },
+
+                                  popupItemBuilder:
+                                      _customPopupItemBuilderAccessionNumber,
+                                ),
+                              )
+                            : Container(),
                         Padding(
                           padding:
                               const EdgeInsets.only(top: 5, right: 5, left: 5),
                           child: TextFormField(
                             keyboardType: TextInputType.number,
                             key: const Key(""),
-                            onSaved: (val) => quantity = int.parse(val!),
+                            onSaved: (val) => quantity = double.parse(val!),
                             decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(5.0),
@@ -987,85 +1089,6 @@ class _SeedsState extends State<Seeds> {
                             },
                           ),
                         ),
-                        isSeed
-                            ? Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 5, right: 5, left: 5),
-                                child: DropdownSearch<AccessionNumberModel>(
-                                  // showSelectedItem: true,
-                                  showSearchBox: true,
-                                  validator: (v) => v == null
-                                      ? "This Field Is required"
-                                      : null,
-                                  popupTitle: const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Center(
-                                        child: Text(
-                                      'List Of Accession Number',
-                                    )),
-                                  ),
-                                  searchFieldProps: TextFieldProps(
-                                    controller: _dealerEditTextController,
-                                    decoration: InputDecoration(
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          borderSide: const BorderSide(
-                                            color: Colors.cyan,
-                                          ),
-                                        ),
-                                        fillColor: const Color(0xfff3f3f4),
-                                        filled: true,
-                                        labelText: "Search",
-                                        border: InputBorder.none,
-                                        isDense: true,
-                                        contentPadding:
-                                            const EdgeInsets.fromLTRB(30, 10, 15, 10),
-                                        suffixIcon: IconButton(
-                                          icon: const Icon(Icons.clear),
-                                          color: Colors.red,
-                                          onPressed: () {
-                                            _dealerEditTextController.clear();
-                                          },
-                                        )),
-                                  ),
-                                  mode: Mode.BOTTOM_SHEET,
-                                  popupElevation: 20,
-
-                                  dropdownSearchDecoration: InputDecoration(
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0),
-                                        borderSide: const BorderSide(
-                                          color: Colors.cyan,
-                                        ),
-                                      ),
-                                      fillColor: const Color(0xfff3f3f4),
-                                      filled: true,
-                                      isDense: true,
-                                      contentPadding:
-                                          const EdgeInsets.fromLTRB(30, 5, 10, 5),
-                                      hintText: "Select Accession Number",
-                                      border: InputBorder.none),
-                                  compareFn: (i, s) => i!.isEqual(s),
-
-                                  onFind: (filter) =>
-                                      getDataAccessionNumber(filter, seedId),
-
-                                  onChanged: (data) {
-                                    accessionNumber = data!.id;
-                                    // acc = int.parse(data.price);
-                                    //seedId = data.id;
-
-                                    // print(seedname);
-                                    // print(price);
-                                  },
-
-                                  popupItemBuilder:
-                                      _customPopupItemBuilderAccessionNumber,
-                                ),
-                              )
-                            : Container(),
                         SizedBox(
                           height: getProportionateScreenHeight(10),
                         ),
@@ -1182,9 +1205,9 @@ class _SeedsState extends State<Seeds> {
                                     Expanded(
                                         flex: 3,
                                         child: Center(
-                                          child: Text((int.parse(
+                                          child: Text((double.parse(
                                                       orderData[i]["price"]) *
-                                                  int.parse(
+                                                  double.parse(
                                                       orderData[i]["quantity"]))
                                               .toString()),
                                         )),
@@ -1200,7 +1223,7 @@ class _SeedsState extends State<Seeds> {
                                                   onPressed: () {
                                                     computeQuantity(
                                                         index: i,
-                                                        quantit: int.parse(
+                                                        quantit: double.parse(
                                                             orderData[i]
                                                                 ["quantity"]));
                                                   },
@@ -1246,7 +1269,8 @@ class _SeedsState extends State<Seeds> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            const Expanded(flex: 1, child: Center(child: Text(" "))),
+                            const Expanded(
+                                flex: 1, child: Center(child: Text(" "))),
                             const Expanded(
                                 flex: 3,
                                 child: Center(
@@ -1265,7 +1289,8 @@ class _SeedsState extends State<Seeds> {
                                         fontWeight: FontWeight.bold),
                                   ),
                                 )),
-                            const Expanded(flex: 2, child: Center(child: Text(" "))),
+                            const Expanded(
+                                flex: 2, child: Center(child: Text(" "))),
                           ],
                         ),
                         SizedBox(
@@ -1305,10 +1330,6 @@ class _SeedsState extends State<Seeds> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () async {
             if (index != null) {
               setState(() {
@@ -1324,18 +1345,22 @@ class _SeedsState extends State<Seeds> {
             isBillMessage! ? await postBill() : "";
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         ),
         DialogButton(
           color: Colors.red,
-          child: const Text(
-            "Cancel",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             Navigator.pop(context);
             //isBillMessage! ? await uploadData() : ""
           },
           width: 120,
+          child: const Text(
+            "Cancel",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -1388,7 +1413,7 @@ class _SeedsState extends State<Seeds> {
     );
   }
 
-  Future computeQuantity({int? index, int? quantit}) {
+  Future computeQuantity({int? index, double? quantit}) {
     return Alert(
         style: const AlertStyle(descStyle: TextStyle(fontSize: 17)),
         context: context,
@@ -1408,7 +1433,7 @@ class _SeedsState extends State<Seeds> {
                   initialValue: quantit == null ? "1" : quantit.toString(),
                   keyboardType: TextInputType.number,
                   key: const Key(""),
-                  onSaved: (val) => quantity = int.parse(val!),
+                  onSaved: (val) => quantity = double.parse(val!),
                   decoration: InputDecoration(
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
@@ -1487,15 +1512,19 @@ class _SeedsState extends State<Seeds> {
             };
             orderData.add(data);
             _dealerEditTextController.clear();
-            seedId = null;
-            seedlingId = null;
+            _accessionEditTextController.clear();
+            _seedEditTextController.clear();
+            _seedlingEditTextController.clear();
+            seedId = "0";
+            seedlingId = "0";
             price = null;
             seedname = null;
             typeSeed = null;
             accessionNumber = null;
 
             cardB.currentState?.collapse();
-            print(orderData);
+            //print(orderData);
+
             cardC.currentState?.expand();
 
             calculateSum();
@@ -1532,7 +1561,7 @@ class _SeedsState extends State<Seeds> {
                 child: Padding(
                   padding: const EdgeInsets.all(0.0),
                   child: Text(
-                    'Save Order Data',
+                    'Save Bill Data',
                     style: TextStyle(fontSize: 13.0.sp, color: Colors.black),
                   ),
                 ),
@@ -1557,7 +1586,7 @@ class _SeedsState extends State<Seeds> {
         child: ListTile(
           selected: isSelected,
           title: Text(item.name),
-          subtitle: Text("Phone#: " + item.phoneNumber),
+          subtitle: Text("Phone#: ${item.phoneNumber}"),
           tileColor: const Color(0xfff3f3f4),
           leading: const CircleAvatar(
             backgroundColor: Colors.grey,
@@ -1583,8 +1612,8 @@ class _SeedsState extends State<Seeds> {
         elevation: 5,
         child: ListTile(
           selected: isSelected,
-          title: Text("Accession#: " + item.accessionNumber),
-          subtitle: Text("Assesment#: " + item.assesmentNumber),
+          title: Text("Accession#: ${item.accessionNumber}"),
+          subtitle: Text("balance: ${item.assesmentNumber}"),
           tileColor: const Color(0xfff3f3f4),
           leading: const CircleAvatar(
             backgroundColor: Colors.grey,
@@ -1611,7 +1640,7 @@ class _SeedsState extends State<Seeds> {
         child: ListTile(
           selected: isSelected,
           title: Text(item.name),
-          subtitle: Text("Unit Price: " + item.price),
+          subtitle: Text("Unit Price: ${item.price}"),
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -1619,7 +1648,7 @@ class _SeedsState extends State<Seeds> {
                 "Balance",
                 style: TextStyle(color: Colors.blue),
               ),
-              Text(item.balance + "Pcs"),
+              Text("${item.balance}Pcs"),
             ],
           ),
           tileColor: const Color(0xfff3f3f4),
@@ -1649,7 +1678,7 @@ class _SeedsState extends State<Seeds> {
         child: ListTile(
           selected: isSelected,
           title: Text(item.name),
-          subtitle: Text("Unit Price: " + item.price),
+          subtitle: Text("Unit Price: ${item.price}"),
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -1657,7 +1686,7 @@ class _SeedsState extends State<Seeds> {
                 "Balance",
                 style: TextStyle(color: Colors.blue),
               ),
-              Text(item.balance + "Kg"),
+              Text("${item.balance}Kg"),
             ],
           ),
           tileColor: const Color(0xfff3f3f4),
@@ -1672,8 +1701,11 @@ class _SeedsState extends State<Seeds> {
 
   Future<List<CustomerModel>> getData(filter, level) async {
     String url;
-    var headers = {"Authorization": "Bearer " + widget.token};
-    url = "http://41.59.227.103:9092/api/v1/customers";
+    var tokens = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getString('token'));
+    print(tokens);
+    var headers = {"Authorization": "Bearer $tokens"};
+    url = "$baseUrlSeed/api/v1/customers";
     var response = await Dio().get(url,
         queryParameters: {
           "filter": filter,
@@ -1695,8 +1727,11 @@ class _SeedsState extends State<Seeds> {
   Future<List<AccessionNumberModel>> getDataAccessionNumber(
       filter, seedId) async {
     String url;
-    var headers = {"Authorization": "Bearer " + widget.token};
-    url = "http://41.59.227.103:9092/api/v1/accession-number/$seedId";
+    var tokens = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getString('token'));
+    print(tokens);
+    var headers = {"Authorization": "Bearer $tokens"};
+    url = "$baseUrlSeed/api/v1/accession-number/$seedId";
     var response = await Dio().get(url,
         queryParameters: {
           "filter": filter,
@@ -1717,14 +1752,17 @@ class _SeedsState extends State<Seeds> {
 
   Future<List<SeedModel>> getDataSeed(filter, level) async {
     String url;
-    var headers = {"Authorization": "Bearer " + widget.token};
-    url = "http://41.59.227.103:9092/api/v1/seeds";
+    var tokens = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getString('token'));
+    print(tokens);
+    var headers = {"Authorization": "Bearer $tokens"};
+    url = "$baseUrlSeed/api/v1/seeds";
     var response = await Dio().get(url,
         queryParameters: {"filter": filter},
         options: Options(headers: headers));
 
     final data = response.data;
-    print(data['data']);
+    //print(data);
     if (data != null) {
       setState(() {
         // datas = data[];
@@ -1737,8 +1775,11 @@ class _SeedsState extends State<Seeds> {
 
   Future<List<SeedlingModel>> getDataSeedling(filter, level) async {
     String url;
-    var headers = {"Authorization": "Bearer " + widget.token};
-    url = "http://41.59.227.103:9092/api/v1/seedlings";
+    var tokens = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getString('token'));
+    print(tokens);
+    var headers = {"Authorization": "Bearer $tokens"};
+    url = "$baseUrlSeed/api/v1/seedlings";
     var response = await Dio().get(url,
         queryParameters: {"filter": filter},
         options: Options(headers: headers));
@@ -1764,8 +1805,11 @@ class _SeedsState extends State<Seeds> {
       //     .then((prefs) => prefs.getString('token'));
       print(id);
       print("djvnjdw");
-      var headers = {"Authorization": "Bearer " + widget.token};
-      var url = Uri.parse('http://41.59.227.103:9092/api/v1/bills/$id');
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      print(tokens);
+      var headers = {"Authorization": "Bearer $tokens"};
+      var url = Uri.parse('$baseUrlSeed/api/v1/bills/$id');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
@@ -1808,10 +1852,11 @@ class _SeedsState extends State<Seeds> {
       //     .then((prefs) => prefs.getString('token'));
       // print(tokens);
       // print(id.toString());
-      print("Bills");
-      var headers = {"Authorization": "Bearer " + widget.token};
-      var url =
-          Uri.parse('http://41.59.227.103:9092/api/v1/controlnumber/$billId');
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      print(tokens);
+      var headers = {"Authorization": "Bearer $tokens"};
+      var url = Uri.parse('$baseUrlSeed/api/v1/controlnumber/$billId');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
@@ -1822,8 +1867,7 @@ class _SeedsState extends State<Seeds> {
             res = json.decode(response.body);
             print(res);
             //widget.callback(jsonEncode(res["data"]));
-            messages(
-                "success", "C/N:  " + res["data"]["control_number"].toString());
+            messages("success", "C/N:  ${res["data"]["control_number"]}");
           });
 
           break;

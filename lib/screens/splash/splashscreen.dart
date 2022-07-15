@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, library_private_types_in_public_api, use_build_context_synchronously
 
 import 'dart:async';
 import 'package:flutter/services.dart';
@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'package:system_clock/system_clock.dart';
 //import 'package:tfsappv1/screens/login/login.dart';
-import 'package:tfsappv1/screens/login/login.dart';
+import 'package:tfsappv1/screens/loginway.dart/loginway.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
@@ -59,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
       _determinePosition();
       initPlatformState();
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+          context, MaterialPageRoute(builder: (context) => const LoginWay()));
     });
   }
 

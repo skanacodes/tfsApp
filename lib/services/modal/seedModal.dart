@@ -17,8 +17,16 @@ class SeedModel {
   factory SeedModel.fromJson(Map<String, dynamic> json) {
     return SeedModel(
       balance: json["balance"].toString(),
-      name: json["specie"]["general_specie"]["sc_name"].toString(),
-      price: json["specie"]["general_specie"]["price"].toString(),
+      name: json["specie"].toString() == "null"
+          ? ""
+          : json["specie"]["general_specie"].toString() == "null"
+              ? ""
+              : json["specie"]["general_specie"]["sc_name"].toString(),
+      price: json["specie"].toString() == "null"
+          ? ""
+          : json["specie"]["general_specie"].toString() == "null"
+              ? ""
+              : json["specie"]["general_specie"]["price"].toString(),
       assesmentId: json["assesment_id"].toString(),
       id: json["specie_id"].toString(),
     );

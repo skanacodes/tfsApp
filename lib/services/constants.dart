@@ -47,13 +47,15 @@ Color kLinearOne = const Color(0xffffb507);
 Color kLinearTwo = const Color(0xfffb2a02);
 Color kPercentUp = const Color(0xff00fbd3);
 Color kPercentDown = const Color(0xffff8484);
-Color kGradientColorOne = Color.fromARGB(255, 249, 241, 16);
-Color kGradientColorTwo = Color.fromARGB(255, 4, 127, 41);
+Color kGradientColorOne = const Color.fromARGB(255, 249, 241, 16);
+Color kGradientColorTwo = const Color.fromARGB(255, 4, 127, 41);
 
 const kAnimationDuration = Duration(milliseconds: 200);
-var baseUrl = "https://mis.tfs.go.tz/fremis-test";
-var baseUrlTest = "https://mis.tfs.go.tz/fremis-test";
-var baseUrlSeed = "http://41.59.227.103:9092";
+var baseUrl = "https://mis.tfs.go.tz/fremis";
+var baseUrlTest = "https://mis.tfs.go.tz/fremis";
+var baseUrlSeed = "https://mis.tfs.go.tz/seed-mis";
+var baseUrlPMIS = "https://mis.tfs.go.tz/pmis";
+var baseUrlHoneyTraceability = "https://mis.tfs.go.tz/honey-traceability";
 String filepathImages = "assets/images/";
 final headingStyle = TextStyle(
   fontSize: getProportionateScreenWidth(28),
@@ -91,19 +93,19 @@ OutlineInputBorder outlineInputBorder() {
   );
 }
 
-TextStyle kSFUI16 = TextStyle(
+TextStyle kSFUI16 = const TextStyle(
   fontSize: 16,
   fontWeight: FontWeight.w500,
   color: kTextColor,
 );
 
-TextStyle kName = TextStyle(
+TextStyle kName = const TextStyle(
   fontSize: 27,
   fontWeight: FontWeight.bold,
   color: kTextColor,
 );
 
-TextStyle kBalance = TextStyle(
+TextStyle kBalance = const TextStyle(
   fontSize: 37,
   fontWeight: FontWeight.bold,
   color: kTextColor,
@@ -114,13 +116,13 @@ TextStyle kPercent = const TextStyle(
   fontWeight: FontWeight.w500,
 );
 
-TextStyle kSectionTitle = TextStyle(
+TextStyle kSectionTitle = const TextStyle(
   fontSize: 20,
   fontWeight: FontWeight.bold,
   color: kTextColor,
 );
 
-TextStyle kCardNumber = TextStyle(
+TextStyle kCardNumber = const TextStyle(
   fontSize: 14,
   fontWeight: FontWeight.w400,
   color: kTextColor,
@@ -133,14 +135,14 @@ TextStyle kCardHolder = const TextStyle(
   color: Colors.white30,
 );
 
-TextStyle kCardName = TextStyle(
+TextStyle kCardName = const TextStyle(
 //  fontFamily: 'Inter',
   fontSize: 14,
   fontWeight: FontWeight.w400,
   color: kTextColor,
 );
 
-TextStyle kInfo = TextStyle(
+TextStyle kInfo = const TextStyle(
   fontSize: 11,
   fontWeight: FontWeight.w500,
   color: kTextColor,

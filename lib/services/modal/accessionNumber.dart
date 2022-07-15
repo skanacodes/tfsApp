@@ -13,8 +13,8 @@ class AccessionNumberModel {
   factory AccessionNumberModel.fromJson(Map<String, dynamic> json) {
     return AccessionNumberModel(
         id: json["id"].toString(),
-        assesmentNumber: json["assesment_number"].toString(),
-        accessionNumber: json["accession_number"]);
+        assesmentNumber: json["balance"].toString(),
+        accessionNumber: json["AccNo"].toString());
   }
 
   static List<AccessionNumberModel> fromJsonList(List list) {

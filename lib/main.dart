@@ -1,4 +1,4 @@
-// ignore_for_file: unused_import, avoid_print
+// ignore_for_file: unused_import, avoid_print, library_private_types_in_public_api
 
 import 'dart:convert';
 import 'dart:io';
@@ -33,7 +33,7 @@ void main() async {
 
   Workmanager().initialize(
     callbackDispatcher,
-    isInDebugMode: true,
+    // isInDebugMode: true,
   );
 
   Workmanager().registerPeriodicTask("3", simplePeriodicTask,
@@ -89,7 +89,7 @@ class _MyAppState extends State<MyApp> {
 
   void navToHomePage(BuildContext context) {
     navigatorKey.currentState!.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => LoginScreen()),
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
         (Route<dynamic> route) => false);
   }
 
@@ -131,11 +131,6 @@ void callbackDispatcher() {
         var lat = prefs.getString("latitude").toString();
         var long = prefs.getString("longitude").toString();
 
-        print(lat + " dtyyfuuy");
-        print(long + "  guhyguu");
-
-        // print(deviceId);
-        // print(DateTime.now().toString());
         var url = Uri.parse(
           'http://41.59.82.189:5555/api/v1/pos-management',
         );
@@ -147,8 +142,8 @@ void callbackDispatcher() {
           "longitude": long
         });
         //final sharedP prefs=await
-        print(response.statusCode);
-        print(response.body.toString());
+         print(response.statusCode);
+        // print(response.body.toString());
 
         print("$simplePeriodicTask was executed");
         break;
@@ -165,7 +160,6 @@ void callbackDispatcher() {
 Future<Position> _determinePosition() async {
   var x;
   try {
-    Position _currentPosition;
     bool serviceEnabled;
     LocationPermission permission;
 

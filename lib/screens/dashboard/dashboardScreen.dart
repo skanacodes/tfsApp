@@ -1,26 +1,22 @@
-// ignore_for_file: unused_import, file_names, prefer_typing_uninitialized_variables
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables
 
 import 'dart:convert';
 
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tfsappv1/screens/ExportImport/permitList.dart';
-import 'package:tfsappv1/screens/Inventory/forestInventoryScreen.dart';
 import 'package:tfsappv1/screens/NfrScreen/nfrScreen.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/screens/dashboard/card_list.dart';
 import 'package:tfsappv1/screens/dashboard/drawer.dart';
 import 'package:tfsappv1/screens/dashboard/managementOperations.dart';
 import 'package:tfsappv1/screens/dashboard/managementscreen.dart';
-import 'package:tfsappv1/screens/illegalproduct/illegal_product_screen.dart';
+import 'package:tfsappv1/screens/loginway.dart/loginway.dart';
 import 'package:tfsappv1/screens/payments/billsDashboard.dart';
 
-import 'package:tfsappv1/screens/payments/systemsList.dart';
 import 'package:tfsappv1/screens/verification/verificationScreen.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
@@ -34,6 +30,7 @@ class DashboardScreen extends StatefulWidget {
 
   const DashboardScreen({Key? key}) : super(key: key);
   @override
+  // ignore: library_private_types_in_public_api
   _DashboardScreenState createState() => _DashboardScreenState();
 }
 
@@ -41,7 +38,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String? usernames;
   String? stationName;
   String? checkpoint;
+  String? sys;
   List roles = [];
+  List dataFremis = [];
+  List dataExport = [];
+  List dataDealers = [];
+  List dataSeed = [];
   String? role1;
   String? role2;
   String? role3;
@@ -97,14 +99,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
       output = json.decode(input);
       return output;
     } catch (err) {
-      print(err.toString());
-      print('The input is not a string representation of a list');
       return null;
     }
   }
 
   Future getData() async {
-    String? rol;
     var fname = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('fname'));
     var lname = await SharedPreferences.getInstance()
@@ -113,7 +112,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         .then((prefs) => prefs.getString('StationName'));
     checkpoint = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('checkpointName'));
-
+    sys = await SharedPreferences.getInstance()
+        .then((value) => value.getString("system"));
     role1 = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('role1'));
     role2 = await SharedPreferences.getInstance()
@@ -149,28 +149,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
         DialogButton(
           color: Colors.red,
           radius: const BorderRadius.all(Radius.circular(10)),
+          onPressed: () async {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              LoginWay.routeName,
+              (Route<dynamic> route) => false,
+            );
+            await RealTimeCommunication().createConnection('2');
+          },
+          width: 120,
           child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          onPressed: () async {
-            await RealTimeCommunication().createConnection('2');
-            Navigator.of(context).pushNamedAndRemoveUntil(
-                '/login', (Route<dynamic> route) => false);
-          },
-          width: 120,
         ),
         DialogButton(
           color: Colors.green,
           radius: const BorderRadius.all(Radius.circular(10)),
-          child: const Text(
-            "Cancel",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () async {
             Navigator.pop(context);
           },
           width: 120,
+          child: const Text(
+            "Cancel",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -240,10 +242,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ),
                                   Row(
                                     children: [
-                                      Text(
-                                        "Station: $stationName",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w400),
+                                      Expanded(
+                                        flex: 6,
+                                        child: Text(
+                                          "Station: $stationName",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w400),
+                                        ),
                                       ),
                                       const Spacer()
                                     ],
@@ -254,7 +259,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           ? Container()
                                           : Row(
                                               children: [
-                                                Text("CheckPoint: $checkpoint"),
+                                                Expanded(
+                                                    flex: 6,
+                                                    child: Text(
+                                                        "CheckPoint: $checkpoint")),
                                                 const Spacer()
                                               ],
                                             )
@@ -312,7 +320,54 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           children: <Widget>[
                                             InkWell(
                                               onTap: () {
-                                                showModal();
+                                                if (sys == "PMIS") {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const BillsDashBoard(
+                                                                  "PMIS"))).then(
+                                                      (_) =>
+                                                          RealTimeCommunication()
+                                                              .createConnection(
+                                                                  "3"));
+                                                } else if (sys == "seedmis") {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const BillsDashBoard(
+                                                                  "seedmis"))).then(
+                                                      (_) =>
+                                                          RealTimeCommunication()
+                                                              .createConnection(
+                                                                  "3"));
+                                                } else if (sys == "Fremis") {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const BillsDashBoard(
+                                                                  "Fremis"))).then(
+                                                      (_) =>
+                                                          RealTimeCommunication()
+                                                              .createConnection(
+                                                                  "3"));
+                                                } else if (sys ==
+                                                    "honeytraceability") {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const BillsDashBoard(
+                                                                  "honeytraceability"))).then(
+                                                      (_) =>
+                                                          RealTimeCommunication()
+                                                              .createConnection(
+                                                                  "3"));
+                                                } else {
+                                                  showModal();
+                                                }
                                               },
                                               child: Container(
                                                   decoration: BoxDecoration(
@@ -342,7 +397,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                         style: TextStyle(
                                                             color:
                                                                 Colors.black87,
-                                                            fontSize: 10.sp,
+                                                            fontSize: 9.sp,
                                                             fontWeight:
                                                                 FontWeight
                                                                     .bold),
@@ -387,7 +442,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                         style: TextStyle(
                                                             color:
                                                                 Colors.black87,
-                                                            fontSize: 10.sp,
+                                                            fontSize: 9.sp,
                                                             fontWeight:
                                                                 FontWeight
                                                                     .bold),
@@ -397,13 +452,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                             ),
                                             InkWell(
                                               onTap: () {
-                                                Navigator.pushNamed(
-                                                  context,
-                                                  IllegalProductScreen
-                                                      .routeName,
-                                                ).then((_) =>
-                                                    RealTimeCommunication()
-                                                        .createConnection("3"));
+                                                // Navigator.pushNamed(
+                                                //   context,
+                                                //   IllegalProductScreen
+                                                //       .routeName,
+                                                // ).then((_) =>
+                                                //     RealTimeCommunication()
+                                                //         .createConnection("3"));
                                               },
                                               child: Container(
                                                   decoration: BoxDecoration(
@@ -434,7 +489,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                         style: TextStyle(
                                                             color:
                                                                 Colors.black87,
-                                                            fontSize: 10.sp,
+                                                            fontSize: 9.sp,
                                                             fontWeight:
                                                                 FontWeight
                                                                     .bold),
@@ -480,7 +535,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                       Text(
                                                         " Tourism",
                                                         style: TextStyle(
-                                                            fontSize: 10.sp,
+                                                            fontSize: 9.sp,
                                                             color:
                                                                 Colors.black87,
                                                             fontWeight:
@@ -529,7 +584,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                           style: TextStyle(
                                                               color: Colors
                                                                   .black87,
-                                                              fontSize: 10.sp,
+                                                              fontSize: 9.sp,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold),
@@ -570,11 +625,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                         size: 40.sp,
                                                       ),
                                                       Text(
-                                                        "Mensuration",
+                                                        "Tallying",
                                                         style: TextStyle(
                                                             color:
                                                                 Colors.black87,
-                                                            fontSize: 10.sp,
+                                                            fontSize: 9.sp,
                                                             fontWeight:
                                                                 FontWeight
                                                                     .bold),
@@ -602,11 +657,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       padding: const EdgeInsets.only(right: 10.0),
       child: PopupMenuButton(
         tooltip: 'Menu',
-        child: const Icon(
-          Icons.more_vert,
-          size: 28.0,
-          color: Colors.black,
-        ),
         offset: const Offset(20, 40),
         itemBuilder: (context) => [
           PopupMenuItem(
@@ -654,6 +704,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
         ],
+        child: const Icon(
+          Icons.more_vert,
+          size: 28.0,
+          color: Colors.black,
+        ),
       ),
     );
   }

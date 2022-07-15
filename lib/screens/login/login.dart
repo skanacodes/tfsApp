@@ -1,4 +1,4 @@
-// ignore_for_file: unused_import, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: unused_import, prefer_typing_uninitialized_variables, avoid_//print(, library_private_types_in_public_api, use_build_context_synchronously
 
 import 'dart:convert';
 
@@ -22,11 +22,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends StatefulWidget {
   static String routeName = "/login";
-
-  const LoginScreen({Key? key}) : super(key: key);
+  final String? email;
+  const LoginScreen({Key? key, this.email}) : super(key: key);
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -59,14 +60,16 @@ class _LoginScreenState extends State<LoginScreen> {
       String checkpointName,
       String role1,
       String role2,
-      String role3) async {
+      String role3,
+      {String? userID,
+      String? checkpoindCode}) async {
     await SharedPreferences.getInstance().then((prefs) {
       prefs.setInt('user_id', userId);
       prefs.setString('token', token);
       prefs.setInt('station_id', stationId);
       prefs.setString('StationName', stationName);
       prefs.setString('fname', fname);
-      prefs.setString('lname', lname);
+      prefs.setString('lname', lname == "null" ? "" : lname);
       prefs.setString('email', email);
       prefs.setString('phoneNumber', phoneNumber);
       prefs.setString('checkpointId', checkpointId);
@@ -74,46 +77,116 @@ class _LoginScreenState extends State<LoginScreen> {
       prefs.setString("role1", role1);
       prefs.setString("role2", role2);
       prefs.setString("role3", role3);
+      prefs.setString("userID", userID.toString());
+      prefs.setString("checkpointcode", checkpoindCode.toString());
     });
   }
 
   Future<String> getUserDetails() async {
     try {
-      print(username);
-      print(devId);
+      String? sys = await SharedPreferences.getInstance()
+          .then((value) => value.getString("system"));
 
-      var url = Uri.parse('$baseUrlTest/api/v1/login');
-      // var username = "barakasikana@gmail.com";
-      // var password = "baraka540";
-      final response = await http.post(
-        url,
-        body: {'email': username, 'password': password, 'android_id': devId!},
-      );
+      var url;
+      sys == "Fremis"
+          ? url = Uri.parse('$baseUrlTest/api/v1/login')
+          : sys == "seedmis"
+              ? url = Uri.parse('$baseUrlSeed/api/v1/login')
+              : sys == "honeytraceability"
+                  ? url =
+                      Uri.parse('$baseUrlHoneyTraceability/api/v1/pos/login')
+                  : url = Uri.parse('$baseUrlPMIS/api/LoginMobile/Login');
+      var body;
+
+      if (sys == "Fremis") {
+        setState(() {
+          body = {
+            'email': username,
+            'password': password,
+            'android_id': devId!
+          };
+        });
+      } else if (sys == "seedmis") {
+        body = {
+          'email': username,
+          'password': password,
+        };
+      } else if (sys == "honeytraceability") {
+        body = {
+          'email': username,
+          'password': password,
+        };
+      } else {
+        setState(() {
+          body = {"UserName": username, "Password": password};
+        });
+      }
+      ////print((body);
+      ////print((url);
+      final response = await http.post(url, body: json.encode(body), headers: {
+        "Accept": "application/json",
+        "content-type": "application/json"
+      });
       var res;
-      //final sharedP prefs=await
-      print(response.statusCode);
+
+      //print((response.statusCode);
+      //print((response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            // ////print((res);
           });
-          for (var i = 0; i < res["roles"].length; i++) {
-            if (i == 0) {
-              role1 = res["roles"][i]["name"].toString();
-            }
-            if (i == 1) {
-              role2 = res["roles"][i]["name"].toString();
-            }
-            if (i == 2) {
-              role3 = res["roles"][i]["name"].toString();
-            }
+          if (sys == "seedmis") {
+            ////print((sys);
+            await createUser(
+                res['access_token'],
+                res['user']['id'],
+                res['user']['station_id'],
+                "",
+                res['user']['first_name'].toString(),
+                res['user']['last_name'].toString(),
+                res['user']['email'].toString(),
+                res['user']['phone'].toString(),
+                res['user']["station"]["name"].toString(),
+                "",
+                "",
+                "",
+                "");
+            return 'success';
           }
-          print("sfsdg");
-          print(role1);
-          print(role2);
-          print(role3);
-          await createUser(
+          if (sys == "honeytraceability") {
+            ////print(("traceability");
+            await createUser(
+                res['access_token'],
+                res['user']['user_id'],
+                res['user']['station_id'],
+                "",
+                res['user']['first_name'].toString(),
+                res['user']['last_name'].toString(),
+                res['user']['email'].toString(),
+                res['user']['phone'].toString(),
+                res['user']["station"].toString(),
+                "",
+                "",
+                "",
+                "");
+            return 'success';
+          }
+          if (sys == "Fremis") {
+            for (var i = 0; i < res["roles"].length; i++) {
+              if (i == 0) {
+                role1 = res["roles"][i]["name"].toString();
+              }
+              if (i == 1) {
+                role2 = res["roles"][i]["name"].toString();
+              }
+              if (i == 2) {
+                role3 = res["roles"][i]["name"].toString();
+              }
+            }
+
+            await createUser(
               res['access_token'],
               res['user']['user_id'],
               res['user']['station_id'],
@@ -126,14 +199,53 @@ class _LoginScreenState extends State<LoginScreen> {
               res['user']['checkpoint_name'].toString(),
               role1.toString(),
               role2.toString(),
-              role3.toString());
-          return 'success';
+              role3.toString(),
+              checkpoindCode: res['user']['checkpoint_code'].toString(),
+            );
+            return 'success';
+          }
+          if (sys == "PMIS") {
+            if (res["Result"]["access_token"] == null) {
+              addError(error: 'Incorrect Password or Email');
+            }
+            if (res["Result"]["access_token"] != null) {
+              // ////print((res["Result"]['user']["access_token"].toString());
+              await createUser(
+                  res["Result"]["access_token"].toString(),
+                  0,
+                  int.parse(res["Result"]['user']['station_id']),
+                  "",
+                  res["Result"]['user']['first_name'].toString(),
+                  res["Result"]['user']['last_name'].toString(),
+                  res["Result"]['user']['email'].toString(),
+                  res["Result"]['user']['phone'].toString(),
+                  res["Result"]['user']['station'].toString(),
+                  "",
+                  "",
+                  "",
+                  "",
+                  userID: res["Result"]['user']['user_id']);
+              return 'success';
+            }
+          }
+          return "";
+          // ignore: dead_code
+          break;
+        case 401:
+          setState(() {
+            res = json.decode(response.body);
+            //////print((res);
+            if (res["error"] == "INVALID_LOGIN") {
+              addError(error: 'Incorrect Password or Email');
+            }
+          });
+          return 'fail';
           // ignore: dead_code
           break;
         case 403:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            // ////print((res);
             if (res['message'] == 'Invalid Credentials') {
               addError(error: 'Incorrect Password or Email');
             } else if (res['message'] ==
@@ -152,7 +264,7 @@ class _LoginScreenState extends State<LoginScreen> {
         case 1200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            // ////print((res);
             addError(
                 error:
                     'Your Device Is Locked Please Contact User Support Team');
@@ -164,7 +276,7 @@ class _LoginScreenState extends State<LoginScreen> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+
             addError(error: 'Something Went Wrong');
             isLoading = false;
           });
@@ -174,7 +286,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        // ////print((e);
 
         addError(error: 'Server Or Network Connectivity Error');
         isLoading = false;
@@ -219,6 +331,11 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 5,
             ),
             TextFormField(
+                initialValue: !isPassword
+                    ? widget.email.toString() == "null"
+                        ? ""
+                        : widget.email.toString()
+                    : "",
                 onChanged: (value) {
                   if (value.isNotEmpty) {
                     errors.contains('Network Problem')
@@ -280,9 +397,12 @@ class _LoginScreenState extends State<LoginScreen> {
           });
           _formKey.currentState!.save();
 
-          print(devId);
+          //////print((devId);
           var res = await getUserDetails();
           if (res == "success") {
+            setState(() {
+              password == null;
+            });
             await RealTimeCommunication()
                 .createConnection('1', androidId: devId, id: userId);
             Navigator.pushNamed(
@@ -294,10 +414,10 @@ class _LoginScreenState extends State<LoginScreen> {
             //   context,
             //   Otp.routeName,
             // ).then((_) => RealTimeCommunication().createConnection("1"));
-
+            // password == null;
             _formKey.currentState!.reset();
           } else {
-            print('fail');
+            //  ////print(('fail');
           }
           //  String val = await checkUserStatus(username!, password!);
 
@@ -356,7 +476,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          Text('tfsappv1.0.0'),
+          Text('tfsappv2.6.2+8'),
           Expanded(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10),
@@ -423,7 +543,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             TextSpan(
               text: 'pp',
-              style: TextStyle(color: Colors.black, fontSize: 20),
+              style: TextStyle(color: kPrimaryColor, fontSize: 20),
             ),
           ]),
     );
@@ -440,18 +560,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  // @override
-  // void initState() {
-  //   // ignore: todo
-  // ignore: todo
-  //   // TODO: implement initState
-
-  //   super.initState();
-  // }
-
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    final Uri toLaunch = Uri(
+      scheme: 'https',
+      host: 'mis.tfs.go.tz',
+      path: '/fremis/download_APK',
+    );
     return Scaffold(
         body: SizedBox(
       height: height,
@@ -497,6 +613,53 @@ class _LoginScreenState extends State<LoginScreen> {
                       _submitButton(),
                       SizedBox(height: getProportionateScreenHeight(15)),
                       _divider(),
+                      InkWell(
+                        onTap: (() => openDownloadLink(toLaunch)),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 7),
+                          child: Row(
+                            children: <Widget>[
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              const Expanded(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 7),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                              ),
+                              CircleAvatar(
+                                  backgroundColor: Colors.grey[200],
+                                  child: const Icon(
+                                    Icons.update_outlined,
+                                    color: Colors.blue,
+                                  )),
+                              SizedBox(
+                                width: getProportionateScreenWidth(5),
+                              ),
+                              const Text(
+                                "Click To Update App",
+                                style: TextStyle(color: Colors.blue),
+                              ),
+                              const Expanded(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 7),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -506,5 +669,16 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       ),
     ));
+  }
+
+  Future<void> openDownloadLink(Uri url) async {
+    // Uri url = Uri.parse("https://mis.tfs.go.tz/fremis/download_APK");
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalNonBrowserApplication,
+    )) {
+      print(url);
+      throw 'Could not launch $url';
+    }
   }
 }

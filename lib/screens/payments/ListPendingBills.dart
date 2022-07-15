@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_//print, library_private_types_in_public_api, prefer_interpolation_to_compose_strings, use_build_context_synchronously
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -40,23 +40,27 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       String stationId = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getInt('station_id').toString());
 
-      print(stationId);
+      ////print(stationId);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-
-      var headers = {"Authorization": "Bearer " + tokens!};
-      var url = Uri.parse(
-          'http://mis.tfs.go.tz/fremis-test/api/v1/unpaid-bills/$stationId');
+      ////print(tokens);
+      var headers = {"Authorization": "Bearer ${tokens!}"};
+      var url;
+      widget.system == "PMIS"
+          ? url = Uri.parse('https://mis.tfs.go.tz/pmis/api/Bill/AccountsBill')
+          : url = Uri.parse('$baseUrlTest/api/v1/unpaid-bills/$stationId');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      ////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
-            data = res['data'];
+            //print(res);
+            widget.system == "PMIS"
+                ? data = res["Result"]["data"]
+                : data = res['data'];
             isLoading = false;
           });
 
@@ -65,7 +69,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -75,7 +79,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -89,7 +93,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
+      // ////print(tokens);
       // var headers = {"Authorization": "Bearer " + tokens!};
       var url =
           Uri.parse('https://mis.tfs.go.tz/e-auction/api/Bill/AccountsBill');
@@ -98,12 +102,12 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       );
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      ////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -113,7 +117,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -123,7 +127,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -137,19 +141,19 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      // print(tokens);
-      var headers = {"Authorization": "Bearer " + tokens!};
+      // ////print(tokens);
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('$baseUrlTest/api/v1/search-bills/$controlNo');
 
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      ////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -159,7 +163,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -169,7 +173,57 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print(e);
+        messages('Server Or Connectivity Error', 'error');
+      });
+    }
+    _refreshController.refreshCompleted();
+  }
+
+  Future getDataHoneyTraceability() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      String stationId = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getInt('station_id').toString());
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      ////print(tokens);
+      var headers = {"Authorization": "Bearer " + tokens!};
+      var url = Uri.parse(
+          '$baseUrlHoneyTraceability/api/v1/pending-bills/$stationId');
+
+      final response = await http.get(url, headers: headers);
+      var res;
+      //final sharedP prefs=await
+      //print(response.statusCode);
+      //print(response.body);
+      switch (response.statusCode) {
+        case 200:
+          setState(() {
+            res = json.decode(response.body);
+            ////print(res);
+            data = res['data'];
+            isLoading = false;
+          });
+
+          break;
+
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            ////print(res);
+            isLoading = false;
+            messages('Ohps! Something Went Wrong', 'error');
+          });
+
+          break;
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        ////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -181,22 +235,22 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       isLoading = true;
     });
     try {
-      // var tokens = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
-      var headers = {"Authorization": "Bearer " + seedToken};
-      var url = widget.system == "seedMIS"
-          ? Uri.parse('http://41.59.227.103:9092/api/v1/bills')
-          : Uri.parse('https://mis.tfs.go.tz/honey-traceability/api/v1/bills');
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      ////print(tokens);
+      var headers = {"Authorization": "Bearer " + tokens!};
+      var url = Uri.parse('$baseUrlSeed/api/v1/bills');
+
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
+      //print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -206,7 +260,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -216,7 +270,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -242,10 +296,6 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -254,6 +304,10 @@ class _ListPendingBillsState extends State<ListPendingBills> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -264,25 +318,27 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       isLoading = true;
     });
     try {
-      // var tokens = await SharedPreferences.getInstance()
-      //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
-      var headers = {"Authorization": "Bearer " + seedToken};
-      var url = widget.system == "seedMIS"
-          ? Uri.parse(
-              'http://41.59.227.103:9092/api/v1/bill-by-controlnumber/$controlNo/2')
-          : Uri.parse(
-              'https://mis.tfs.go.tz/honey-traceability/api/v1/bill-by-controlnumber/$controlNo/2');
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      // ////print(tokens);
+      var headers = {"Authorization": "Bearer " + tokens!};
+      var url = widget.system == "seedmis"
+          ? Uri.parse('$baseUrlSeed/api/v1/bill-by-controlnumber/$controlNo/2')
+          : widget.system == "honeytraceability"
+              ? Uri.parse(
+                  '$baseUrlHoneyTraceability/api/v1/search-bills/$controlNo')
+              : Uri.parse(
+                  'https://mis.tfs.go.tz/honey-traceability/api/v1/bill-by-controlnumber/$controlNo/2');
 
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      ////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -292,7 +348,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -302,7 +358,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -347,7 +403,8 @@ class _ListPendingBillsState extends State<ListPendingBills> {
                           ),
                         ),
                         isDense: true,
-                        contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(20, 10, 20, 10),
                         border: InputBorder.none,
                         fillColor: const Color(0xfff3f3f4),
                         label: const Text(
@@ -363,10 +420,10 @@ class _ListPendingBillsState extends State<ListPendingBills> {
 
   @override
   void initState() {
-    widget.system == "seedMIS"
-        ? getUserDetails()
-        : widget.system == "HoneyTraceability"
-            ? getUserDetails()
+    widget.system == "seedmis"
+        ? getDataSeed()
+        : widget.system == "honeytraceability"
+            ? getDataHoneyTraceability()
             : widget.system == "E-Auction"
                 ? getDataEAuction()
                 : getData();
@@ -417,10 +474,10 @@ class _ListPendingBillsState extends State<ListPendingBills> {
           ),
           controller: _refreshController,
           onRefresh: () {
-            widget.system == "seedMIS"
-                ? getUserDetails()
-                : widget.system == "HoneyTraceability"
-                    ? getUserDetails()
+            widget.system == "seedmis"
+                ? getDataSeed()
+                : widget.system == "honeytraceability"
+                    ? getDataHoneyTraceability()
                     : widget.system == "E-Auction"
                         ? getDataEAuction()
                         : getData();
@@ -505,48 +562,50 @@ class _ListPendingBillsState extends State<ListPendingBills> {
                                               var fname =
                                                   await SharedPreferences
                                                           .getInstance()
-                                                      .then((prefs) =>
-                                                          prefs.getString(
-                                                              'fname'));
+                                                      .then((prefs) => prefs
+                                                          .getString('fname'));
                                               var lname =
                                                   await SharedPreferences
                                                           .getInstance()
-                                                      .then((prefs) =>
-                                                          prefs.getString(
-                                                              'lname'));
+                                                      .then((prefs) => prefs
+                                                          .getString('lname'));
                                               var username =
-                                                  fname! + " " + lname!;
+                                                  "${fname!} ${lname!}";
 
                                               widget.system == "E-Auction"
                                                   ? null
-                                                  : Navigator.pushNamed(
-                                                      context,
+                                                  : Navigator.pushNamed(context,
                                                       Payments.routeName,
                                                       arguments:
                                                           ReceiptScreenArguments(
-                                                        data[index]
-                                                                ["DealerName"]
-                                                            .toString(),
-                                                        data[index][
-                                                                "ControlNumber"]
-                                                            .toString(),
-                                                        data[index][
-                                                                "bank_receipt_no"]
-                                                            .toString(),
-                                                        widget.system ==
-                                                                "E-Auction"
-                                                            ? data[index]
-                                                                ["BillAmount"]
-                                                            : double.parse(data[
-                                                                    index][
-                                                                "BillAmount"]),
-                                                        true,
-                                                        data[index]
-                                                                ["BillDesc"]
-                                                            .toString(),
-                                                        username,
-                                                        station: station,
-                                                      ));
+                                                              data[index]["DealerName"]
+                                                                  .toString(),
+                                                              data[index]["ControlNumber"]
+                                                                  .toString(),
+                                                              data[index]["bank_receipt_no"]
+                                                                  .toString(),
+                                                              widget.system ==
+                                                                          "E-Auction" ||
+                                                                      widget.system ==
+                                                                          "PMIS"
+                                                                  ? data[index][
+                                                                      "BillAmount"]
+                                                                  : widget.system ==
+                                                                          "honeytraceability"
+                                                                      ? data[index]["BillAmount"]
+                                                                          .toDouble()
+                                                                      : double.parse(
+                                                                          data[index][
+                                                                              "BillAmount"]),
+                                                              true,
+                                                              data[index][
+                                                                      "BillDesc"]
+                                                                  .toString(),
+                                                              username,
+                                                              station: station,
+                                                              currency: data[index]
+                                                                      ["currency"]
+                                                                  .toString()));
                                             },
                                             trailing: Column(
                                               mainAxisAlignment:
@@ -577,12 +636,10 @@ class _ListPendingBillsState extends State<ListPendingBills> {
                                                         )
                                                       ],
                                                     ))),
-                                            title: Text("Name: " +
-                                                data[index]["DealerName"]
-                                                    .toString()),
-                                            subtitle: Text('Control #: ' +
-                                                data[index]["ControlNumber"]
-                                                    .toString()),
+                                            title: Text(
+                                                "Name: ${data[index]["DealerName"]}"),
+                                            subtitle: Text(
+                                                'Control #: ${data[index]["ControlNumber"]}'),
                                           ),
                                         ),
                                       ),
@@ -613,20 +670,20 @@ class _ListPendingBillsState extends State<ListPendingBills> {
           : 'admin@localhost';
       String password =
           widget.system == "HoneyTraceability" ? '12345678' : 'muyenjwa';
-      print(email);
-      print(password);
+      ////print(email);
+      ////print(password);
       final response = await http.post(
         url,
         body: {'email': email, 'password': password},
       );
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      ////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             seedToken = res["token"];
           });
           await getDataSeed();
@@ -636,7 +693,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         case 403:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
           });
           return 'fail';
           // ignore: dead_code
@@ -645,7 +702,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         case 1200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             // addError(
             //     error:
             //         'Your Device Is Locked Please Contact User Support Team');
@@ -657,7 +714,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print(res);
             // addError(error: 'Something Went Wrong');
             // isLoading = false;
           });
@@ -667,7 +724,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        ////print(e);
 
         // addError(error: 'Server Or Network Connectivity Error');
         // isLoading = false;

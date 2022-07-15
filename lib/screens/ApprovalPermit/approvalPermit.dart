@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print, file_names
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -7,7 +7,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tfsappv1/screens/ApprovalPermit/ApprovalDetails.dart';
-import 'package:tfsappv1/screens/verification/extensionApprovalWidget.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
@@ -32,7 +31,7 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url =
           Uri.parse('https://mis.tfs.go.tz/fremis-test/api/v1/exp_appr_req');
 
@@ -82,14 +81,14 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
       desc: message,
       buttons: [
         DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
           child: const Text(
             "Ok",
             style: TextStyle(
               color: Colors.white,
             ),
           ),
-          onPressed: () => Navigator.pop(context),
-          width: 120,
         )
       ],
     ).show();
@@ -102,17 +101,20 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
       });
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = operation == "approve"
           ? Uri.parse(
               'https://mis.tfs.go.tz/fremis-test/api/v1/tp_extend/authorize/$id')
           : Uri.parse(
-              'https://mis.tfs.go.tz/fremis-test/api/v1/xp_appr_req/reject/$id');
+              'https://mis.tfs.go.tz/fremis-test/api/v1/xp_appr_req/reject');
 
       final response = operation == "approve"
           ? await http.get(url, headers: headers)
-          : await http
-              .post(url, headers: headers, body: {"reject_comment": "dfefe"});
+          : await http.post(
+              url,
+              headers: headers,
+              body: {"reject_comment": comment, "id": id},
+            );
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
@@ -215,8 +217,8 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
                 _formKey.currentState!.save();
                 // print(comment);
                 // print(id);
+                Navigator.of(context).pop();
                 await getApprovalRejectStatus("reject", id);
-                Navigator.pop(context);
               }
             },
             child: const Text(
@@ -249,7 +251,7 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text(
-          'Approval Request' " (" + Data.length.toString() + ")",
+          'Approval Request' " ( ${Data.length}  )",
           style: const TextStyle(
               color: Colors.black, fontFamily: 'ubuntu', fontSize: 17),
         ),
@@ -345,10 +347,7 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                      "Client Name: " +
-                                                          Data[index][
-                                                                  "client_name"]
-                                                              .toString(),
+                                                      "Client Name: ${Data[index]["client_name"]}",
                                                       style: const TextStyle(
                                                           color: Colors.black,
                                                           fontSize: 15,
@@ -358,10 +357,7 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
                                                     height: 5,
                                                   ),
                                                   Text(
-                                                      "Address: " +
-                                                          Data[index][
-                                                                  "postal_address"]
-                                                              .toString(),
+                                                      "Address: ${Data[index]["postal_address"]}",
                                                       style: TextStyle(
                                                           color: Colors
                                                               .grey[500])),
@@ -398,10 +394,6 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
         DialogButton(
           color: kPrimaryColor,
           radius: const BorderRadius.all(Radius.circular(10)),
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () async {
             Navigator.pop(context);
             setState(() {
@@ -415,18 +407,22 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
             });
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         ),
         DialogButton(
           color: Colors.red,
           radius: const BorderRadius.all(Radius.circular(10)),
-          child: const Text(
-            "Cancel",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () async {
             Navigator.pop(context);
           },
           width: 120,
+          child: const Text(
+            "Cancel",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -437,11 +433,6 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
       padding: const EdgeInsets.only(right: 10.0),
       child: PopupMenuButton(
         tooltip: 'Menu',
-        child: const Icon(
-          Icons.more_vert,
-          size: 28.0,
-          color: Colors.black,
-        ),
         offset: const Offset(20, 40),
         itemBuilder: (context) => [
           PopupMenuItem(
@@ -496,6 +487,11 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
             ),
           ),
         ],
+        child: const Icon(
+          Icons.more_vert,
+          size: 28.0,
+          color: Colors.black,
+        ),
       ),
     );
   }

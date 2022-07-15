@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:tfsappv1/screens/ApprovalPermit/approvalPermit.dart';
 import 'package:tfsappv1/services/constants.dart';
@@ -64,7 +66,7 @@ class _ManagementOperationState extends State<ManagementOperation> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(" Others Operations"),
+                  const Text(" Pending Inspection Request(s)"),
                   CircleAvatar(
                     radius: 15,
                     backgroundColor: Colors.grey[200],

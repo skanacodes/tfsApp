@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print, use_build_context_synchronously
 
 import 'dart:convert';
 import 'dart:io';
@@ -139,11 +139,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
             isLoading = false;
             for (var i = 0; i < data.length; i++) {
               dataItems.add(data[i]["id"]);
-              clientName.add(data[i]["first_name"].toString() +
-                  " " +
-                  data[i]["middle_name"].toString() +
-                  " " +
-                  data[i]["last_name"].toString());
+              clientName.add("${data[i]["first_name"]} ${data[i]["middle_name"]} ${data[i]["last_name"]}");
             }
           });
 
@@ -179,10 +175,6 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -191,6 +183,10 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -381,11 +377,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
                                                                         flex: 6,
                                                                         child:
                                                                             Center(
-                                                                          child: Text(data[index]["first_name"].toString() +
-                                                                              " " +
-                                                                              data[index]["middle_name"].toString() +
-                                                                              " " +
-                                                                              data[index]["last_name"].toString()),
+                                                                          child: Text("${data[index]["first_name"]} ${data[index]["middle_name"]} ${data[index]["last_name"]}"),
                                                                         ),
                                                                       ),
                                                                       popBar(
@@ -623,11 +615,6 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
         padding: const EdgeInsets.only(right: 1.0),
         child: PopupMenuButton(
           tooltip: 'Menu',
-          child: const Icon(
-            Icons.more_vert,
-            size: 28.0,
-            color: Colors.black,
-          ),
           offset: const Offset(20, 40),
           itemBuilder: (context) => [
             PopupMenuItem(
@@ -635,11 +622,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
                 toQrImageData([
                   data["id"]
                 ], [
-                  data["first_name"].toString() +
-                      " " +
-                      data["middle_name"].toString() +
-                      " " +
-                      data["last_name"].toString()
+                  "${data["first_name"]} ${data["middle_name"]} ${data["last_name"]}"
                 ], itemIndex: index);
               },
               child: Row(
@@ -690,6 +673,11 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
               ),
             ),
           ],
+          child: const Icon(
+            Icons.more_vert,
+            size: 28.0,
+            color: Colors.black,
+          ),
         ),
       ),
     );

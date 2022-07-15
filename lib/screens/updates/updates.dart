@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, unrelated_type_equality_checks
+// ignore_for_file: avoid_print, unrelated_type_equality_checks, library_private_types_in_public_api
 
 import 'package:sizer/sizer.dart';
 import 'package:flutter/material.dart';
@@ -22,18 +22,20 @@ class _UpdateAppState extends State<UpdateApp> {
   int percentage = 0;
   Future<void> tryOtaUpdate() async {
     try {
+      print("Am In");
       //LINK CONTAINS APK OF FLUTTER HELLO WORLD FROM FLUTTER SDK EXAMPLES
       OtaUpdate()
           .execute(
-        'http://mis.tfs.go.tz/fremis/download_APK',
+        '$baseUrlTest/download_APK',
 
-        destinationFilename: 'app-release.apk',
+        destinationFilename: 'tfs_app_v1.apk',
         //FOR NOW ANDROID ONLY - ABILITY TO VALIDATE CHECKSUM OF FILE:
       )
           .listen(
         (OtaEvent event) {
           setState(() {
             currentEvent = event;
+            print("${event.value}ota event");
             percentage = int.parse(currentEvent!.value!);
           });
         },
@@ -86,116 +88,119 @@ class _UpdateAppState extends State<UpdateApp> {
               fontFamily: 'Ubuntu', color: Colors.black, fontSize: 15),
         ),
       ),
-      body: Column(
-        children: [
-          Stack(
-            children: [
-              Container(
-                height: getProportionateScreenHeight(70),
-                color: Colors.white,
-                // decoration: BoxDecoration(color: Colors.white),
-              ),
-              Container(
-                height: getProportionateScreenHeight(50),
-                decoration: const BoxDecoration(color: kPrimaryColor),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Card(
-                    elevation: 10,
-                    child: ListTile(
-                      leading: const CircleAvatar(
-                        foregroundColor: kPrimaryColor,
-                        backgroundColor: Colors.black12,
-                        child: Icon(Icons.update),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                Container(
+                  height: getProportionateScreenHeight(70),
+                  color: Colors.white,
+                  // decoration: BoxDecoration(color: Colors.white),
+                ),
+                Container(
+                  height: getProportionateScreenHeight(50),
+                  decoration: const BoxDecoration(color: kPrimaryColor),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Card(
+                      elevation: 10,
+                      child: ListTile(
+                        leading: const CircleAvatar(
+                          foregroundColor: kPrimaryColor,
+                          backgroundColor: Colors.black12,
+                          child: Icon(Icons.update),
+                        ),
+                        title: _title(),
+                        trailing: const Icon(
+                          Icons.format_align_justify,
+                          color: Colors.pink,
+                        ),
+                        tileColor: Colors.white,
                       ),
-                      title: _title(),
-                      trailing: const Icon(
-                        Icons.format_align_justify,
-                        color: Colors.pink,
-                      ),
-                      tileColor: Colors.white,
                     ),
                   ),
-                ),
-              )
-            ],
-          ),
-          SizedBox(
-            height: getProportionateScreenHeight(10),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Card(
-              elevation: 10,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  CircularStepProgressIndicator(
-                    totalSteps: 100,
-                    currentStep: percentage,
-                    stepSize: 1,
-                    selectedColor: Colors.green,
-                    padding: 0,
-                    unselectedColor: Colors.grey[400],
-                    width: 200,
-                    height: 200,
-                    selectedStepSize: 15,
-                    roundedCap: (_, __) => true,
-                    child: currentEvent == null
-                        ? Container()
-                        : Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text(
-                                    currentEvent!.status == ""
-                                        ? "100%"
-                                        : '${currentEvent!.value}% \n',
-                                    style: TextStyle(
-                                        fontSize: 17.sp,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
+                )
+              ],
+            ),
+            SizedBox(
+              height: getProportionateScreenHeight(10),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Card(
+                elevation: 10,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    CircularStepProgressIndicator(
+                      totalSteps: 100,
+                      currentStep: percentage,
+                      stepSize: 1,
+                      selectedColor: Colors.green,
+                      padding: 0,
+                      unselectedColor: Colors.grey[400],
+                      width: 200,
+                      height: 200,
+                      selectedStepSize: 15,
+                      roundedCap: (_, __) => true,
+                      child: currentEvent == null
+                          ? Container()
+                          : Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      currentEvent!.status == ""
+                                          ? "100%"
+                                          : '${currentEvent!.value}% \n',
+                                      style: TextStyle(
+                                          fontSize: 17.sp,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          SizedBox(
-            height: getProportionateScreenHeight(100),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              elevation: 10,
-              child: ListTile(
-                onTap: () async {
-                  await tryOtaUpdate();
-                },
-                leading: CircleAvatar(
-                  backgroundColor: Colors.grey[200],
-                  child: const Icon(
-                    Icons.upgrade,
-                    color: Colors.green,
-                  ),
-                ),
-                trailing: const Icon(
-                  Icons.arrow_forward_ios_outlined,
-                  color: Colors.pink,
-                ),
-                title: const Text("Click To Update App To The Latest Version"),
-              ),
+            SizedBox(
+              height: getProportionateScreenHeight(20),
             ),
-          )
-        ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                elevation: 10,
+                child: ListTile(
+                  onTap: () async {
+                    await tryOtaUpdate();
+                  },
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.grey[200],
+                    child: const Icon(
+                      Icons.upgrade,
+                      color: Colors.green,
+                    ),
+                  ),
+                  trailing: const Icon(
+                    Icons.arrow_forward_ios_outlined,
+                    color: Colors.pink,
+                  ),
+                  title:
+                      const Text("Click To Update App To The Latest Version"),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

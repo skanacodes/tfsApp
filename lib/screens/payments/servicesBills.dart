@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print, library_private_types_in_public_api
 
 import 'dart:convert';
 
@@ -84,10 +84,6 @@ class _ServiceBillsState extends State<ServiceBills> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -96,6 +92,10 @@ class _ServiceBillsState extends State<ServiceBills> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -163,12 +163,10 @@ class _ServiceBillsState extends State<ServiceBills> {
                                       leading: CircleAvatar(
                                           backgroundColor: kPrimaryColor,
                                           child: Text('${index + 1}')),
-                                      title: Text("Descriptions: " +
-                                          data[index]["description"]
-                                              .toString()),
-                                      subtitle: Text('Unit Price: ' +
-                                          data[index]["unit_price"]
-                                              .toString()),
+                                      title: Text(
+                                          "Descriptions: ${data[index]["description"]}"),
+                                      subtitle: Text(
+                                          'Unit Price: ${data[index]["unit_price"]}'),
                                     ),
                                   ),
                                 ),

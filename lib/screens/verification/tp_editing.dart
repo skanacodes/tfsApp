@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print, prefer_interpolation_to_compose_strings
 
 import 'dart:convert';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -28,19 +28,20 @@ class _TPEditingState extends State<TPEditing> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
-      var url = Uri.parse('https://mis.tfs.go.tz/fremis-test/api/v1/tp_edit');
+      var headers = {"Authorization": "Bearer ${tokens!}"};
+      var url = Uri.parse('$baseUrlTest/api/v1/tp_edit');
 
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
+            // //print(res);
             Data = res["data"];
-            print(res);
+            //print(res);
             isLoading = false;
           });
 
@@ -51,7 +52,7 @@ class _TPEditingState extends State<TPEditing> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
 
             isLoading = false;
           });
@@ -60,7 +61,7 @@ class _TPEditingState extends State<TPEditing> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        //print(e);
 
         isLoading = false;
       });
@@ -76,14 +77,14 @@ class _TPEditingState extends State<TPEditing> {
       desc: message,
       buttons: [
         DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
           child: const Text(
             "Ok",
             style: TextStyle(
               color: Colors.white,
             ),
           ),
-          onPressed: () => Navigator.pop(context),
-          width: 120,
         )
       ],
     ).show();
@@ -96,26 +97,24 @@ class _TPEditingState extends State<TPEditing> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = operation == "approve"
-          ? Uri.parse(
-              'https://mis.tfs.go.tz/fremis-test/api/v1/tp_edit/authorize/$id')
-          : Uri.parse(
-              'https://mis.tfs.go.tz/fremis-test/api/v1/tp_edit/reject/$id');
+          ? Uri.parse('$baseUrlTest/api/v1/tp_edit/authorize/$id')
+          : Uri.parse('$baseUrlTest/api/v1/tp_edit/reject/$id');
 
       final response = operation == "approve"
           ? await http.get(url, headers: headers)
           : await http
-              .post(url, headers: headers, body: {"reject_comment": "Noo"});
+              .post(url, headers: headers, body: {"reject_comment": ""});
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
 
-            print(res);
+            //print(res);
             isLoading = false;
           });
           operation == "approve"
@@ -128,7 +127,7 @@ class _TPEditingState extends State<TPEditing> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
 
             isLoading = false;
 
@@ -139,7 +138,7 @@ class _TPEditingState extends State<TPEditing> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        //print(e);
 
         isLoading = false;
       });
@@ -247,9 +246,7 @@ class _TPEditingState extends State<TPEditing> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                    "TP Number: " +
-                                                        Data[index]["tp_number"]
-                                                            .toString(),
+                                                    "TP Number: ${Data[index]["tp_number"]}",
                                                     style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 15,
@@ -259,9 +256,7 @@ class _TPEditingState extends State<TPEditing> {
                                                   height: 5,
                                                 ),
                                                 Text(
-                                                    "Reason: " +
-                                                        Data[index]["reasons"]
-                                                            .toString(),
+                                                    "Reason: ${Data[index]["reasons"]}",
                                                     style: TextStyle(
                                                         color:
                                                             Colors.grey[500])),
@@ -327,8 +322,7 @@ class _TPEditingState extends State<TPEditing> {
                                                 BorderRadius.circular(12),
                                             color: Colors.grey.shade200),
                                         child: Text(
-                                          "Station: " +
-                                              Data[index]["station"],
+                                          "Station: " + Data[index]["station"],
                                           style: const TextStyle(
                                               color: Colors.black),
                                         ),
@@ -354,11 +348,6 @@ class _TPEditingState extends State<TPEditing> {
       padding: const EdgeInsets.only(right: 10.0),
       child: PopupMenuButton(
         tooltip: 'Menu',
-        child: const Icon(
-          Icons.more_vert,
-          size: 28.0,
-          color: Colors.black,
-        ),
         offset: const Offset(20, 40),
         itemBuilder: (context) => [
           PopupMenuItem(
@@ -412,6 +401,11 @@ class _TPEditingState extends State<TPEditing> {
             ),
           ),
         ],
+        child: const Icon(
+          Icons.more_vert,
+          size: 28.0,
+          color: Colors.black,
+        ),
       ),
     );
   }

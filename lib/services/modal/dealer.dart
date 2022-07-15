@@ -51,15 +51,11 @@ class DealerModel {
   }
 
   @override
-  String toString() => companyName == "null"
-      ? " " + fname.toString() == "null"
-          ? ""
-          : fname.toString() + " " + mname.toString() == "null"
-              ? ""
-              : mname.toString() + " " + lname.toString() == "null"
-                  ? "null"
-                  : lname.toString()
-      : companyName.toString() == "null"
-          ? ""
-          : companyName.toString();
+  String toString() {
+    if (companyName != 'null') {
+      return companyName;
+    } else {
+      return fname;
+    }
+  }
 }

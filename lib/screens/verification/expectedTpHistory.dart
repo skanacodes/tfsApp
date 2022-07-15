@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_//print(
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -45,21 +45,21 @@ class _ExpectedTPState extends State<ExpectedTP> {
       String checkpointId = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('checkpointId').toString());
 
-      //print(stationId);
+      //////print((stationId);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
-      var url = Uri.parse(
-          'https://mis.tfs.go.tz/fremis-test/api/v1/expected-tp/$checkpointId');
+      var headers = {"Authorization": "Bearer ${tokens!}"};
+      var url = Uri.parse('$baseUrlTest/api/v1/expected-tp/$checkpointId');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print((response.statusCode);
+      //print((response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print((res);
             if (res["status"] == "Token is Expired") {
               messages("error", "Token Expired.. Please Login Again");
               return;
@@ -74,7 +74,7 @@ class _ExpectedTPState extends State<ExpectedTP> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////print((res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -84,7 +84,7 @@ class _ExpectedTPState extends State<ExpectedTP> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        print(e);
+        ////print((e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -96,10 +96,10 @@ class _ExpectedTPState extends State<ExpectedTP> {
   //     isLoading = true;
   //   });
   //   try {
-  //     print(duration);
+  //     ////print((duration);
   //     // var tokens = await SharedPreferences.getInstance()
   //     //     .then((prefs) => prefs.getString('token'));
-  //     // print(tokens);
+  //     // ////print((tokens);
   //     var headers = {"Authorization": "Bearer " + seedToken};
   //     var url = Uri.parse(
   //         'https://mis.tfs.go.tz/honey-traceability/api/v1/search-payment-history/$duration/$formattedDate');
@@ -107,12 +107,12 @@ class _ExpectedTPState extends State<ExpectedTP> {
   //     final response = await http.get(url, headers: headers);
   //     var res;
   //     //final sharedP prefs=await
-  //     print(response.statusCode);
+  //     ////print((response.statusCode);
   //     switch (response.statusCode) {
   //       case 200:
   //         setState(() {
   //           res = json.decode(response.body);
-  //           print(res);
+  //           ////print((res);
   //           data = res['data'];
   //           isLoading = false;
   //         });
@@ -122,7 +122,7 @@ class _ExpectedTPState extends State<ExpectedTP> {
   //       default:
   //         setState(() {
   //           res = json.decode(response.body);
-  //           print(res);
+  //           ////print((res);
   //           isLoading = false;
   //           messages('Ohps! Something Went Wrong', 'error');
   //         });
@@ -132,7 +132,7 @@ class _ExpectedTPState extends State<ExpectedTP> {
   //   } catch (e) {
   //     setState(() {
   //       isLoading = false;
-  //       print(e);
+  //       ////print((e);
   //       messages('Server Or Connectivity Error', 'error');
   //     });
   //   }
@@ -146,7 +146,7 @@ class _ExpectedTPState extends State<ExpectedTP> {
   //   try {
   //     // var tokens = await SharedPreferences.getInstance()
   //     //     .then((prefs) => prefs.getString('token'));
-  //     // print(tokens);
+  //     // ////print((tokens);
   //     var headers = {"Authorization": "Bearer " + seedToken};
   //     var url = Uri.parse(
   //         'https://mis.tfs.go.tz/honey-traceability/api/v1/bill-by-controlnumber/$controlNo/1');
@@ -154,12 +154,12 @@ class _ExpectedTPState extends State<ExpectedTP> {
   //     final response = await http.get(url, headers: headers);
   //     var res;
   //     //final sharedP prefs=await
-  //     print(response.statusCode);
+  //     ////print((response.statusCode);
   //     switch (response.statusCode) {
   //       case 200:
   //         setState(() {
   //           res = json.decode(response.body);
-  //           print(res);
+  //           ////print((res);
   //           data = res['data'];
   //           isLoading = false;
   //         });
@@ -169,7 +169,7 @@ class _ExpectedTPState extends State<ExpectedTP> {
   //       default:
   //         setState(() {
   //           res = json.decode(response.body);
-  //           print(res);
+  //           ////print((res);
   //           isLoading = false;
   //           messages('Ohps! Something Went Wrong', 'error');
   //         });
@@ -179,7 +179,7 @@ class _ExpectedTPState extends State<ExpectedTP> {
   //   } catch (e) {
   //     setState(() {
   //       isLoading = false;
-  //       print(e);
+  //       ////print((e);
   //       messages('Server Or Connectivity Error', 'error');
   //     });
   //   }
@@ -210,10 +210,6 @@ class _ExpectedTPState extends State<ExpectedTP> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -222,6 +218,10 @@ class _ExpectedTPState extends State<ExpectedTP> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -256,7 +256,7 @@ class _ExpectedTPState extends State<ExpectedTP> {
                           onTap: () async {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              // print(controlNo);
+                              // ////print((controlNo);
                               // await searchData();
                             }
                           },
@@ -267,7 +267,8 @@ class _ExpectedTPState extends State<ExpectedTP> {
                           ),
                         ),
                         isDense: true,
-                        contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(20, 10, 20, 10),
                         border: InputBorder.none,
                         fillColor: const Color(0xfff3f3f4),
                         label: const Text(
@@ -411,14 +412,13 @@ class _ExpectedTPState extends State<ExpectedTP> {
                                                 Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                        builder:
-                                                            (context) =>
-                                                                TPtimeline(
-                                                                  tpNumber: data[index]
-                                                                          [
-                                                                          "tp_id"]
-                                                                      .toString(),
-                                                                )));
+                                                        builder: (context) =>
+                                                            TPtimeline(
+                                                              tpNumber: data[
+                                                                          index]
+                                                                      ["tp_id"]
+                                                                  .toString(),
+                                                            )));
                                               },
                                               trailing: Column(
                                                 mainAxisAlignment:
@@ -434,37 +434,30 @@ class _ExpectedTPState extends State<ExpectedTP> {
                                               ),
                                               leading: IntrinsicHeight(
                                                   child: SizedBox(
-                                                      height:
-                                                          double.maxFinite,
+                                                      height: double.maxFinite,
                                                       width:
                                                           getProportionateScreenHeight(
                                                               50),
                                                       child: Row(
                                                         children: [
                                                           VerticalDivider(
-                                                            color: index
-                                                                    .isEven
+                                                            color: index.isEven
                                                                 ? kPrimaryColor
-                                                                : Colors.green[
-                                                                    200],
+                                                                : Colors
+                                                                    .green[200],
                                                             thickness: 5,
                                                           )
                                                         ],
                                                       ))),
                                               title: Text(
-                                                "TP-Number: " +
-                                                    data[index]["tp_number"]
-                                                        .toString(),
+                                                "TP-Number: ${data[index]["tp_number"]}",
                                               ),
                                               subtitle: Text(
                                                 data[index]["remained"]
                                                             .toString() ==
                                                         "0"
                                                     ? "Arriving Soon"
-                                                    : "Station(s) Remained: " +
-                                                        data[index]
-                                                                ["remained"]
-                                                            .toString(),
+                                                    : "Station(s) Remained: ${data[index]["remained"]}",
                                               ),
                                             ),
                                           ),
@@ -490,17 +483,6 @@ class _ExpectedTPState extends State<ExpectedTP> {
       child: PopupMenuButton(
         tooltip: 'Sort',
         color: const Color(0xfff3f3f4),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Text("Sort"),
-            Icon(
-              Icons.sort_outlined,
-              size: 28.0,
-              color: Colors.black,
-            ),
-          ],
-        ),
         offset: const Offset(20, 40),
         itemBuilder: (context) => [
           PopupMenuItem(
@@ -601,6 +583,17 @@ class _ExpectedTPState extends State<ExpectedTP> {
             ),
           ),
         ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Text("Sort"),
+            Icon(
+              Icons.sort_outlined,
+              size: 28.0,
+              color: Colors.black,
+            ),
+          ],
+        ),
       ),
     );
   }

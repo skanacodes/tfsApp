@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, prefer_const_constructors_in_immutables, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: file_names, prefer_const_constructors_in_immutables, prefer_typing_uninitialized_variables, avoid_print, library_private_types_in_public_api
 
 import 'dart:convert';
 import 'dart:io';
@@ -49,33 +49,33 @@ class _PermittListState extends State<PermittList> {
     // String stationId = await SharedPreferences.getInstance()
     //     .then((prefs) => prefs.getInt('station_id').toString());
 
-    // print(userId);
-    // print(stationId);
-    // print(userId.toString());
-    // print(checkpointId.toString());
+    // //print(userId);
+    // //print(stationId);
+    // //print(userId.toString());
+    // //print(checkpointId.toString());
     try {
-      print(id);
+      //print(id);
       int.parse(id);
-      print(id);
-      print("gfgjhjkm");
-      var headers = {"Authorization": "Bearer " + token};
+      //print(id);
+      //print("gfgjhjkm");
+      var headers = {"Authorization": "Bearer $token"};
       var url = Uri.parse('$baseUrl/api/v1/export/find/$id');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
-      // print('dfsjjdsfsd');
+      //print(response.statusCode);
+      // //print('dfsjjdsfsd');
       //final sharedP prefs=await
       res = json.decode(response.body);
-      print(res);
-      // print('dfsjjdsfsd');
+      //print(res);
+      // //print('dfsjjdsfsd');
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
             exportData = res['export'];
             goToTheSealScreen();
-            print(res);
+            //print(res);
           });
           break;
 
@@ -83,22 +83,21 @@ class _PermittListState extends State<PermittList> {
           setState(() {
             message("Error Occured While Processing Request", "error");
             res = response.body;
-            print(res);
+            //print(res);
           });
           break;
         default:
           setState(() {
             message("Error Occured While Processing Request", "error");
             res = json.decode(response.body);
-            print(res);
+            //print(res);
           });
           break;
       }
     } on SocketException {
       setState(() {
-        var res = 'Server Error';
         message("Error Occured While Processing Request", "error");
-        print(res);
+        //print(res);
       });
     }
   }
@@ -107,15 +106,15 @@ class _PermittListState extends State<PermittList> {
     try {
       // String? barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
       //     "GREEN", "Cancel", true, ScanMode.QR);
-      // print(barcodeScanRes.toString() + "huushfuiewiu");
+      // //print(barcodeScanRes.toString() + "huushfuiewiu");
       // // ignore: unnecessary_null_comparison
       // var x = barcodeScanRes.toString() == "-1"
       //     ? null
       //     : barcodeScanRes.substring(7, 11);
-      // print(barcodeScanRes);
+      // //print(barcodeScanRes);
       // String tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token').toString());
-      // print(x.toString() + "hfdhg");
+      // //print(x.toString() + "hfdhg");
       // if (x != null) {
       //   setState(() {
       //     isVerify = true;
@@ -158,7 +157,7 @@ class _PermittListState extends State<PermittList> {
             TextField(
               onChanged: (value) {
                 permitNumber = value;
-                print(permitNumber);
+                //print(permitNumber);
               },
               cursorColor: kPrimaryColor,
               decoration: const InputDecoration(
@@ -204,12 +203,12 @@ class _PermittListState extends State<PermittList> {
       desc: desc,
       buttons: [
         DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
           child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          onPressed: () => Navigator.pop(context),
-          width: 120,
         )
       ],
     ).show();
@@ -217,16 +216,16 @@ class _PermittListState extends State<PermittList> {
 
   final List<DropdownMenuItem<String>> _permitType = [
     const DropdownMenuItem(
-      child: Text("Inspection"),
       value: "Export Inspection",
+      child: Text("Inspection"),
     ),
     const DropdownMenuItem(
-      child: Text("Grading"),
       value: "Grading",
+      child: Text("Grading"),
     ),
     const DropdownMenuItem(
-      child: Text("Verification And Seal"),
       value: "Verification And Seal",
+      child: Text("Verification And Seal"),
     ),
   ];
 
@@ -234,18 +233,18 @@ class _PermittListState extends State<PermittList> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      print(tokens);
-      var headers = {"Authorization": "Bearer " + tokens!};
+      //print(tokens);
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('$baseUrl/api/v1/export/grade-view');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             data = res['grading'];
           });
           RealTimeCommunication().createConnection(
@@ -256,7 +255,7 @@ class _PermittListState extends State<PermittList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             messages('Ohps! Something Went Wrong', 'error');
           });
 
@@ -264,7 +263,7 @@ class _PermittListState extends State<PermittList> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        //print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -274,18 +273,18 @@ class _PermittListState extends State<PermittList> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      print(tokens);
-      var headers = {"Authorization": "Bearer " + tokens!};
+      //print(tokens);
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('$baseUrl/api/v1/import/insp-view');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             data = res['inspection'];
           });
           RealTimeCommunication().createConnection(
@@ -296,7 +295,7 @@ class _PermittListState extends State<PermittList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             messages('Ohps! Something Went Wrong', 'error');
           });
 
@@ -304,7 +303,7 @@ class _PermittListState extends State<PermittList> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        //print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -314,21 +313,21 @@ class _PermittListState extends State<PermittList> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      print(tokens);
+      //print(tokens);
 
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('$baseUrl/api/v1/inspection');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             data = res['inspection'];
-            //  print(data[0]["dealer"].toString() + "hjsdkjdskjdsjk");
+            //  //print(data[0]["dealer"].toString() + "hjsdkjdskjdsjk");
           });
           RealTimeCommunication().createConnection(
             "10",
@@ -338,7 +337,7 @@ class _PermittListState extends State<PermittList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             messages('Ohps! Something Went Wrong', 'error');
           });
 
@@ -346,7 +345,7 @@ class _PermittListState extends State<PermittList> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        //print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -363,10 +362,6 @@ class _PermittListState extends State<PermittList> {
       desc: desc,
       buttons: [
         DialogButton(
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () {
             if (type == 'success') {
               Navigator.pop(context);
@@ -375,6 +370,10 @@ class _PermittListState extends State<PermittList> {
             }
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -594,37 +593,18 @@ class _PermittListState extends State<PermittList> {
                                                               ))),
                                                       title: Text(type! ==
                                                               'Grading'
-                                                          ? "Name: " +
-                                                              data[index][
-                                                                      "dealer_name"]
-                                                                  .toString()
+                                                          ? "Name: ${data[index]["dealer_name"]}"
                                                           : type ==
                                                                   'Export Inspection'
-                                                              ? "Name: " +
-                                                                  data[index][
-                                                                          "dealer_name"]
-                                                                      .toString()
-                                                              : "Name: " +
-                                                                  data[index][
-                                                                          "dealer_name"]
-                                                                      .toString()),
+                                                              ? "Name: ${data[index]["dealer_name"]}"
+                                                              : "Name: ${data[index]["dealer_name"]}"),
                                                       subtitle: Text(type! ==
                                                               'Grading'
-                                                          ? "ID Code: " +
-                                                              data[index]
-                                                                      ["code"]
-                                                                  .toString()
+                                                          ? "ID Code: ${data[index]["code"]}"
                                                           : type! ==
                                                                   'Export Inspection'
-                                                              ? 'ID Code: ' +
-                                                                  data[index][
-                                                                          "code"]
-                                                                      .toString()
-                                                              : 'ID Code: ' +
-                                                                  data[index]["import"]
-                                                                          [
-                                                                          "code"]
-                                                                      .toString()),
+                                                              ? 'ID Code: ${data[index]["code"]}'
+                                                              : 'ID Code: ${data[index]["import"]["code"]}'),
                                                     ),
                                                   ),
                                                 ),

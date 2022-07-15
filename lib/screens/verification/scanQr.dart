@@ -1,6 +1,4 @@
-// ignore_for_file: unused_import, unused_element, file_names, use_key_in_widget_constructors, prefer_typing_uninitialized_variables, avoid_print, non_constant_identifier_names
-
-import 'dart:ui';
+// ignore_for_file: unused_import, unused_element, file_names, use_key_in_widget_constructors, prefer_typing_uninitialized_variables, avoid_print, non_constant_identifier_names, use_build_context_synchronously, library_private_types_in_public_api
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/screens/verification/expectedTpHistory.dart';
 import 'package:tfsappv1/screens/verification/extension_approvalscreen.dart';
+import 'package:tfsappv1/screens/verification/license_screen.dart';
 import 'package:tfsappv1/screens/verification/tp_editing.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/screens/verification/afterverification.dart';
@@ -38,6 +37,7 @@ class _ScanQrState extends State<ScanQr> {
   bool isAlreadyVerified = false;
   bool iSscanned = false;
   bool isReceiptLoading = false;
+  bool isTptypeForest = false;
   String? tpNumberPrompt;
   bool? status;
   String? tpNumber;
@@ -76,7 +76,7 @@ class _ScanQrState extends State<ScanQr> {
           content: Text("Starting Printer"),
         ),
       );
-      print(totalfines);
+      //print(totalfines);
       final String result = await platform.invokeMethod('getBatteryLevel', {
         "controlNumberList": controlNumberList,
         "fineList": finesList,
@@ -87,7 +87,7 @@ class _ScanQrState extends State<ScanQr> {
         "activity": "printBill"
       });
 
-      print(result);
+      //print(result);
       if (result == "Successfully Printed") {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -103,7 +103,7 @@ class _ScanQrState extends State<ScanQr> {
         );
       }
     } on PlatformException catch (e) {
-      print(e);
+      //print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("$e"),
@@ -120,7 +120,7 @@ class _ScanQrState extends State<ScanQr> {
           _qrInfo = code;
           istp = false;
         });
-        //  print(_qrInfo!);
+        //  //print(_qrInfo!);
         String tokens = await SharedPreferences.getInstance()
             .then((prefs) => prefs.getString('token').toString());
         verifyTp(_qrInfo!.substring(11, 19), tokens);
@@ -131,7 +131,7 @@ class _ScanQrState extends State<ScanQr> {
           _qrInfo = code;
           isreceipt = false;
         });
-        // print(_qrInfo! + "dwf");
+        // //print(_qrInfo! + "dwf");
         String tokens = await SharedPreferences.getInstance()
             .then((prefs) => prefs.getString('token').toString());
         await verifyReceipt(_qrInfo!, tokens);
@@ -158,26 +158,37 @@ class _ScanQrState extends State<ScanQr> {
         .then((prefs) => prefs.getInt('user_id').toString());
     String checkpointId = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('checkpointId').toString());
+    String? fname = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getString('fname'));
+    String? lname = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getString('lname'));
+
+    String? checkpointcode = await SharedPreferences.getInstance()
+        .then((prefs) => prefs.getString('checkpointcode'));
     setState(() {
       isPosting = true;
     });
-    print(tpNumbere);
-    print(userId.toString());
-    print(checkpointId.toString());
+    String username = "$fname $lname";
     try {
-      var headers = {"Authorization": "Bearer " + token};
-      var url =
-          Uri.parse('https://mis.tfs.go.tz/fremis-test/api/v1/tp-validate');
+      var headers = {"Authorization": "Bearer $token"};
+      var url = isTptypeForest
+          ? Uri.parse('$baseUrlTest/api/v1/tp-validate')
+          : Uri.parse('$baseUrlHoneyTraceability/api/v1/tp-validate');
+      //print(checkpointcode);
+      // print(username);
       final response = await http.post(url,
           body: {
-            'tp_number': tpNumbere,
             'user_id': userId.toString(),
-            'checkpoint_id': checkpointId.toString()
+            'tp_number': tpNumbere,
+            'name': username.toString(),
+            'checkpoint_id': checkpointId.toString(),
+            'checkpoint_code': checkpointcode
           },
           headers: headers);
       var res;
       //final sharedP prefs=await
       print(response.statusCode);
+      print(response.body);
 
       switch (response.statusCode) {
         case 201:
@@ -191,8 +202,7 @@ class _ScanQrState extends State<ScanQr> {
               message('Some Previous Checkpoints Have Not Verified This TP',
                   'error');
             } else {
-              print(res);
-              print(res['data']['id']);
+              message(res['message'], 'error');
               isPosting = false;
               iSscanned = true;
             }
@@ -201,19 +211,22 @@ class _ScanQrState extends State<ScanQr> {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
-
-            tpData = res['tp_data'];
-            prevCheck = res['prev_check'];
-            tpProduct = res['products'];
-            iSscanned = true;
-            isPosting = false;
+            //print(res);
+            if (res["success"]) {
+              tpData = res['tp_data'];
+              prevCheck = res['prev_check'];
+              tpProduct = res['products'];
+              iSscanned = true;
+              isPosting = false;
+            } else {
+              message(res["message"].toString(), "error");
+            }
           });
           break;
         case 400:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
 
             tpData = res['tp_data'];
             prevCheck = res['prev_check'];
@@ -227,7 +240,7 @@ class _ScanQrState extends State<ScanQr> {
         case 403:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             isPosting = false;
             if (res['message'] == 'This TP Already Expired') {
               message("This TP Has Already Expired", "error");
@@ -250,7 +263,8 @@ class _ScanQrState extends State<ScanQr> {
             }
             if (res['message'] ==
                 'This TP contains unpaid fine, please pay before proceed') {
-              message('This TP contains unpaid fine, please pay before proceed',
+              message(
+                  'This TP contains unpaid fine, please pay before you proceed',
                   'error');
               setState(() {
                 controlNumber = res["bills"];
@@ -278,7 +292,7 @@ class _ScanQrState extends State<ScanQr> {
         case 404:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             isPosting = false;
             if (res['message'] == 'Transitpass Does not Exist') {
               message('Transitpass Does not Exist', 'error');
@@ -287,17 +301,17 @@ class _ScanQrState extends State<ScanQr> {
           break;
         case 500:
           setState(() {
-            print('thhy');
+            // print('thhy');
             res = response.body;
             print(res);
             isPosting = false;
-            message('Transit Pass Not Found', 'error');
+            message('Connectivity Error', 'error');
           });
           break;
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             isPosting = false;
             message('Ooohps! Something Went Wrong', 'error');
           });
@@ -308,7 +322,7 @@ class _ScanQrState extends State<ScanQr> {
         var res = 'Server Error';
         message('Bad Connection Or  Server Error', 'error');
         isPosting = false;
-        print(res);
+        //print(res);
       });
     }
   }
@@ -319,25 +333,25 @@ class _ScanQrState extends State<ScanQr> {
     });
 
     try {
-      var headers = {"Authorization": "Bearer " + token};
+      var headers = {"Authorization": "Bearer $token"};
       var url = Uri.parse('$baseUrlTest/api/v1/receipt-validate');
       final response =
           await http.post(url, body: {"receipt_no": Numbere}, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
 
       switch (response.statusCode) {
         case 201:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             //message("The Receipt is Valid", "success");
           });
           break;
         case 200:
           res = json.decode(response.body);
-          print(res);
+          //print(res);
           setState(() {
             res = json.decode(response.body);
             if (res["status"].toString() == "Token is Expired") {
@@ -353,7 +367,7 @@ class _ScanQrState extends State<ScanQr> {
         case 404:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             message("Receipt Not Found", "error");
           });
           break;
@@ -361,7 +375,7 @@ class _ScanQrState extends State<ScanQr> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
             isPosting = false;
             message("Something Went Wrong", "success");
           });
@@ -372,7 +386,7 @@ class _ScanQrState extends State<ScanQr> {
         var res = 'Server Error';
         message('Bad Connection Or  Server Error', 'error');
         isPosting = false;
-        print(res);
+        //print(res);
       });
     }
     setState(() {
@@ -396,7 +410,7 @@ class _ScanQrState extends State<ScanQr> {
                 : TextField(
                     onChanged: (value) {
                       tpNumberPrompt = value;
-                      // print(tpNumberPrompt);
+                      // //print(tpNumberPrompt);
                     },
                     cursorColor: kPrimaryColor,
                     decoration: InputDecoration(
@@ -422,9 +436,9 @@ class _ScanQrState extends State<ScanQr> {
                 istp = false;
               });
             },
-            child: const Text(
+            child: Text(
               "VERIFY",
-              style: TextStyle(color: Colors.white, fontSize: 20),
+              style: TextStyle(color: Colors.white, fontSize: 11.sp),
             ),
           ),
           DialogButton(
@@ -437,9 +451,9 @@ class _ScanQrState extends State<ScanQr> {
               });
               Navigator.pop(context);
             },
-            child: const Text(
+            child: Text(
               "CANCEL",
-              style: TextStyle(color: Colors.white, fontSize: 20),
+              style: TextStyle(color: Colors.white, fontSize: 11.sp),
             ),
           )
         ]).show();
@@ -453,12 +467,12 @@ class _ScanQrState extends State<ScanQr> {
       desc: desc,
       buttons: [
         DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
           child: const Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          onPressed: () => Navigator.pop(context),
-          width: 120,
         )
       ],
     ).show();
@@ -634,7 +648,7 @@ class _ScanQrState extends State<ScanQr> {
                                   child: ListTile(
                                     // tileColor: Colors.grey[200],
                                     onTap: () async {
-                                      _scanCode("tp");
+                                      showModalForTp();
                                     },
                                     trailing: const Icon(
                                       Icons.arrow_right,
@@ -648,8 +662,7 @@ class _ScanQrState extends State<ScanQr> {
                                             child: CircleAvatar(
                                               backgroundColor: Colors.grey[200],
                                               child: Image.asset(
-                                                  filepathImages +
-                                                      "verify.png"),
+                                                  "${filepathImages}verify.png"),
                                             ))),
                                     title: const Text("Click To Verify TP "),
                                     subtitle: const Text(
@@ -682,8 +695,7 @@ class _ScanQrState extends State<ScanQr> {
                                             child: CircleAvatar(
                                               backgroundColor: Colors.grey[200],
                                               child: Image.asset(
-                                                  filepathImages +
-                                                      "receipt.png"),
+                                                  "${filepathImages}receipt.png"),
                                             ))),
                                     title: const Text("Verify Receipt"),
                                     subtitle: const Text(
@@ -718,8 +730,7 @@ class _ScanQrState extends State<ScanQr> {
                                             child: CircleAvatar(
                                               backgroundColor: Colors.grey[200],
                                               child: Image.asset(
-                                                  filepathImages +
-                                                      "expected.png"),
+                                                  "${filepathImages}expected.png"),
                                             ))),
                                     title: const Text("List Of Expected TP"),
                                     subtitle: const Text(""),
@@ -749,8 +760,7 @@ class _ScanQrState extends State<ScanQr> {
                                             child: CircleAvatar(
                                               backgroundColor: Colors.grey[200],
                                               child: Image.asset(
-                                                  filepathImages +
-                                                      "change.png"),
+                                                  "${filepathImages}change.png"),
                                             ))),
                                     title: const Text("Change Request(s)"),
                                     subtitle:
@@ -807,14 +817,10 @@ class _ScanQrState extends State<ScanQr> {
                                               Text(controlNumber![i]
                                                       ["bill_desc"]
                                                   .toString()),
-                                              Text("Control-No: " +
-                                                  controlNumber![i]
-                                                          ["control_number"]
-                                                      .toString()),
-                                              Text("Amount: " +
-                                                  controlNumber![i]
-                                                          ["bill_amount"]
-                                                      .toString()),
+                                              Text(
+                                                  "Control-No: ${controlNumber![i]["control_number"]}"),
+                                              Text(
+                                                  "Amount: ${controlNumber![i]["bill_amount"]}"),
                                               const Divider(
                                                 color: Colors.black54,
                                               )
@@ -834,6 +840,7 @@ class _ScanQrState extends State<ScanQr> {
                 tpProduct: tpProduct,
                 isAlreadyVerified: isAlreadyVerified,
                 verificationCode: vercode,
+                isForestProduce: isTptypeForest,
               );
   }
 
@@ -844,14 +851,20 @@ class _ScanQrState extends State<ScanQr> {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              const ListTile(
-                leading: Icon(
-                  Icons.select_all_outlined,
-                  color: Colors.green,
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: Colors.grey[200]!,
+                  child: const Icon(
+                    Icons.select_all_outlined,
+                    color: Colors.green,
+                  ),
                 ),
-                title: Text(
+                title: const Text(
                   "Select Operation",
                 ),
+              ),
+              Divider(
+                color: Colors.grey[400]!,
               ),
               ListTile(
                 leading: const Icon(
@@ -859,6 +872,9 @@ class _ScanQrState extends State<ScanQr> {
                   color: Colors.green,
                 ),
                 title: const Text('TP Extensions Request(s)'),
+                subtitle: Divider(
+                  color: Colors.grey[400]!,
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.pushNamed(
@@ -874,12 +890,93 @@ class _ScanQrState extends State<ScanQr> {
                   color: Colors.green,
                 ),
                 title: const Text('TP Editing Request(s)'),
+                subtitle: Divider(
+                  color: Colors.grey[400]!,
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.pushNamed(
                     context,
                     TPEditing.routeName,
                   ).then((_) => RealTimeCommunication().createConnection("1"));
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.arrow_right,
+                  color: Colors.green,
+                ),
+                subtitle: Divider(
+                  color: Colors.grey[400]!,
+                ),
+                title: const Text('License Editing Request(s)'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(
+                    context,
+                    LicenseEditiScreen.routeName,
+                  ).then((_) => RealTimeCommunication().createConnection("1"));
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  showModalForTp() {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: Colors.grey[200]!,
+                  child: const Icon(
+                    Icons.select_all_outlined,
+                    color: Colors.green,
+                  ),
+                ),
+                title: const Text(
+                  "Select Operation",
+                ),
+              ),
+              Divider(
+                color: Colors.grey[400]!,
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.arrow_right,
+                  color: Colors.green,
+                ),
+                title: const Text('Forest Produce TP'),
+                subtitle: Divider(
+                  color: Colors.grey[400]!,
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() {
+                    isTptypeForest = true;
+                  });
+                  _scanCode("tp");
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.arrow_right,
+                  color: Colors.green,
+                ),
+                title: const Text('Bee Product TP'),
+                subtitle: Divider(
+                  color: Colors.grey[400]!,
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() {
+                    isTptypeForest = false;
+                  });
+                  _scanCode("tp");
                 },
               ),
             ],

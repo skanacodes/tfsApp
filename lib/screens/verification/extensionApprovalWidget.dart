@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, avoid_print, prefer_typing_uninitialized_variables, use_build_context_synchronously
 
 import 'dart:convert';
 
@@ -36,14 +36,14 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
       desc: message,
       buttons: [
         DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
           child: const Text(
             "Ok",
             style: TextStyle(
               color: Colors.white,
             ),
           ),
-          onPressed: () => Navigator.pop(context),
-          width: 120,
         )
       ],
     ).show();
@@ -56,26 +56,25 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
       });
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer " + tokens!};
+      var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = operation == "approve"
-          ? Uri.parse(
-              'https://mis.tfs.go.tz/fremis-test/api/v1/tp_extend/authorize/$id')
-          : Uri.parse(
-              'https://mis.tfs.go.tz/fremis-test/api/v1/tp_extend/reject/$id');
+          ? Uri.parse('$baseUrlTest/api/v1/tp_extend/authorize/$id')
+          : Uri.parse('$baseUrlTest/api/v1/tp_extend/reject/$id');
 
       final response = operation == "approve"
           ? await http.get(url, headers: headers)
-          : await http
-              .post(url, headers: headers, body: {"reject_comment": "dfefe"});
+          : await http.post(url,
+              headers: headers,
+              body: {"id": id.toString(), "reject_comment": comment});
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
 
-            print(res);
+            //print(res);
             isLoading = false;
           });
           operation == "approve"
@@ -88,7 +87,7 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print(res);
 
             isLoading = false;
 
@@ -99,7 +98,7 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        //print(e);
 
         isLoading = false;
       });
@@ -167,8 +166,8 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                // print(comment);
-                // print(id);
+                // //print(comment);
+                // //print(id);
                 await getApprovalRejectStatus("reject", id);
                 Navigator.pop(context);
               }
@@ -289,10 +288,7 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                    "TP Number: " +
-                                                        widget.data![index]
-                                                                ["tp_number"]
-                                                            .toString(),
+                                                    "TP Number: ${widget.data![index]["tp_number"]}",
                                                     style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 15,
@@ -302,10 +298,7 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
                                                   height: 5,
                                                 ),
                                                 Text(
-                                                    "Reason: " +
-                                                        widget.data![index]
-                                                                ["reason"]
-                                                            .toString(),
+                                                    "Reason: ${widget.data![index]["reason"]}",
                                                     style: TextStyle(
                                                         color:
                                                             Colors.grey[500]!)),
@@ -609,10 +602,6 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
         DialogButton(
           color: kPrimaryColor,
           radius: const BorderRadius.all(Radius.circular(10)),
-          child: const Text(
-            "Ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () async {
             Navigator.pop(context);
             setState(() {
@@ -626,18 +615,22 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
             });
           },
           width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         ),
         DialogButton(
           color: Colors.red,
           radius: const BorderRadius.all(Radius.circular(10)),
-          child: const Text(
-            "Cancel",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
           onPressed: () async {
             Navigator.pop(context);
           },
           width: 120,
+          child: const Text(
+            "Cancel",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();
@@ -648,11 +641,6 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
       padding: const EdgeInsets.only(right: 10.0),
       child: PopupMenuButton(
         tooltip: 'Menu',
-        child: const Icon(
-          Icons.more_vert,
-          size: 28.0,
-          color: Colors.black,
-        ),
         offset: const Offset(20, 40),
         itemBuilder: (context) => [
           PopupMenuItem(
@@ -707,6 +695,11 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
             ),
           ),
         ],
+        child: const Icon(
+          Icons.more_vert,
+          size: 28.0,
+          color: Colors.black,
+        ),
       ),
     );
   }
