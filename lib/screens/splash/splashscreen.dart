@@ -217,7 +217,7 @@ class _SplashScreenState extends State<SplashScreen> {
               textAlign: TextAlign.center,
               textStyle: const TextStyle(
                 fontSize: 30.0,
-                //fontFamily: 'Pacifico',
+                fontFamily: "ChicagoMakersPersonalUse",
                 fontWeight: FontWeight.bold,
               ),
               boxHeight: 150.0,

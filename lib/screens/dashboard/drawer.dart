@@ -1,5 +1,6 @@
 import 'package:tfsappv1/screens/POSmanagement/posRegistration.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
+import 'package:tfsappv1/screens/digitalSignature/digitalsignature.dart';
 import 'package:tfsappv1/screens/loginway.dart/loginway.dart';
 import 'package:tfsappv1/screens/updates/updates.dart';
 import 'package:tfsappv1/services/constants.dart';
@@ -68,6 +69,20 @@ class CustomDrawer extends StatelessWidget {
                 ),
                 onTap: () {
                   Navigator.of(context).pop();
+                }),
+            const Divider(
+              color: Colors.black,
+            ),
+            ListTile(
+                title: const Text('Digital Signature',
+                    style: TextStyle(color: Colors.black)),
+                leading: const Icon(
+                  Icons.fingerprint_outlined,
+                  color: Colors.black,
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.pushNamed(context, SignatureScreen.routeName);
                 }),
             const Divider(
               color: Colors.black,

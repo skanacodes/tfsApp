@@ -4,12 +4,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:sizer/sizer.dart';
 import 'package:tfsappv1/screens/login/login.dart';
+import 'package:tfsappv1/services/constants.dart';
 
 import 'package:tfsappv1/services/routes.dart';
 import 'package:tfsappv1/services/theme.dart';
@@ -17,6 +19,7 @@ import 'package:tfsappv1/screens/splash/splashscreen.dart';
 import 'package:workmanager/workmanager.dart';
 
 const simplePeriodicTask = "simplePeriodicTask";
+FlutterLocalNotificationsPlugin? flutterNotificationPlugin;
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -57,6 +60,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   Timer? _timer;
   bool forceLogout = false;
+  String role = "";
   final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
@@ -124,31 +128,198 @@ void callbackDispatcher() {
     HttpOverrides.global = MyHttpOverrides();
     switch (task) {
       case simplePeriodicTask:
-        _determinePosition();
         final prefs = await SharedPreferences.getInstance();
-        var on = prefs.getString("power_on").toString();
-        var deviceId = prefs.getString("deviceId").toString();
-        var lat = prefs.getString("latitude").toString();
-        var long = prefs.getString("longitude").toString();
 
-        var url = Uri.parse(
-          'http://41.59.82.189:5555/api/v1/pos-management',
-        );
-        final response = await http.post(url, body: {
-          "android_id": deviceId,
-          "power_on": on,
-          "last_seen": DateTime.now().toString(),
-          "latitude": lat,
-          "longitude": long
-        });
-        //final sharedP prefs=await
-         print(response.statusCode);
-        // print(response.body.toString());
+        String? role1 = prefs.getString('role1').toString();
+        print(role1);
+        String? role2 = prefs.getString('role2').toString();
+        print(role2);
+        String? role3 = prefs.getString('role3').toString();
+        print(role3);
+        List roles = [role1, role2, role3];
+        print(roles);
+        print("Notify Begin");
+        if (roles.contains("HQ Officer")) {
+          var url = Uri.parse('$baseUrl/api/v1/exp_appr_req/notification');
 
-        print("$simplePeriodicTask was executed");
-        break;
+          final response = await http.get(
+            url,
+          );
+
+          var res;
+
+          //final sharedP prefs=await
+          // print(response.statusCode);
+          // print(response.body);
+
+          if (response.statusCode == 200) {
+            res = json.decode(response.body);
+            print(res);
+            if (res["success"]) {
+              List resp = res["data"];
+              // print(res);
+              var initializationSettingsAndroid =
+                  const AndroidInitializationSettings('app_icon');
+
+              var initializationSettings = InitializationSettings(
+                android: initializationSettingsAndroid,
+              );
+              print("Notify Middle");
+              flutterNotificationPlugin = FlutterLocalNotificationsPlugin();
+
+              flutterNotificationPlugin!.initialize(
+                initializationSettings,
+              );
+
+              for (var i = 0; i < resp.length; i++) {
+                resp[i]["number"] > 0
+                    ? await notificationDefaultSound(
+                        index: i.toString(),
+                        body:
+                            'Request for ${resp[i]["type"]} Approval - ${resp[i]["number"]}',
+                        title: resp[i]["number"].toString())
+                    : null;
+                print("Notify");
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  print("Delay");
+                });
+              }
+            } else {
+              print("Notification Failed To Launch");
+            }
+          } else {
+            print("API Failed To Launch");
+          }
+        } else if (roles.contains("ZM")) {
+          String? zoneId = prefs.getString('zoneId').toString();
+          var url = Uri.parse('$baseUrl/api/v1/tp/notification/$zoneId');
+
+          final response = await http.get(
+            url,
+          );
+
+          var res;
+
+          //final sharedP prefs=await
+          // print(response.statusCode);
+          // print(response.body);
+
+          if (response.statusCode == 200) {
+            res = json.decode(response.body);
+            print(res);
+            if (res["success"]) {
+              List resp = res["data"];
+              // print(res);
+              var initializationSettingsAndroid =
+                  const AndroidInitializationSettings('app_icon');
+
+              var initializationSettings = InitializationSettings(
+                android: initializationSettingsAndroid,
+              );
+              print("Notify Middle");
+              flutterNotificationPlugin = FlutterLocalNotificationsPlugin();
+
+              flutterNotificationPlugin!.initialize(
+                initializationSettings,
+              );
+
+              for (var i = 0; i < resp.length; i++) {
+                resp[i]["number"] > 0
+                    ? await notificationDefaultSound(
+                        index: i.toString(),
+                        body:
+                            'Request for TP ${resp[i]["type"]} - ${resp[i]["number"]}',
+                        title: "")
+                    : null;
+                print("Notify");
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  print("Delay");
+                });
+              }
+            } else {
+              print("Notification Failed To Launch");
+            }
+          } else {
+            print("API Failed To Launch");
+          }
+        } else {
+          _determinePosition();
+          final prefs = await SharedPreferences.getInstance();
+          var on = prefs.getString("power_on").toString();
+          var deviceId = prefs.getString("deviceId").toString();
+          var lat = prefs.getString("latitude").toString();
+          var long = prefs.getString("longitude").toString();
+
+          var url = Uri.parse(
+            'http://41.59.82.189:5555/api/v1/pos-management',
+          );
+          final response = await http.post(url, body: {
+            "android_id": deviceId,
+            "power_on": on,
+            "last_seen": DateTime.now().toString(),
+            "latitude": lat,
+            "longitude": long
+          });
+          //final sharedP prefs=await
+          print(response.statusCode);
+          // print(response.body.toString());
+
+          print("$simplePeriodicTask was executed");
+          break;
+        }
+
+      //       String? role1 = SharedPreferences.getInstance()
+      //           .then((prefs) => prefs.getString('role1'))
+      //           .toString();
+      //       String? role2 = SharedPreferences.getInstance()
+      //           .then((prefs) => prefs.getString('role2'))
+      //           .toString();
+      //       String? role3 = SharedPreferences.getInstance()
+      //           .then((prefs) => prefs.getString('role3'))
+      //           .toString();
+      //       List roles = [role1, role2, role3];
+      //       if (roles.contains("HQ Officer")) {
+      //         print("Notify Begin");
+      //         var initializationSettingsAndroid =
+      //             const AndroidInitializationSettings('app_icon');
+
+      //         var initializationSettings = InitializationSettings(
+      //           android: initializationSettingsAndroid,
+      //         );
+      //         print("Notify Middle");
+      //         flutterNotificationPlugin = FlutterLocalNotificationsPlugin();
+
+      //         flutterNotificationPlugin!.initialize(
+      //           initializationSettings,
+      //         );
+      //         await notificationDefaultSound();
+      //         print("Notify");
+      //       } else {
+      //         _determinePosition();
+      //         final prefs = await SharedPreferences.getInstance();
+      //         var on = prefs.getString("power_on").toString();
+      //         var deviceId = prefs.getString("deviceId").toString();
+      //         var lat = prefs.getString("latitude").toString();
+      //         var long = prefs.getString("longitude").toString();
+
+      //         var url = Uri.parse(
+      //           'http://41.59.82.189:5555/api/v1/pos-management',
+      //         );
+      //         final response = await http.post(url, body: {
+      //           "android_id": deviceId,
+      //           "power_on": on,
+      //           "last_seen": DateTime.now().toString(),
+      //           "latitude": lat,
+      //           "longitude": long
+      //         });
+      //         //final sharedP prefs=await
+      //         print(response.statusCode);
+      //         // print(response.body.toString());
+
+      //         print("$simplePeriodicTask was executed");
+      //         break;
+      //       }
     }
-
     return Future.value(true);
   });
 }
@@ -217,4 +388,34 @@ Future<Position> _determinePosition() async {
     print(e.toString());
   }
   return x;
+}
+
+Future notificationDefaultSound(
+    {String? title, String? body, String? index}) async {
+  var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    index.toString(),
+    'Channel Name',
+    channelDescription: 'Description',
+    importance: Importance.max,
+    priority: Priority.high,
+    enableVibration: true,
+    playSound: true,
+    groupKey: index,
+    setAsGroupSummary: true,
+    visibility: NotificationVisibility.public,
+  );
+
+  // var iOSPlatformChannelSpecifics = const IOSNotificationDetails();
+
+  var platformChannelSpecifics = NotificationDetails(
+    android: androidPlatformChannelSpecifics,
+  );
+
+  flutterNotificationPlugin!.show(
+    int.parse(index.toString()),
+    '$body',
+    '',
+    platformChannelSpecifics,
+    payload: 'Default Sound',
+  );
 }

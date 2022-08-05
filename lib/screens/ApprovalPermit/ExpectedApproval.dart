@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_typing_uninitialized_variables, avoid_print, file_names
+// ignore_for_file: file_names
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -6,22 +6,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizer/sizer.dart';
 import 'package:tfsappv1/screens/ApprovalPermit/ApprovalDetails.dart';
+import 'package:tfsappv1/screens/ApprovalPermit/AprovalTimeline.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
-class ApprovalPermitt extends StatefulWidget {
-  static String routeName = "/approvalPermit";
-  const ApprovalPermitt({Key? key}) : super(key: key);
+class ExpectedApprovals extends StatefulWidget {
+  static String routeName = "/approvalTimeline";
+  const ExpectedApprovals({Key? key}) : super(key: key);
 
   @override
-  State<ApprovalPermitt> createState() => _ApprovalPermittState();
+  State<ExpectedApprovals> createState() => _ExpectedApprovalsState();
 }
 
-class _ApprovalPermittState extends State<ApprovalPermitt> {
+class _ExpectedApprovalsState extends State<ExpectedApprovals> {
   bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
   String? comment;
+  List timeLine = [];
   // ignore: non_constant_identifier_names
   List Data = [];
   Future getData() async {
@@ -43,9 +46,11 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            // print(res);
             Data = res["data"];
-            print(res);
+            // for (var i = 0; i < Data.length; i++) {
+            //   timeLine.add()
+            // }
             isLoading = false;
           });
 
@@ -249,9 +254,9 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text(
-          'Approval Request' " ( ${Data.length}  )",
-          style: const TextStyle(
-              color: Colors.black, fontFamily: 'ubuntu', fontSize: 17),
+          'Approval Request(s) Timeline' " (${Data.length})",
+          style: TextStyle(
+              color: Colors.white, fontFamily: 'ubuntu', fontSize: 11.sp),
         ),
         backgroundColor: kPrimaryColor,
       ),
@@ -286,11 +291,61 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ApprovalDetails(
-                                            data: [Data[index]],
-                                          ))).then((value) async {
-                                await getData();
-                              });
+                                      builder: (context) => ApprovalTimeline(
+                                            data: [
+                                              Data[index]["review_time"]
+                                                          .toString() ==
+                                                      "null"
+                                                  ? ""
+                                                  : DateTime.now()
+                                                              .difference(DateTime
+                                                                  .parse(Data[index]
+                                                                          [
+                                                                          "review_time"]
+                                                                      .toString()))
+                                                              .inDays
+                                                              .toString() ==
+                                                          "0"
+                                                      ? Data[index]
+                                                              ["review_time"]
+                                                          .toString()
+                                                      : "${DateTime.now().difference(DateTime.parse(Data[index]["review_time"].toString())).inDays} day(s) ago",
+                                              Data[index]["assessment_time"]
+                                                          .toString() ==
+                                                      "null"
+                                                  ? ""
+                                                  : DateTime.now()
+                                                              .difference(DateTime
+                                                                  .parse(Data[index]
+                                                                          [
+                                                                          "assessment_time"]
+                                                                      .toString()))
+                                                              .inDays
+                                                              .toString() ==
+                                                          "0"
+                                                      ? Data[index][
+                                                              "assessment_time"]
+                                                          .toString()
+                                                      : "${DateTime.now().difference(DateTime.parse(Data[index]["assessment_time"].toString())).inDays} day(s) ago",
+                                              Data[index]["submission_time"]
+                                                          .toString() ==
+                                                      "null"
+                                                  ? ""
+                                                  : DateTime.now()
+                                                              .difference(DateTime
+                                                                  .parse(Data[index]
+                                                                          [
+                                                                          "submission_time"]
+                                                                      .toString()))
+                                                              .inDays
+                                                              .toString() ==
+                                                          "0"
+                                                      ? Data[index][
+                                                              "submission_time"]
+                                                          .toString()
+                                                      : "${DateTime.now().difference(DateTime.parse(Data[index]["submission_time"].toString())).inDays} day(s) ago",
+                                            ],
+                                          )));
                             },
                             child: Container(
                               padding: const EdgeInsets.all(10),
@@ -364,12 +419,29 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
                                                           color: Colors
                                                               .grey[500])),
                                                   Text(
-                                                      "Approval Type: ${Data[index]["approval_type"].toUpperCase()}",
+                                                      Data[index]["submission_time"]
+                                                                  .toString() ==
+                                                              "null"
+                                                          ? ""
+                                                          : "Submission Time: ${DateTime.now().difference(DateTime.parse(Data[index]["submission_time"].toString())).inDays} day(s) ago",
                                                       style: TextStyle(
                                                           color: Colors
                                                               .grey[500])),
                                                   Text(
-                                                      "Station to be Issued: ${Data[index]["station_name"]}",
+                                                      Data[index]["assessment_time"]
+                                                                  .toString() ==
+                                                              "null"
+                                                          ? ""
+                                                          : "Assessment Time: ${Data[index]["assessment_time"]}",
+                                                      style: TextStyle(
+                                                          color: Colors
+                                                              .grey[500])),
+                                                  Text(
+                                                      Data[index]["review_time"]
+                                                                  .toString() ==
+                                                              "null"
+                                                          ? ""
+                                                          : "Review Time: ${Data[index]["review_time"]}",
                                                       style: TextStyle(
                                                           color: Colors
                                                               .grey[500])),

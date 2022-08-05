@@ -187,10 +187,12 @@ class _LoginWayState extends State<LoginWay> {
                                               child: Text(
                                                 'Fremis Sign In',
                                                 style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 13.sp,
-                                                  // fontWeight: FontWeight.w600,
-                                                ),
+                                                    color: Colors.white,
+                                                    fontSize: 13.sp,
+                                                    fontFamily:
+                                                        "ChicagoMakersPersonalUse"
+                                                    // fontWeight: FontWeight.w600,
+                                                    ),
                                               ),
                                             ),
                                           ),
@@ -233,9 +235,10 @@ class _LoginWayState extends State<LoginWay> {
                                               child: Text(
                                                 'PMIS Sign In',
                                                 style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 13.sp,
-                                                ),
+                                                    color: Colors.white,
+                                                    fontSize: 13.sp,
+                                                    fontFamily:
+                                                        "ChicagoMakersPersonalUse"),
                                               ),
                                             ),
                                           ),
@@ -278,9 +281,10 @@ class _LoginWayState extends State<LoginWay> {
                                               child: Text(
                                                 'HoneyTraceability Sign In',
                                                 style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 13.sp,
-                                                ),
+                                                    color: Colors.white,
+                                                    fontSize: 13.sp,
+                                                    fontFamily:
+                                                        "ChicagoMakersPersonalUse"),
                                               ),
                                             ),
                                           ),
@@ -323,9 +327,10 @@ class _LoginWayState extends State<LoginWay> {
                                               child: Text(
                                                 'SeedMis Sign In',
                                                 style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 13.sp,
-                                                ),
+                                                    color: Colors.white,
+                                                    fontSize: 13.sp,
+                                                    fontFamily:
+                                                        "ChicagoMakersPersonalUse"),
                                               ),
                                             ),
                                           ),

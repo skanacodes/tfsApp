@@ -1627,39 +1627,119 @@ class _SeedsState extends State<Seeds> {
   Widget _customPopupItemBuilderSeedling(
       BuildContext context, SeedlingModel item, bool isSelected) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: !isSelected
-          ? null
-          : BoxDecoration(
-              border: Border.all(color: kPrimaryColor),
-              borderRadius: BorderRadius.circular(5),
-              color: Colors.white,
-            ),
-      child: Card(
-        elevation: 5,
-        child: ListTile(
-          selected: isSelected,
-          title: Text(item.name),
-          subtitle: Text("Unit Price: ${item.price}"),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Balance",
-                style: TextStyle(color: Colors.blue),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: !isSelected
+            ? null
+            : BoxDecoration(
+                border: Border.all(color: kPrimaryColor),
+                borderRadius: BorderRadius.circular(5),
+                color: Colors.white,
               ),
-              Text("${item.balance}Pcs"),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          margin: const EdgeInsets.only(bottom: 15),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 0,
+                  blurRadius: 5,
+                  offset: const Offset(0, 1),
+                ),
+              ]),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(children: [
+                      SizedBox(
+                          width: 50,
+                          height: 40,
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: CircleAvatar(
+                                radius: 20,
+                                backgroundColor: Colors.grey[200],
+                                child: const Icon(
+                                  Icons.line_weight_outlined,
+                                  color: Colors.black38,
+                                ),
+                              ))),
+                      const SizedBox(width: 10),
+                      Flexible(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("name${item.name}",
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500)),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Text("Price${item.price}",
+                                  style: TextStyle(color: Colors.grey[500])),
+                            ]),
+                      )
+                    ]),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        //job.isMyFav = !job.isMyFav;
+                      });
+                    },
+                    child: AnimatedContainer(
+                        height: 35,
+                        padding: const EdgeInsets.all(5),
+                        duration: const Duration(milliseconds: 300),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.yellow.shade100)),
+                        child: const Center(
+                            child: Icon(
+                          Icons.arrow_forward_ios,
+                          color: kPrimaryColor,
+                        ))),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 15),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: Colors.grey.shade200),
+                          child: Text(
+                            "Balance: ${item.balance}",
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
-          tileColor: const Color(0xfff3f3f4),
-          leading: const CircleAvatar(
-              backgroundColor: Colors.grey,
-              child: Icon(
-                Icons.nature_outlined,
-              )),
-        ),
-      ),
-    );
+        ));
   }
 
   Widget _customPopupItemBuilderSeed(
@@ -1762,7 +1842,7 @@ class _SeedsState extends State<Seeds> {
         options: Options(headers: headers));
 
     final data = response.data;
-    //print(data);
+    print(data);
     if (data != null) {
       setState(() {
         // datas = data[];

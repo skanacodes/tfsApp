@@ -58,8 +58,7 @@ class _PaymentListState extends State<PaymentList> {
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url;
       widget.system == "PMIS"
-          ? url =
-              Uri.parse('https://mis.tfs.go.tz/pmis/api/Bill/AccountsPayments')
+          ? url = Uri.parse('$baseUrlPMIS/api/Bill/AccountsPayments')
           : url = Uri.parse('$baseUrlTest/api/v1/paid-bills/$stationId');
       final response = await http.get(url, headers: headers);
       var res;
@@ -407,12 +406,68 @@ class _PaymentListState extends State<PaymentList> {
     _refreshController.loadComplete();
   }
 
+  Future searchDataPMIS() async {
+    BigInt controlNumber = BigInt.parse(controlNo.toString());
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      print(controlNumber);
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      //print(tokens);
+      var headers = {"Authorization": "Bearer ${tokens!}"};
+      var url = Uri.parse(
+        '$baseUrlPMIS/api/Bill/SearchAccountsPayments/$controlNumber',
+      );
+
+      final response = await http.get(
+        url,
+        headers: headers,
+      );
+      var res;
+      //final sharedP prefs=await
+      print(response.statusCode);
+      print(response.body);
+      switch (response.statusCode) {
+        case 200:
+          setState(() {
+            res = json.decode(response.body);
+
+            data = res["Result"]['data'];
+            isLoading = false;
+          });
+
+          break;
+
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            //////print(res);
+            isLoading = false;
+            messages('Ohps! Something Went Wrong', 'error');
+          });
+
+          break;
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        //////print(e);
+        messages('Server Or Connectivity Error', 'error');
+      });
+    }
+    _refreshController.refreshCompleted();
+  }
+
   messages(
     String type,
     String desc,
   ) {
     return Alert(
-      style: AlertStyle(descStyle: TextStyle(fontSize: 13.sp)),
+      style: AlertStyle(
+          descStyle: TextStyle(
+              fontSize: 10.sp, fontFamily: "Ubuntu", color: Colors.black54)),
       context: context,
       type: type == 'success'
           ? AlertType.success
@@ -472,7 +527,9 @@ class _PaymentListState extends State<PaymentList> {
                               //////print(controlNo);
                               widget.system == "Fremis"
                                   ? await searchDataFremis()
-                                  : await searchData();
+                                  : widget.system == "PMIS"
+                                      ? await searchDataPMIS()
+                                      : await searchData();
                             }
                           },
                           child: const Icon(
@@ -529,7 +586,7 @@ class _PaymentListState extends State<PaymentList> {
       ),
       body: SingleChildScrollView(
         child: SizedBox(
-          height: getProportionateScreenHeight(700),
+          height: getProportionateScreenHeight(900),
           child: SmartRefresher(
             enablePullDown: true,
             enablePullUp: true,
@@ -617,7 +674,7 @@ class _PaymentListState extends State<PaymentList> {
                               ),
                             )
                           : Container(
-                              height: getProportionateScreenHeight(530),
+                              height: getProportionateScreenHeight(750),
                               color: Colors.white,
                               child: AnimationLimiter(
                                 child: ListView.builder(
@@ -631,103 +688,342 @@ class _PaymentListState extends State<PaymentList> {
                                       child: SlideAnimation(
                                         verticalOffset: 50.0,
                                         child: FadeInAnimation(
-                                          child: Card(
-                                            elevation: 10,
-                                            shadowColor: Colors.grey,
-                                            child: ListTile(
-                                              onTap: () async {
-                                                var station =
-                                                    await SharedPreferences
-                                                            .getInstance()
-                                                        .then((prefs) =>
-                                                            prefs.getString(
-                                                                'StationName'));
+                                          child: InkWell(
+                                            onTap: (() async {
+                                              var station =
+                                                  await SharedPreferences
+                                                          .getInstance()
+                                                      .then((prefs) =>
+                                                          prefs.getString(
+                                                              'StationName'));
 
-                                                data[index]["IsPrinted"]
-                                                            .toString() ==
-                                                        "1"
-                                                    ? messages("info",
-                                                        "control No:  ${data[index]["ControlNumber"]} \nReceipt No:  ${data[index]["ReceiptNumber"]} \nPayer Name:  ${data[index]["DealerName"]} \nBill Amount:  ${data[index]["BillAmount"]} \nBill Desc:  ${data[index]["BillDesc"]} \n")
-                                                    : Navigator.pushNamed(
-                                                            context,
-                                                            Payments.routeName,
-                                                            arguments: ReceiptScreenArguments(
-                                                                data[index]["DealerName"].toString(),
-                                                                data[index]["ControlNumber"].toString(),
-                                                                data[index]["ReceiptNumber"].toString(),
-                                                                widget.system == "E-Auction" || widget.system == "PMIS"
-                                                                    ? data[index]["BillAmount"]
-                                                                    : widget.system == "honeytraceability"
-                                                                        ? data[index]["BillAmount"].toDouble()
-                                                                        : double.parse(data[index]["BillAmount"]),
-                                                                false,
-                                                                data[index]["BillDesc"].toString(),
-                                                                data[index]["issuer"].toString(),
-                                                                bankReceipt: data[index]["bank_receipt_no"].toString(),
-                                                                payedDate: data[index]["TrasDateTime"].toString(),
-                                                                plotname: widget.system == "E-Auction" ? data[index]["PlotName"].toString() : "null",
-                                                                station: widget.system == "E-Auction" ? data[index]["Station"].toString() : station,
-                                                                isPrinted: data[index]["IsPrinted"] == 0 ? false : true,
-                                                                system: widget.system,
-                                                                currency: data[index]["currency"].toString(),
-                                                                billId: data[index]["BillId"].toString()))
-                                                        .then((value) async {
-                                                        setState(() {
-                                                          isLoading = true;
-                                                        });
-                                                        widget.system ==
-                                                                "seedmis"
-                                                            ? getDataSeed()
-                                                            : widget.system ==
-                                                                    "honeytraceability"
-                                                                ? getDataHoneyTraceability()
-                                                                : widget.system ==
-                                                                        "E-Auction"
-                                                                    ? getDataEAuction()
-                                                                    : getData();
-
-                                                        setState(() {
-                                                          isLoading = false;
-                                                        });
+                                              data[index]["IsPrinted"].toString() ==
+                                                      "1"
+                                                  ? messages("info",
+                                                      "control No:  ${data[index]["ControlNumber"]} \nReceipt No:  ${data[index]["ReceiptNumber"]} \nPayer Name:  ${data[index]["DealerName"]} \nBill Amount:  ${data[index]["BillAmount"]} \nBill Desc:  ${data[index]["BillDesc"]} \n")
+                                                  : Navigator.pushNamed(context,
+                                                          Payments.routeName,
+                                                          arguments:
+                                                              ReceiptScreenArguments(
+                                                                  data[index]["DealerName"]
+                                                                      .toString(),
+                                                                  data[index]["ControlNumber"]
+                                                                      .toString(),
+                                                                  data[index]["ReceiptNumber"]
+                                                                      .toString(),
+                                                                  widget.system == "E-Auction" ||
+                                                                          widget.system ==
+                                                                              "PMIS"
+                                                                      ? data[index][
+                                                                          "BillAmount"]
+                                                                      : widget.system ==
+                                                                              "honeytraceability"
+                                                                          ? data[index]["BillAmount"]
+                                                                              .toDouble()
+                                                                          : double.parse(data[index][
+                                                                              "BillAmount"]),
+                                                                  false,
+                                                                  data[index]["BillDesc"]
+                                                                      .toString(),
+                                                                  data[index]
+                                                                          ["issuer"]
+                                                                      .toString(),
+                                                                  bankReceipt: data[index]["bank_receipt_no"].toString(),
+                                                                  payedDate: data[index]["TrasDateTime"].toString(),
+                                                                  plotname: widget.system == "E-Auction" ? data[index]["PlotName"].toString() : "null",
+                                                                  station: widget.system == "E-Auction" ? data[index]["Station"].toString() : station,
+                                                                  isPrinted: data[index]["IsPrinted"] == 0 ? false : true,
+                                                                  system: widget.system,
+                                                                  currency: data[index]["currency"].toString(),
+                                                                  billId: data[index]["BillId"].toString()))
+                                                      .then((value) async {
+                                                      setState(() {
+                                                        isLoading = true;
                                                       });
-                                              },
-                                              trailing: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: const [
-                                                  Icon(
-                                                    Icons
-                                                        .arrow_forward_ios_sharp,
-                                                    color: kPrimaryColor,
-                                                    size: 15,
-                                                  ),
-                                                ],
-                                              ),
-                                              leading: IntrinsicHeight(
-                                                  child: SizedBox(
-                                                      height: double.maxFinite,
-                                                      width:
-                                                          getProportionateScreenHeight(
-                                                              50),
+                                                      widget.system == "seedmis"
+                                                          ? getDataSeed()
+                                                          : widget.system ==
+                                                                  "honeytraceability"
+                                                              ? getDataHoneyTraceability()
+                                                              : widget.system ==
+                                                                      "E-Auction"
+                                                                  ? getDataEAuction()
+                                                                  : getData();
+
+                                                      setState(() {
+                                                        isLoading = false;
+                                                      });
+                                                    });
+                                            }),
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8, right: 8),
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(5),
+                                                margin: const EdgeInsets.only(
+                                                    bottom: 10),
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    color: Colors.white,
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.grey
+                                                            .withOpacity(0.5),
+                                                        spreadRadius: 0,
+                                                        blurRadius: 5,
+                                                        offset:
+                                                            const Offset(0, 1),
+                                                      ),
+                                                    ]),
+                                                child: Column(
+                                                  children: [
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Expanded(
+                                                          child: Row(children: [
+                                                            SizedBox(
+                                                                width: 40,
+                                                                height: 40,
+                                                                child:
+                                                                    ClipRRect(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              20),
+                                                                  child: IntrinsicHeight(
+                                                                      child: SizedBox(
+                                                                          height: double.maxFinite,
+                                                                          width: getProportionateScreenHeight(40),
+                                                                          child: Row(
+                                                                            children: [
+                                                                              VerticalDivider(
+                                                                                color: index.isEven ? kPrimaryColor : Colors.green[200],
+                                                                                thickness: 5,
+                                                                              )
+                                                                            ],
+                                                                          ))),
+                                                                )),
+                                                            Flexible(
+                                                              child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                        "Name: ${data[index]["DealerName"]}",
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.black87,
+                                                                            fontSize: 11.sp,
+                                                                            fontWeight: FontWeight.w500)),
+                                                                    const SizedBox(
+                                                                      height: 5,
+                                                                    ),
+                                                                    Text(
+                                                                        "Control #: ${data[index]["ControlNumber"]}",
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.grey[500])),
+                                                                  ]),
+                                                            )
+                                                          ]),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
                                                         children: [
-                                                          VerticalDivider(
-                                                            color: index.isEven
-                                                                ? kPrimaryColor
-                                                                : Colors
-                                                                    .green[200],
-                                                            thickness: 5,
-                                                          )
+                                                          Expanded(
+                                                            flex: 4,
+                                                            child: Container(
+                                                              padding: const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical: 8,
+                                                                  horizontal:
+                                                                      10),
+                                                              decoration: BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
+                                                                  color: Colors
+                                                                      .grey
+                                                                      .shade200),
+                                                              child: data[index]
+                                                                              [
+                                                                              "IsPrinted"]
+                                                                          .toString() ==
+                                                                      "0"
+                                                                  ? const Text(
+                                                                      "Printing Status: Not Printed",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .black54,
+                                                                      ),
+                                                                    )
+                                                                  : const Text(
+                                                                      "Printing Status: Printed",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .black54,
+                                                                      ),
+                                                                    ),
+                                                            ),
+                                                          ),
+                                                          const Spacer(
+                                                            flex: 2,
+                                                          ),
+                                                          Expanded(
+                                                              flex: 1,
+                                                              child:
+                                                                  CircleAvatar(
+                                                                radius: 13.sp,
+                                                                backgroundColor:
+                                                                    Colors.grey[
+                                                                        200],
+                                                                child: data[index]["IsPrinted"]
+                                                                            .toString() ==
+                                                                        "0"
+                                                                    ? Icon(
+                                                                        Icons
+                                                                            .radio_button_unchecked_outlined,
+                                                                        color: Colors
+                                                                            .red,
+                                                                        size: 13
+                                                                            .sp,
+                                                                      )
+                                                                    : Icon(
+                                                                        Icons
+                                                                            .check_circle_outline,
+                                                                        color:
+                                                                            kPrimaryColor,
+                                                                        size: 13
+                                                                            .sp,
+                                                                      ),
+                                                              )),
                                                         ],
-                                                      ))),
-                                              title: Text(
-                                                "Name: ${data[index]["DealerName"]}",
-                                              ),
-                                              subtitle: Text(
-                                                "Control #: ${data[index]["ControlNumber"]}",
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
+                                          // Card(
+                                          //   elevation: 10,
+                                          //   shadowColor: Colors.grey,
+                                          //   child:
+                                          //   ListTile(
+                                          //     onTap: () async {
+                                          //       var station =
+                                          //           await SharedPreferences
+                                          //                   .getInstance()
+                                          //               .then((prefs) =>
+                                          //                   prefs.getString(
+                                          //                       'StationName'));
+
+                                          //       data[index]["IsPrinted"]
+                                          //                   .toString() ==
+                                          //               "1"
+                                          //           ? messages("info",
+                                          //               "control No:  ${data[index]["ControlNumber"]} \nReceipt No:  ${data[index]["ReceiptNumber"]} \nPayer Name:  ${data[index]["DealerName"]} \nBill Amount:  ${data[index]["BillAmount"]} \nBill Desc:  ${data[index]["BillDesc"]} \n")
+                                          //           : Navigator.pushNamed(
+                                          //                   context,
+                                          //                   Payments.routeName,
+                                          //                   arguments: ReceiptScreenArguments(
+                                          //                       data[index]["DealerName"].toString(),
+                                          //                       data[index]["ControlNumber"].toString(),
+                                          //                       data[index]["ReceiptNumber"].toString(),
+                                          //                       widget.system == "E-Auction" || widget.system == "PMIS"
+                                          //                           ? data[index]["BillAmount"]
+                                          //                           : widget.system == "honeytraceability"
+                                          //                               ? data[index]["BillAmount"].toDouble()
+                                          //                               : double.parse(data[index]["BillAmount"]),
+                                          //                       false,
+                                          //                       data[index]["BillDesc"].toString(),
+                                          //                       data[index]["issuer"].toString(),
+                                          //                       bankReceipt: data[index]["bank_receipt_no"].toString(),
+                                          //                       payedDate: data[index]["TrasDateTime"].toString(),
+                                          //                       plotname: widget.system == "E-Auction" ? data[index]["PlotName"].toString() : "null",
+                                          //                       station: widget.system == "E-Auction" ? data[index]["Station"].toString() : station,
+                                          //                       isPrinted: data[index]["IsPrinted"] == 0 ? false : true,
+                                          //                       system: widget.system,
+                                          //                       currency: data[index]["currency"].toString(),
+                                          //                       billId: data[index]["BillId"].toString()))
+                                          //               .then((value) async {
+                                          //               setState(() {
+                                          //                 isLoading = true;
+                                          //               });
+                                          //               widget.system ==
+                                          //                       "seedmis"
+                                          //                   ? getDataSeed()
+                                          //                   : widget.system ==
+                                          //                           "honeytraceability"
+                                          //                       ? getDataHoneyTraceability()
+                                          //                       : widget.system ==
+                                          //                               "E-Auction"
+                                          //                           ? getDataEAuction()
+                                          //                           : getData();
+
+                                          //               setState(() {
+                                          //                 isLoading = false;
+                                          //               });
+                                          //             });
+                                          //     },
+                                          //     trailing: Column(
+                                          //       mainAxisAlignment:
+                                          //           MainAxisAlignment.center,
+                                          //       children: const [
+                                          //         Icon(
+                                          //           Icons
+                                          //               .arrow_forward_ios_sharp,
+                                          //           color: kPrimaryColor,
+                                          //           size: 15,
+                                          //         ),
+                                          //       ],
+                                          //     ),
+                                          //     leading: IntrinsicHeight(
+                                          //         child: SizedBox(
+                                          //             height: double.maxFinite,
+                                          //             width:
+                                          //                 getProportionateScreenHeight(
+                                          //                     50),
+                                          //             child: Row(
+                                          //               children: [
+                                          //                 VerticalDivider(
+                                          //                   color: index.isEven
+                                          //                       ? kPrimaryColor
+                                          //                       : Colors
+                                          //                           .green[200],
+                                          //                   thickness: 5,
+                                          //                 )
+                                          //               ],
+                                          //             ))),
+                                          //     title: Text(
+                                          //       "Name: ${data[index]["DealerName"]}",
+                                          //     ),
+                                          //     subtitle: Text(
+                                          //       "Control #: ${data[index]["ControlNumber"]}",
+                                          //     ),
+                                          //   ),
+                                          // ),
                                         ),
                                       ),
                                     );

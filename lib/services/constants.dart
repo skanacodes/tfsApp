@@ -57,6 +57,7 @@ var baseUrlSeed = "https://mis.tfs.go.tz/seed-mis";
 var baseUrlPMIS = "https://mis.tfs.go.tz/pmis";
 var baseUrlHoneyTraceability = "https://mis.tfs.go.tz/honey-traceability";
 String filepathImages = "assets/images/";
+String filepathIcons = "assets/icons/";
 final headingStyle = TextStyle(
   fontSize: getProportionateScreenWidth(28),
   fontWeight: FontWeight.bold,

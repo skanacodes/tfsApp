@@ -4,20 +4,29 @@ class SeedlingModel {
   final String name;
   final String balance;
   final String price;
+  final String type;
+  final String category;
+  final String size;
   final String id;
 
   SeedlingModel(
       {required this.name,
       required this.id,
       required this.price,
-      required this.balance});
+      required this.balance,
+      required this.category,
+      required this.size,
+      required this.type});
 
   factory SeedlingModel.fromJson(Map<String, dynamic> json) {
     return SeedlingModel(
         name: json["seedling_name"].toString(),
         price: json["price"].toString(),
         id: json["id"].toString(),
-        balance: json["balance"].toString());
+        balance: json["balance"].toString(),
+        category: json["seedling_category"].toString(),
+        size: json["seedling_size"].toString(),
+        type: json["seedling_type"].toString());
   }
 
   static List<SeedlingModel> fromJsonList(List list) {

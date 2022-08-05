@@ -66,24 +66,33 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       //     .then((prefs) => prefs.getString('email').toString());
       //       String id = await SharedPreferences.getInstance()
       // .then((prefs) => prefs.getInt('email').toString());
-
-      //print(email);
+      print(controlNumber);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer ${tokens!}"};
+      print(tokens);
+      var headers = {
+        "Authorization": "Bearer ${tokens!}",
+        "Accept": "application/json",
+        "content-type": "application/json"
+      };
       var url = systemtype == "honeytraceability"
           ? Uri.parse('$baseUrlHoneyTraceability/api/v1/updatePrintStatus')
           : systemtype == "seedmis"
               ? Uri.parse('$baseUrlSeed/api/v1/updatePrintStatus')
-              : Uri.parse('$baseUrlTest/api/v1/print_status');
+              : systemtype == "PMIS"
+                  ? Uri.parse('$baseUrlPMIS/api/Bill/UpdatePrintStatus')
+                  : Uri.parse('$baseUrlTest/api/v1/print_status');
       //print(billId);
       // var url =
       //     Uri.parse('http://mis.tfs.go.tz/e-auction/api/v1/Bill/PrintReceipt');
+      print(url);
       final response = await http.post(url,
-          body: {"control_number": controlNumber}, headers: headers);
+          body: json.encode({"control_number": controlNumber}),
+          headers: headers);
       var res;
       //final sharedP prefs=await
-      //print(response.statusCode);
+      print(response.statusCode);
+      print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
@@ -355,14 +364,14 @@ class _PaymentWidgetState extends State<PaymentWidget> {
     isItems
         ? null
         : args.billId == null
-            ? null
+            ? itemsReceipt(args.billId, args.system)
             : itemsReceipt(args.billId, args.system);
 
     return Column(
       children: [
         isReceiptGenerated
             ? Container()
-            : dataItems.isEmpty && !args.isBill
+            : dataItems.isEmpty
                 ? Container()
                 : Padding(
                     padding: const EdgeInsets.fromLTRB(13, 8, 13, 0),
@@ -634,35 +643,31 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                 Divider(
                   color: Colors.grey[400],
                 ),
-                args.isBill
-                    ? Container()
-                    : Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10, right: 10, bottom: 10, top: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            Expanded(
-                                flex: 6,
-                                child: Text('Description ',
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                    ))),
-                            Expanded(
-                              flex: 3,
-                              child: Text('Amount',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                  )),
-                            )
-                          ],
-                        ),
-                      ),
-                args.isBill
-                    ? Container()
-                    : Divider(
-                        color: Colors.grey[400],
-                      ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 10, right: 10, bottom: 10, top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Expanded(
+                          flex: 6,
+                          child: Text('Description ',
+                              style: TextStyle(
+                                color: Colors.grey,
+                              ))),
+                      Expanded(
+                        flex: 3,
+                        child: Text('Amount',
+                            style: TextStyle(
+                              color: Colors.grey,
+                            )),
+                      )
+                    ],
+                  ),
+                ),
+                Divider(
+                  color: Colors.grey[400],
+                ),
                 for (var i = 0; i < dataItems.length; i++)
                   Padding(
                     padding:
@@ -687,11 +692,9 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                       ],
                     ),
                   ),
-                args.isBill
-                    ? Container()
-                    : Divider(
-                        color: Colors.grey[400],
-                      ),
+                Divider(
+                  color: Colors.grey[400],
+                ),
                 Padding(
                   padding:
                       const EdgeInsets.only(left: 10, right: 10, bottom: 10),

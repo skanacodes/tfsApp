@@ -50,7 +50,9 @@ class _AppBarActionItemsState extends State<AppBarActionItems> {
           widget.roles!.contains("HQ Officer")
               ? const CircleAvatar(
                   radius: 20,
-                  backgroundImage: AssetImage("assets/images/dos.jpg"),
+                  backgroundImage: AssetImage(
+                    "assets/images/cc.png",
+                  ),
                 )
               : const CircleAvatar(
                   radius: 20,
@@ -130,7 +132,9 @@ class _AppBarActionItemsState extends State<AppBarActionItems> {
                     left: 5.0,
                   ),
                   child: Text(
-                    widget.roles.toString(),
+                    widget.roles!.contains("HQ Officer")
+                        ? "CC"
+                        : widget.roles.toString(),
                     style: const TextStyle(
                       color: Colors.black,
                     ),

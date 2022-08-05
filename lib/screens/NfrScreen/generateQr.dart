@@ -110,7 +110,7 @@ class _GenerateQrCodeState extends State<GenerateQrCode> {
         );
       }
     } catch (e) {
-      rethrow;
+     
     }
   }
 

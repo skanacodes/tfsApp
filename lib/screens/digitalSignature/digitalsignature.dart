@@ -1,10 +1,10 @@
+// ignore_for_file: avoid_print, prefer_typing_uninitialized_variables
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,10 +15,12 @@ import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
 class SignatureScreen extends StatefulWidget {
+  static String routeName = "/signaturescreen";
   const SignatureScreen({Key? key}) : super(key: key);
 
   @override
-  State<SignatureScreen> createState() => _SignatureScreenState();
+  // ignore: library_private_types_in_public_api
+  _SignatureScreenState createState() => _SignatureScreenState();
 }
 
 class _SignatureScreenState extends State<SignatureScreen> {
@@ -52,30 +54,40 @@ class _SignatureScreenState extends State<SignatureScreen> {
       });
     }
     try {
-      var id = await SharedPreferences.getInstance()
-          .then((prefs) => prefs.getString('id'));
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      var headers = {"Authorization": "Bearer ${tokens!}"};
+
       var dio = Dio();
 
       var formData = FormData.fromMap({
-        'user_id': id,
-        'image': base64Encode(bytes),
+        'signature': base64Encode(bytes),
       });
-      var response = await dio
-          .post('$baseUrlTest/api/FileUpload/UploadSignature', data: formData);
-      //print("gone");
-      //print(response.statusCode);
+      var response = await dio.post('$baseUrl/api/v1/signature',
+          data: formData, options: Options(headers: headers));
+      // print("gone");
+      print(response.statusCode);
+      print(response.data);
       switch (response.statusCode) {
         case 200:
+          var res;
+          setState(() {
+            res = json.decode(response.data);
+          });
+          message("error", res["message"].toString());
+
+          break;
+        case 201:
           message("success", "Signature Was Uploaded Successfully");
 
           break;
         case 500:
-          message("error", "Serve Error");
+          message("error", "Server Error");
           break;
         default:
       }
     } catch (e) {
-      //print(e);
+      print(e);
       message("error", "There Was An Error While Uploading Signature");
     }
 
@@ -93,12 +105,12 @@ class _SignatureScreenState extends State<SignatureScreen> {
       format: ui.ImageByteFormat.png,
     );
     var path = signatureGlobalKey.currentState!.toPathList();
-    //print(path);
+    print(path);
     // getting a directory path for saving
     Directory appDocDir = await getApplicationDocumentsDirectory();
-    //print(appDocDir);
+    print(appDocDir);
     String appDocPath = appDocDir.path;
-    //print(appDocPath);
+    print(appDocPath);
     String imageName = 'mark';
     if (mounted) {
       setState(() {
@@ -109,8 +121,8 @@ class _SignatureScreenState extends State<SignatureScreen> {
         .writeAsBytesSync(byte!.buffer.asInt8List());
     // var tokens = await SharedPreferences.getInstance()
     //     .then((prefs) => prefs.getString('token'));
-    ////print(tokens);
-    // //print(bytes);
+    //print(tokens);
+    // print(bytes);
     if (mounted) {
       setState(() {
         isSigned = true;
@@ -124,6 +136,7 @@ class _SignatureScreenState extends State<SignatureScreen> {
         context: context,
         isScrollControlled: true,
         isDismissible: true,
+        enableDrag: false,
         builder: (context) {
           return SingleChildScrollView(
             child: SizedBox(
@@ -229,7 +242,7 @@ class _SignatureScreenState extends State<SignatureScreen> {
           child: Column(
             children: [
               SizedBox(
-                height: getProportionateScreenHeight(100),
+                height: getProportionateScreenHeight(20),
               ),
               SizedBox(
                 child: Padding(
@@ -258,69 +271,74 @@ class _SignatureScreenState extends State<SignatureScreen> {
                 ),
               ),
               SizedBox(
-                height: getProportionateScreenHeight(100),
+                height: getProportionateScreenHeight(10),
               ),
               Column(
                 children: [
-                  Container(
-                    width: getProportionateScreenWidth(100),
-                    height: getProportionateScreenHeight(70),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40),
-                      boxShadow: [
-                        BoxShadow(
-                          blurRadius: 5,
-                          offset: const Offset(0, 15),
-                          color: Colors.grey[400]!,
-                        )
-                      ],
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Colors.grey[50]!, Colors.grey[100]!],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      width: double.infinity,
+                      height: getProportionateScreenHeight(50),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(40),
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 5,
+                            offset: const Offset(0, 15),
+                            color: Colors.grey[400]!,
+                          )
+                        ],
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Colors.grey[50]!, Colors.grey[100]!],
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () async {
-                              await uploadSign();
-                            },
-                            child: Row(
-                              children: const [
-                                Expanded(child: Center(child: Text("Upload"))),
-                                Expanded(
-                                    child: Icon(
-                                  Icons.upload,
-                                  color: Colors.red,
-                                )),
-                              ],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                await uploadSign();
+                              },
+                              child: Row(
+                                children: const [
+                                  Expanded(
+                                      child: Center(child: Text("Upload"))),
+                                  Expanded(
+                                      child: Icon(
+                                    Icons.upload,
+                                    color: Colors.red,
+                                  )),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        const Spacer(
-                          flex: 1,
-                        ),
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              //signatureGlobalKey.currentState!.clear();
-                            },
-                            child: Row(
-                              children: const [
-                                Expanded(child: Center(child: Text("Delete"))),
-                                Expanded(
-                                    child: Icon(
-                                  Icons.edit,
-                                  color: Colors.blue,
-                                ))
-                              ],
-                            ),
+                          const Spacer(
+                            flex: 1,
                           ),
-                        )
-                      ],
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                //signatureGlobalKey.currentState!.clear();
+                              },
+                              child: Row(
+                                children: const [
+                                  Expanded(
+                                      child: Center(child: Text("Delete"))),
+                                  Expanded(
+                                      child: Icon(
+                                    Icons.edit,
+                                    color: Colors.blue,
+                                  ))
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(

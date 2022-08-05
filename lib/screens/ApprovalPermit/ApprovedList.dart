@@ -6,19 +6,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tfsappv1/screens/ApprovalPermit/ApprovalDetails.dart';
+import 'package:sizer/sizer.dart';
+
+import 'package:tfsappv1/screens/ApprovalPermit/approved_rejected_details.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
-class ApprovalPermitt extends StatefulWidget {
-  static String routeName = "/approvalPermit";
-  const ApprovalPermitt({Key? key}) : super(key: key);
+class ApprovedList extends StatefulWidget {
+  static String routeName = "/approvedList";
+  const ApprovedList({Key? key}) : super(key: key);
 
   @override
-  State<ApprovalPermitt> createState() => _ApprovalPermittState();
+  State<ApprovedList> createState() => _ApprovedListState();
 }
 
-class _ApprovalPermittState extends State<ApprovalPermitt> {
+class _ApprovedListState extends State<ApprovedList> {
   bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
   String? comment;
@@ -32,13 +34,13 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
       var headers = {"Authorization": "Bearer ${tokens!}"};
-      var url = Uri.parse('$baseUrl/api/v1/exp_appr_req/fw');
+      var url = Uri.parse('$baseUrl/api/v1/exp_appr_req/approved');
 
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      // print(response.statusCode);
-      // print(response.body);
+      print(response.statusCode);
+      print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
@@ -249,9 +251,9 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text(
-          'Approval Request' " ( ${Data.length}  )",
-          style: const TextStyle(
-              color: Colors.black, fontFamily: 'ubuntu', fontSize: 17),
+          'Approved Request(s)' " (${Data.length})",
+          style: TextStyle(
+              color: Colors.white, fontFamily: 'ubuntu', fontSize: 12.sp),
         ),
         backgroundColor: kPrimaryColor,
       ),
@@ -286,7 +288,8 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ApprovalDetails(
+                                      builder: (context) =>
+                                          ApprovedRejectedDetails(
                                             data: [Data[index]],
                                           ))).then((value) async {
                                 await getData();
@@ -360,16 +363,6 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
                                                   ),
                                                   Text(
                                                       "Address: ${Data[index]["postal_address"]}",
-                                                      style: TextStyle(
-                                                          color: Colors
-                                                              .grey[500])),
-                                                  Text(
-                                                      "Approval Type: ${Data[index]["approval_type"].toUpperCase()}",
-                                                      style: TextStyle(
-                                                          color: Colors
-                                                              .grey[500])),
-                                                  Text(
-                                                      "Station to be Issued: ${Data[index]["station_name"]}",
                                                       style: TextStyle(
                                                           color: Colors
                                                               .grey[500])),

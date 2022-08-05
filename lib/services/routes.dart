@@ -1,4 +1,6 @@
 import 'package:tfsappv1/screens/ApprovalPermit/ApprovalDetails.dart';
+import 'package:tfsappv1/screens/ApprovalPermit/ApprovedList.dart';
+import 'package:tfsappv1/screens/ApprovalPermit/ExpectedApproval.dart';
 import 'package:tfsappv1/screens/ApprovalPermit/approvalPermit.dart';
 import 'package:tfsappv1/screens/ExportImport/InspectionForm.dart';
 import 'package:tfsappv1/screens/ExportImport/grading.dart';
@@ -12,6 +14,7 @@ import 'package:tfsappv1/screens/NfrScreen/toursList.dart';
 import 'package:tfsappv1/screens/POSmanagement/posRegistration.dart';
 import 'package:tfsappv1/screens/charts/charts_screen.dart';
 import 'package:tfsappv1/screens/dashboard/dashboardScreen.dart';
+import 'package:tfsappv1/screens/digitalSignature/digitalsignature.dart';
 import 'package:tfsappv1/screens/illegalproduct/illegal_product_screen.dart';
 import 'package:tfsappv1/screens/login/login.dart';
 import 'package:tfsappv1/screens/loginway.dart/loginway.dart';
@@ -33,6 +36,7 @@ import 'package:tfsappv1/screens/verification/extensionApprovalWidget.dart';
 import 'package:tfsappv1/screens/verification/extension_approvalscreen.dart';
 import 'package:tfsappv1/screens/verification/licence_edit_details.dart';
 import 'package:tfsappv1/screens/verification/license_screen.dart';
+import 'package:tfsappv1/screens/verification/tpEditingDetails.dart';
 import 'package:tfsappv1/screens/verification/tpEditview.dart';
 import 'package:tfsappv1/screens/verification/tpTimeline.dart';
 import 'package:tfsappv1/screens/verification/tp_editing.dart';
@@ -75,10 +79,14 @@ final Map<String, WidgetBuilder> routes = {
   ExyensionApprovalWidget.routeName: (context) =>
       const ExyensionApprovalWidget(),
   ApprovalPermitt.routeName: (context) => const ApprovalPermitt(),
+  ApprovedList.routeName: (context) => const ApprovedList(),
   ApprovalDetails.routeName: (context) => const ApprovalDetails(),
   ChartsScreen.routeName: ((context) => const ChartsScreen()),
   LicenseEditiScreen.routeName: (context) => const LicenseEditiScreen(),
   LicenseEditShow.routeName: ((context) => const LicenseEditShow()),
   ExtensionView.routeName: (context) => const ExtensionView(),
-  LoginWay.routeName: ((context) => const LoginWay())
+  LoginWay.routeName: ((context) => const LoginWay()),
+  SignatureScreen.routeName: ((context) => const SignatureScreen()),
+  TPEditingDetails.routeName: (context) => const TPEditingDetails(),
+  ExpectedApprovals.routeName: ((context) => const ExpectedApprovals())
 };

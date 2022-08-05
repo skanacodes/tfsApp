@@ -146,8 +146,8 @@ class _BillManagementState extends State<BillManagement> {
 
   @override
   Widget build(BuildContext context) {
-    // String username = arguments.username.toString();
-    final height = MediaQuery.of(context).size.height;
+    final bottom = MediaQuery.of(context).viewInsets.bottom;
+
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
@@ -157,81 +157,84 @@ class _BillManagementState extends State<BillManagement> {
             style: TextStyle(color: Colors.black, fontFamily: 'Ubuntu'),
           ),
         ),
-        body: SizedBox(
-          height: height,
-          child: Column(
-            children: <Widget>[
-              Stack(
-                children: [
-                  Container(
-                    height: getProportionateScreenHeight(70),
-                    color: Colors.white,
-                    // decoration: BoxDecoration(color: Colors.white),
-                  ),
-                  Container(
-                    height: getProportionateScreenHeight(50),
-                    decoration: const BoxDecoration(color: kPrimaryColor),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Card(
-                        elevation: 10,
-                        child: ListTile(
-                          leading: const CircleAvatar(
-                            foregroundColor: kPrimaryColor,
-                            backgroundColor: Colors.black12,
-                            child: Icon(Icons.format_align_center),
+        body: SingleChildScrollView(
+          reverse: true,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: bottom),
+            child: Column(
+              children: <Widget>[
+                Stack(
+                  children: [
+                    Container(
+                      height: getProportionateScreenHeight(70),
+                      color: Colors.white,
+                      // decoration: BoxDecoration(color: Colors.white),
+                    ),
+                    Container(
+                      height: getProportionateScreenHeight(50),
+                      decoration: const BoxDecoration(color: kPrimaryColor),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Card(
+                          elevation: 10,
+                          child: ListTile(
+                            leading: const CircleAvatar(
+                              foregroundColor: kPrimaryColor,
+                              backgroundColor: Colors.black12,
+                              child: Icon(Icons.format_align_center),
+                            ),
+                            title: _title(),
+                            trailing: const Icon(
+                              Icons.api,
+                              color: Colors.pink,
+                            ),
+                            tileColor: Colors.white,
                           ),
-                          title: _title(),
-                          trailing: const Icon(
-                            Icons.api,
-                            color: Colors.pink,
-                          ),
-                          tileColor: Colors.white,
                         ),
                       ),
-                    ),
-                  )
-                ],
-              ),
-              // _divider(),
-              Padding(
-                padding: const EdgeInsets.all(0.0),
-                child: Container(
-                  color: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: AnimationLimiter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: AnimationConfiguration.toStaggeredList(
-                        duration: const Duration(milliseconds: 1375),
-                        childAnimationBuilder: (widget) => SlideAnimation(
-                          horizontalOffset: 50.0,
-                          child: FadeInAnimation(
-                            child: widget,
-                          ),
-                        ),
-                        children: <Widget>[
-                          Container(
-                              height: getProportionateScreenHeight(545),
-                              color: Colors.transparent,
-                              child: widget.system == "HoneyTraceability"
-                                  ? HoneyTraceAbility(seedToken!)
-                                  : widget.system == "Fremis"
-                                      ? const FremisBills()
-                                      : const Seeds(
-                                          "efwu",
-                                        )),
-                        ],
-                      ),
-                    ),
-                  ),
+                    )
+                  ],
                 ),
-              )
-            ],
+                // _divider(),
+                Padding(
+                  padding: const EdgeInsets.all(0.0),
+                  child: Container(
+                    color: Colors.transparent,
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: AnimationLimiter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: AnimationConfiguration.toStaggeredList(
+                          duration: const Duration(milliseconds: 1375),
+                          childAnimationBuilder: (widget) => SlideAnimation(
+                            horizontalOffset: 50.0,
+                            child: FadeInAnimation(
+                              child: widget,
+                            ),
+                          ),
+                          children: <Widget>[
+                            Container(
+                                height: getProportionateScreenHeight(670),
+                                color: Colors.transparent,
+                                child: widget.system == "HoneyTraceability"
+                                    ? HoneyTraceAbility(seedToken!)
+                                    : widget.system == "Fremis"
+                                        ? const FremisBills()
+                                        : const Seeds(
+                                            "",
+                                          )),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ));
   }

@@ -1,6 +1,8 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:tfsappv1/screens/ApprovalPermit/ApprovedList.dart';
+import 'package:tfsappv1/screens/ApprovalPermit/ExpectedApproval.dart';
 import 'package:tfsappv1/screens/ApprovalPermit/approvalPermit.dart';
 import 'package:tfsappv1/services/constants.dart';
 
@@ -45,7 +47,7 @@ class _ManagementOperationState extends State<ManagementOperation> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(" Export Approval"),
+                    const Text(" Approval Request(s)"),
                     CircleAvatar(
                       radius: 15,
                       backgroundColor: Colors.grey[200],
@@ -61,22 +63,55 @@ class _ManagementOperationState extends State<ManagementOperation> {
             const Divider(
               color: Colors.grey,
             ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(" Pending Inspection Request(s)"),
-                  CircleAvatar(
-                    radius: 15,
-                    backgroundColor: Colors.grey[200],
-                    child: const Icon(
-                      Icons.arrow_right,
-                      color: kPrimaryColor,
+            InkWell(
+              onTap: () {
+                Navigator.pushNamed(context, ApprovedList.routeName);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("List of Approved Request"),
+                    CircleAvatar(
+                      radius: 15,
+                      backgroundColor: Colors.grey[200],
+                      child: const Icon(
+                        Icons.arrow_right,
+                        color: kPrimaryColor,
+                      ),
                     ),
-                  )
-                ],
+                  ],
+                ),
               ),
+            ),
+            const Divider(
+              color: Colors.grey,
+            ),
+            InkWell(
+              onTap: (() {
+                Navigator.pushNamed(context, ExpectedApprovals.routeName);
+              }),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Approval Request Timeline"),
+                    CircleAvatar(
+                      radius: 15,
+                      backgroundColor: Colors.grey[200],
+                      child: const Icon(
+                        Icons.arrow_right,
+                        color: kPrimaryColor,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            const Divider(
+              color: Colors.grey,
             ),
           ],
         ),

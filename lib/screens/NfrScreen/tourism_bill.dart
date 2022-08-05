@@ -70,22 +70,22 @@ class _TourismBillScreenState extends State<TourismBillScreen> {
             );
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
-      print(response.body);
+      //print(response.statusCode);
+      //print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
-            print(res);
+            //print(res);
+            //print(res);
             isLoading = false;
           });
           if (res["success"]) {
-            // print(res);
+            // //print(res);
             operation == "create"
                 ? message("success", "Bill Successfully Created!")
                 : message("success", "Successfully Posted");
-            // print("sbdhfsdf");
+            // //print("sbdhfsdf");
             Future.delayed(const Duration(milliseconds: 1000), () {
               setState(() {
                 refreshScreen();
@@ -102,7 +102,7 @@ class _TourismBillScreenState extends State<TourismBillScreen> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
 
             isLoading = false;
 
@@ -113,7 +113,7 @@ class _TourismBillScreenState extends State<TourismBillScreen> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        //print(e);
 
         isLoading = false;
       });
@@ -129,22 +129,22 @@ class _TourismBillScreenState extends State<TourismBillScreen> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      print(tokens);
+      //print(tokens);
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url =
           Uri.parse('$baseUrlTest/api/v1/safari_info/bill-view/${widget.id}');
-      print(widget.id);
+      //print(widget.id);
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
-      print(response.body);
+      //print(response.statusCode);
+      //print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
             data = [res["data"]];
-            ////print(res);
+            //////print(res);
             isLoading = false;
           });
 
@@ -155,7 +155,7 @@ class _TourismBillScreenState extends State<TourismBillScreen> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
 
             isLoading = false;
           });
@@ -164,7 +164,7 @@ class _TourismBillScreenState extends State<TourismBillScreen> {
       }
     } catch (e) {
       setState(() {
-        ////print(e);
+        //////print(e);
 
         isLoading = false;
       });
@@ -180,14 +180,14 @@ class _TourismBillScreenState extends State<TourismBillScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.id);
+    //print(widget.id);
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           "Preview Bill",
           style: TextStyle(
-              color: Colors.black, fontFamily: 'ubuntu', fontSize: 17),
+              color: Colors.white, fontFamily: 'ubuntu', fontSize: 12.sp),
         ),
         backgroundColor: kPrimaryColor,
       ),

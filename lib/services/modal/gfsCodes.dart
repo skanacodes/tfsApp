@@ -2,7 +2,7 @@
 
 class GfsModel {
   final String gfsCode;
-
+  final List distributions;
   final String description;
   final String id;
   final String amount;
@@ -13,7 +13,8 @@ class GfsModel {
       required this.description,
       required this.id,
       required this.amount,
-      required this.levelTwoId});
+      required this.levelTwoId,
+      required this.distributions});
 
   factory GfsModel.fromJson(Map<String, dynamic> json) {
     return GfsModel(
@@ -21,7 +22,8 @@ class GfsModel {
         description: json["description"],
         id: json["id"].toString(),
         amount: json["bill_amount"].toString(),
-        levelTwoId: json["level_two_id"].toString());
+        levelTwoId: json["level_two_id"].toString(),
+        distributions: json["distributions"] ?? []);
   }
 
   static List<GfsModel> fromJsonList(List list) {

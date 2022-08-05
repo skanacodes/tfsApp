@@ -155,8 +155,8 @@ class _InspectionFormState extends State<InspectionForm> {
 
     File('$appDocPath/$imageName.png')
         .writeAsBytesSync(byte!.buffer.asInt8List());
-    var tokens = await SharedPreferences.getInstance()
-        .then((prefs) => prefs.getString('token'));
+    // var tokens = await SharedPreferences.getInstance()
+    //     .then((prefs) => prefs.getString('token'));
     //print(tokens);
     //print(bytes);
 

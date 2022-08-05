@@ -5,6 +5,7 @@ import 'package:tfsappv1/screens/NfrScreen/activities_screen.dart';
 import 'package:tfsappv1/screens/NfrScreen/camping_screen.dart';
 import 'package:tfsappv1/screens/NfrScreen/film_screen.dart';
 import 'package:tfsappv1/screens/NfrScreen/members_screen.dart';
+import 'package:tfsappv1/screens/NfrScreen/permit.dart';
 import 'package:tfsappv1/screens/NfrScreen/tour_guider.dart';
 import 'package:tfsappv1/screens/NfrScreen/tourism_bill.dart';
 import 'package:tfsappv1/screens/NfrScreen/vehicle_screen.dart';
@@ -104,13 +105,22 @@ class _AddSafariDetailsState extends State<AddSafariDetails> {
                 ),
                 actions: Row(
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.all(10.0),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
                       child: InkWell(
-                        child: CircleAvatar(
+                        onTap: (() {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PermittScreen(
+                                      id: widget.data[0]["id"].toString(),
+                                    )),
+                          );
+                        }),
+                        child: const CircleAvatar(
                           backgroundColor: Colors.grey,
                           child: Icon(
-                            Icons.edit,
+                            Icons.email_outlined,
                             color: Colors.white,
                           ),
                         ),

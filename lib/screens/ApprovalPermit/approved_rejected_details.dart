@@ -1,35 +1,34 @@
 // ignore_for_file: file_names, prefer_typing_uninitialized_variables
 
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:tfsappv1/screens/ApprovalPermit/pdfPreviewer.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
-class ApprovalDetails extends StatefulWidget {
-  static String routeName = "/ApprovalDetails";
+class ApprovedRejectedDetails extends StatefulWidget {
+  static String routeName = "/ApprovedRejectedDetails";
   final List? data;
-  const ApprovalDetails({Key? key, this.data}) : super(key: key);
+  const ApprovedRejectedDetails({Key? key, this.data}) : super(key: key);
 
   @override
-  State<ApprovalDetails> createState() => _ApprovalDetailsState();
+  State<ApprovedRejectedDetails> createState() =>
+      _ApprovedRejectedDetailsState();
 }
 
-class _ApprovalDetailsState extends State<ApprovalDetails> {
+class _ApprovedRejectedDetailsState extends State<ApprovedRejectedDetails> {
   final GlobalKey<ExpansionTileCardState> cardA = GlobalKey();
   final GlobalKey<ExpansionTileCardState> cardB = GlobalKey();
   final GlobalKey<ExpansionTileCardState> cardC = GlobalKey();
   bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
   String? comment;
-  final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
+
   Future comments(int id) {
     return Alert(
         context: context,
@@ -253,10 +252,10 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Approval Details",
+        title: Text(
+          "Status: Approved",
           style: TextStyle(
-              color: Colors.black, fontFamily: 'ubuntu', fontSize: 17),
+              color: Colors.white, fontFamily: 'ubuntu', fontSize: 12.sp),
         ),
         backgroundColor: kPrimaryColor,
       ),
@@ -520,7 +519,8 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 const Expanded(
-                                    flex: 4, child: Text("Country: ")),
+                                    flex: 4,
+                                    child: Text("Destination Country: ")),
                                 Expanded(
                                   flex: 4,
                                   child: Text(widget.data![0]["exp_products"][i]
@@ -681,7 +681,7 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
                             flex: 2,
                             child: Center(
                               child: Text(
-                                "Preview",
+                                "Action",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black),
@@ -721,25 +721,21 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
                                   child: Center(
                                     child: IconButton(
                                         onPressed: () {
-                                          String? url =
-                                              "https://mis.tfs.go.tz/fremis/uploads/approval_docs/${widget.data![0]["exp_attachments"][i]["file_name"]}.pdf";
-                                          // print(url);
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PdfPreviewComponent(
-                                                        path: url.toString(),
-                                                        name: widget.data![0][
-                                                                "exp_attachments"]
-                                                                [i]["name"]
-                                                            .toString(),
-                                                      )));
+                                          // String? url =
+                                          //     "https://mis.tfs.go.tz/fremis/uploads/approval_docs/${widget.data![0]["exp_attachments"][i]["file_name"]}.pdf";
+                                          // // print(url);
+                                          // Navigator.push(
+                                          //     context,
+                                          //     MaterialPageRoute(
+                                          //         builder: (context) =>
+                                          //             PdfPreviewComponent(
+                                          //               path: url.toString(),
+                                          //             )));
                                         },
                                         icon: CircleAvatar(
                                           backgroundColor: Colors.grey[400],
                                           child: Icon(
-                                            Icons.remove_red_eye_outlined,
+                                            Icons.email,
                                             size: 15.sp,
                                             color: Colors.blue,
                                           ),
@@ -765,38 +761,38 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
           SizedBox(
             height: getProportionateScreenHeight(20),
           ),
-          isLoading
-              ? const Center(
-                  child: CupertinoActivityIndicator(
-                    animating: true,
-                    radius: 25,
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                        onPressed: () async {
-                          verificationMessage(
-                              "info", "Are You Sure You Want To Approve ?",
-                              id: widget.data![0]["id"]);
-                          // getApprovalRejectStatus(
-                          //     "approve", widget.data![0]["id"]);
-                        },
-                        child: const Text("Accept")),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          primary: Colors.red,
-                          textStyle: const TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontFamily: "Ubuntu")),
-                      onPressed: () {
-                        comments(widget.data![0]["id"]);
-                      },
-                      child: const Text("Decline"),
-                    )
-                  ],
-                ),
+          // isLoading
+          //     ? const Center(
+          //         child: CupertinoActivityIndicator(
+          //           animating: true,
+          //           radius: 25,
+          //         ),
+          //       )
+          //     : Row(
+          //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //         children: [
+          //           ElevatedButton(
+          //               onPressed: () async {
+          //                 verificationMessage(
+          //                     "info", "Are You Sure You Want To Approve ?",
+          //                     id: widget.data![0]["id"]);
+          //                 // getApprovalRejectStatus(
+          //                 //     "approve", widget.data![0]["id"]);
+          //               },
+          //               child: const Text("Accept")),
+          //           ElevatedButton(
+          //             style: ElevatedButton.styleFrom(
+          //                 primary: Colors.red,
+          //                 textStyle: const TextStyle(
+          //                     fontWeight: FontWeight.normal,
+          //                     fontFamily: "Ubuntu")),
+          //             onPressed: () {
+          //               comments(widget.data![0]["id"]);
+          //             },
+          //             child: const Text("Decline"),
+          //           )
+          //         ],
+          //       ),
           SizedBox(
             height: getProportionateScreenHeight(50),
           )

@@ -1,30 +1,30 @@
-// ignore_for_file: avoid_print, prefer_typing_uninitialized_variables, non_constant_identifier_names, duplicate_ignore
+// ignore_for_file: file_names, avoid_print, prefer_typing_uninitialized_variables, use_build_context_synchronously
 
 import 'dart:convert';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
+import 'package:http/http.dart' as http;
 
-class LicenseEditShow extends StatefulWidget {
-  static String routeName = "/LicenseShow";
+class TPEditingDetails extends StatefulWidget {
+  static String routeName = "/editingDetails";
   final List? data;
   final String? operation;
-  const LicenseEditShow({Key? key, this.data, this.operation})
+  const TPEditingDetails({Key? key, this.data, this.operation})
       : super(key: key);
 
   @override
-  State<LicenseEditShow> createState() => _LicenseEditShowState();
+  State<TPEditingDetails> createState() => _TPEditingDetailsState();
 }
 
-class _LicenseEditShowState extends State<LicenseEditShow> {
+class _TPEditingDetailsState extends State<TPEditingDetails> {
   bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
   String? comment;
-  List Data = [];
   // ignore: non_constant_identifier_names
 
   message(String hint, String message) {
@@ -57,16 +57,17 @@ class _LicenseEditShowState extends State<LicenseEditShow> {
           .then((prefs) => prefs.getString('token'));
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = operation == "approve"
-          ? Uri.parse('$baseUrlTest/api/v1/lc_edit/authorize/$id')
-          : Uri.parse('$baseUrlTest/api/v1/lc_edit/reject/$id');
+          ? Uri.parse('$baseUrlTest/api/v1/tp_edit/authorize/$id')
+          : Uri.parse('$baseUrlTest/api/v1/tp_edit/reject/$id');
 
       final response = operation == "approve"
           ? await http.get(url, headers: headers)
-          : await http
-              .post(url, headers: headers, body: {"reject_comment": comment});
+          : await http.post(url,
+              headers: headers,
+              body: {"id": id.toString(), "reject_comment": comment});
       var res;
       //final sharedP prefs=await
-      //print(response.statusCode);
+      print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
@@ -75,13 +76,9 @@ class _LicenseEditShowState extends State<LicenseEditShow> {
             //print(res);
             isLoading = false;
           });
-          if (res["success"]) {
-            operation == "approve"
-                ? message("success", "Successfully Approved")
-                : message("success", "Successfully Rejected");
-          } else {
-            message("error", res["message"].toString());
-          }
+          operation == "approve"
+              ? message("success", "Successfully Approved")
+              : message("success", "Successfully Rejected");
           return 'success';
           // ignore: dead_code
           break;
@@ -107,60 +104,6 @@ class _LicenseEditShowState extends State<LicenseEditShow> {
       message("error", "Something Went Wrong");
       return 'fail';
     }
-  }
-
-  Future getData() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      var tokens = await SharedPreferences.getInstance()
-          .then((prefs) => prefs.getString('token'));
-      var headers = {"Authorization": "Bearer ${tokens!}"};
-      var url = Uri.parse(
-          '$baseUrlTest/api/v1/lc_edit/show/${widget.data![0]["id"]}');
-
-      final response = await http.get(url, headers: headers);
-      var res;
-      //final sharedP prefs=await
-      //print(response.statusCode);
-      switch (response.statusCode) {
-        case 200:
-          setState(() {
-            res = json.decode(response.body);
-            Data = [res["data"]];
-            //print(res);
-            isLoading = false;
-          });
-
-          return 'success';
-          // ignore: dead_code
-          break;
-
-        default:
-          setState(() {
-            res = json.decode(response.body);
-            //print(res);
-
-            isLoading = false;
-          });
-
-          break;
-      }
-    } catch (e) {
-      setState(() {
-        //print(e);
-
-        isLoading = false;
-      });
-      return 'fail';
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getData();
   }
 
   Future comments(int id) {
@@ -242,6 +185,13 @@ class _LicenseEditShowState extends State<LicenseEditShow> {
             ),
           )
         ]).show();
+  }
+
+  @override
+  void initState() {
+    // ignore: todo
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
@@ -337,7 +287,7 @@ class _LicenseEditShowState extends State<LicenseEditShow> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                    "License Number: ${widget.data![index]["license_no"]}",
+                                                    "TP Number: ${widget.data![index]["tp_number"]}",
                                                     style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 15,
@@ -426,35 +376,6 @@ class _LicenseEditShowState extends State<LicenseEditShow> {
                                 SizedBox(
                                   height: getProportionateScreenHeight(10),
                                 ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 15),
-                                        child: const Text(
-                                          "Dealer Name: ",
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 15),
-                                        child: Text(
-                                          Data[0]["dealer_name"].toString(),
-                                          style: const TextStyle(
-                                              color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
                                 SizedBox(
                                   height: getProportionateScreenHeight(10),
                                 ),
@@ -468,7 +389,7 @@ class _LicenseEditShowState extends State<LicenseEditShow> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 8, horizontal: 15),
                                         child: const Text(
-                                          "Forest: ",
+                                          "Vehicle No: ",
                                           style: TextStyle(color: Colors.black),
                                         ),
                                       ),
@@ -479,8 +400,7 @@ class _LicenseEditShowState extends State<LicenseEditShow> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 8, horizontal: 15),
                                         child: Text(
-                                          Data[0]["forest"]
-                                              .toString()
+                                          widget.data![index]["vehicle_no"]
                                               .toString(),
                                           style: const TextStyle(
                                               color: Colors.black),
@@ -499,7 +419,7 @@ class _LicenseEditShowState extends State<LicenseEditShow> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 8, horizontal: 15),
                                         child: const Text(
-                                          "Product Name: ",
+                                          "Trailer No: ",
                                           style: TextStyle(color: Colors.black),
                                         ),
                                       ),
@@ -510,7 +430,13 @@ class _LicenseEditShowState extends State<LicenseEditShow> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 8, horizontal: 15),
                                         child: Text(
-                                          Data[0]["product_name"].toString(),
+                                          widget.data![index]["trailer_no"]
+                                                      .toString() ==
+                                                  "null"
+                                              ? ""
+                                              : widget.data![index]
+                                                      ["old_trailer_no"]
+                                                  .toString(),
                                           style: const TextStyle(
                                               color: Colors.black),
                                         ),
@@ -528,7 +454,7 @@ class _LicenseEditShowState extends State<LicenseEditShow> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 8, horizontal: 15),
                                         child: const Text(
-                                          "Quantity: ",
+                                          "No. of Printouts: ",
                                           style: TextStyle(color: Colors.black),
                                         ),
                                       ),
@@ -539,126 +465,8 @@ class _LicenseEditShowState extends State<LicenseEditShow> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 8, horizontal: 15),
                                         child: Text(
-                                          Data[0]["quantity"].toString(),
-                                          style: const TextStyle(
-                                              color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 15),
-                                        child: const Text(
-                                          "Species: ",
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 15),
-                                        child: Text(
-                                          Data[0]["species"].toString(),
-                                          style: const TextStyle(
-                                              color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Divider(
-                                  color: Colors.grey[400],
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 15),
-                                        child: const Text(
-                                          "Receipt No: ",
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 15),
-                                        child: Text(
-                                          Data[0]["receipt_no"].toString(),
-                                          style: const TextStyle(
-                                              color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 15),
-                                        child: const Text(
-                                          "Receipt Date: ",
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 15),
-                                        child: Text(
-                                          Data[0]["receipt_date"].toString(),
-                                          style: const TextStyle(
-                                              color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 15),
-                                        child: const Text(
-                                          "Amount Paid: ",
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 15),
-                                        child: Text(
-                                          Data[0]["amount_paid"].toString(),
+                                          widget.data![index]["printed_count"]
+                                              .toString(),
                                           style: const TextStyle(
                                               color: Colors.black),
                                         ),

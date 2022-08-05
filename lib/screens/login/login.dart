@@ -1,4 +1,4 @@
-// ignore_for_file: unused_import, prefer_typing_uninitialized_variables, avoid_//print(, library_private_types_in_public_api, use_build_context_synchronously
+// ignore_for_file: unused_import, prefer_typing_uninitialized_variables, avoid_////print(, library_private_types_in_public_api, use_build_context_synchronously
 
 import 'dart:convert';
 
@@ -62,7 +62,8 @@ class _LoginScreenState extends State<LoginScreen> {
       String role2,
       String role3,
       {String? userID,
-      String? checkpoindCode}) async {
+      String? checkpoindCode,
+      String? zoneId}) async {
     await SharedPreferences.getInstance().then((prefs) {
       prefs.setInt('user_id', userId);
       prefs.setString('token', token);
@@ -79,6 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
       prefs.setString("role3", role3);
       prefs.setString("userID", userID.toString());
       prefs.setString("checkpointcode", checkpoindCode.toString());
+      prefs.setString("zoneId", zoneId.toString());
     });
   }
 
@@ -121,24 +123,24 @@ class _LoginScreenState extends State<LoginScreen> {
           body = {"UserName": username, "Password": password};
         });
       }
-      ////print((body);
-      ////print((url);
+      //////print((body);
+      //////print((url);
       final response = await http.post(url, body: json.encode(body), headers: {
         "Accept": "application/json",
         "content-type": "application/json"
       });
       var res;
 
-      //print((response.statusCode);
-      //print((response.body);
+      ////print((response.statusCode);
+      ////print((response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            // ////print((res);
+            // //////print((res);
           });
           if (sys == "seedmis") {
-            ////print((sys);
+            //////print((sys);
             await createUser(
                 res['access_token'],
                 res['user']['id'],
@@ -156,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
             return 'success';
           }
           if (sys == "honeytraceability") {
-            ////print(("traceability");
+            //////print(("traceability");
             await createUser(
                 res['access_token'],
                 res['user']['user_id'],
@@ -201,6 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
               role2.toString(),
               role3.toString(),
               checkpoindCode: res['user']['checkpoint_code'].toString(),
+              zoneId: res['user']['zone_id'].toString(),
             );
             return 'success';
           }
@@ -209,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
               addError(error: 'Incorrect Password or Email');
             }
             if (res["Result"]["access_token"] != null) {
-              // ////print((res["Result"]['user']["access_token"].toString());
+              // //////print((res["Result"]['user']["access_token"].toString());
               await createUser(
                   res["Result"]["access_token"].toString(),
                   0,
@@ -234,7 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
         case 401:
           setState(() {
             res = json.decode(response.body);
-            //////print((res);
+            ////////print((res);
             if (res["error"] == "INVALID_LOGIN") {
               addError(error: 'Incorrect Password or Email');
             }
@@ -245,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
         case 403:
           setState(() {
             res = json.decode(response.body);
-            // ////print((res);
+            // //////print((res);
             if (res['message'] == 'Invalid Credentials') {
               addError(error: 'Incorrect Password or Email');
             } else if (res['message'] ==
@@ -264,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
         case 1200:
           setState(() {
             res = json.decode(response.body);
-            // ////print((res);
+            // //////print((res);
             addError(
                 error:
                     'Your Device Is Locked Please Contact User Support Team');
@@ -286,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       setState(() {
-        // ////print((e);
+        // //////print((e);
 
         addError(error: 'Server Or Network Connectivity Error');
         isLoading = false;
@@ -397,7 +400,7 @@ class _LoginScreenState extends State<LoginScreen> {
           });
           _formKey.currentState!.save();
 
-          //////print((devId);
+          ////////print((devId);
           var res = await getUserDetails();
           if (res == "success") {
             setState(() {
@@ -417,7 +420,7 @@ class _LoginScreenState extends State<LoginScreen> {
             // password == null;
             _formKey.currentState!.reset();
           } else {
-            //  ////print(('fail');
+            //  //////print(('fail');
           }
           //  String val = await checkUserStatus(username!, password!);
 
@@ -677,7 +680,7 @@ class _LoginScreenState extends State<LoginScreen> {
       url,
       mode: LaunchMode.externalNonBrowserApplication,
     )) {
-      print(url);
+      //print(url);
       throw 'Could not launch $url';
     }
   }

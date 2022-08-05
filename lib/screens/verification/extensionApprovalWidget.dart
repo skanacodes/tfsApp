@@ -54,6 +54,7 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
       setState(() {
         isLoading = true;
       });
+      print(id);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
       var headers = {"Authorization": "Bearer ${tokens!}"};
@@ -68,7 +69,8 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
               body: {"id": id.toString(), "reject_comment": comment});
       var res;
       //final sharedP prefs=await
-      //print(response.statusCode);
+      print(response.statusCode);
+      print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
@@ -77,9 +79,14 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
             //print(res);
             isLoading = false;
           });
-          operation == "approve"
-              ? message("success", "Successfully Approved")
-              : message("success", "Successfully Rejected");
+          if (res["success"]) {
+            operation == "approve"
+                ? message("success", "Successfully Approved")
+                : message("success", "Successfully Rejected");
+          } else {
+            message("error", res["message"].toString());
+          }
+
           return 'success';
           // ignore: dead_code
           break;
@@ -168,8 +175,8 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
                 _formKey.currentState!.save();
                 // //print(comment);
                 // //print(id);
-                await getApprovalRejectStatus("reject", id);
                 Navigator.pop(context);
+                await getApprovalRejectStatus("reject", id);
               }
             },
             child: const Text(
@@ -186,13 +193,6 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
             ),
           )
         ]).show();
-  }
-
-  @override
-  void initState() {
-    // ignore: todo
-    // TODO: implement initState
-    super.initState();
   }
 
   @override
@@ -468,36 +468,6 @@ class _ExyensionApprovalWidgetState extends State<ExyensionApprovalWidget> {
                                               : widget.data![index]
                                                       ["old_trailer_no"]
                                                   .toString(),
-                                          style: const TextStyle(
-                                              color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 15),
-                                        child: const Text(
-                                          "Reviewed At: ",
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 15),
-                                        child: Text(
-                                          widget.data![index]["reviewed_at"]
-                                              .toString(),
                                           style: const TextStyle(
                                               color: Colors.black),
                                         ),

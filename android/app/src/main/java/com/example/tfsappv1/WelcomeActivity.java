@@ -274,17 +274,37 @@ public class WelcomeActivity extends FlutterActivity {
                                     }
                                 }
                                 else {
+//                                    "activity": "QrCode",
+//                                            "activities": activities,
+//                                            "brand": brand,
+//                                            "client_name": data[0]["client"].toString(),
+//                                            "reserve": data[0]["reserve"].toString(),
+//                                            "entry_point": data[0]["entry_point"].toString(),
+//                                            "fee": data[0]["fee"].toString(),
+//                                            "receipt_no": data[0]["receipt_no"].toString(),
+//                                            "valid_days": data[0]["valid_days"].toString(),
                                     String parameter2 = call.argument("brand");
-                                    List qrList = call.argument("qrList");
-                                    List names=call.argument("client_name");
+                                    List activities = call.argument("activities");
+                                    String names=call.argument("client_name");
+                                    String reserve=call.argument("reserve");
+                                    String entry_point=call.argument("entry_point");
+                                    String fee=call.argument("fee");
+                                    String receiptNo=call.argument("receipt_no");
+                                    String validDays=call.argument("valid_days");
+
+
+
+
+
+
                                     System.out.println(parameter2);
                                     if (parameter2.equals("MobiWire")) {
 
-                                        String res = printQr(qrList,names);
+                                        String res = printQr(activities,names,reserve,entry_point,fee,receiptNo,validDays);
                                         result.success(res);
                                     } else if (parameter2.equals("MobiIoT")) {
 
-                                        String res = printQrIot(qrList,names);
+                                        String res = printQrIot(activities,names,reserve,entry_point,fee,receiptNo,validDays);
                                         System.out.println("");
                                         result.success(res);
 
@@ -406,7 +426,7 @@ public class WelcomeActivity extends FlutterActivity {
                     printer.printText("-----------------------------");
                     printer.printText("Total  Amount :  "+ amount);
                     printer.printText("-----------------------------");
-                    printer.printText("Signature: ----------------");
+                    printer.printText("Signature: ___________________");
                     //printer.addBarQrCodeToPrint(controlNo, BarcodeFormat.QR_CODE,300,300);
                     //printer.wait();
                     printer.addBitmapToPrint( decodedQr);
@@ -429,7 +449,13 @@ public class WelcomeActivity extends FlutterActivity {
                     printer.printText("Issuer: "+issuer);
                    // printer.printText("Paid On: "+paidDate);
                     printer.printText("Printed On:"+currentDateandTime);
+                    printer.printText("-----------------------------");
+                    printer.printText("Description(s).");
+                    printer.printText("-----------------------------");
+                    for (int i = 0; i < itemsAmount.toArray().length; i++) {
 
+                        printer.printText(itemsDesc.get(i) +" "+    itemsAmount.get(i));
+                    }
                     printer.printText("-----------------------------");
                     printer.printText("Total  Amount :  "+ amount);
                     printer.printText("-----------------------------");
@@ -473,10 +499,10 @@ public class WelcomeActivity extends FlutterActivity {
 
     }
 
-    public String printQrIot(List qrList,List names) {
+    public String printQrIot(List activities,String names, String reserve,String entry_point,String fee,String receiptNo,String validDays) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         String currentDateandTime = sdf.format(new Date());
-
+        CsPrinter printer=new CsPrinter();
         try {
 
             if (CsPrinter.getPrinterStatus()==0){
@@ -486,51 +512,53 @@ public class WelcomeActivity extends FlutterActivity {
                 Log.e("click","click");
                 System.out.println("am Here");
                 // printContent(decodedByte);
-                CsPrinter printer=new CsPrinter();
+
+
+               printer.printText("-----------------------------");
+                printer.printText("(Made Under Regulation 35(3))");
+                printer.printText(" Entry Form Permit For Persons, Animals Or Vehicles Into Forest Reserve ");
+                    printer.printText("-----------------------------");
+                    printer.printText("Name: " + names);
+                printer.printText("Reserve: " + reserve);
+                printer.printText("Entry Point: " + entry_point);
+                printer.printText("Fee: " + fee);
+                printer.printText("Receipt No: " + receiptNo);
+                printer.printText("Valid Days: " + validDays);
                 printer.printText("Printed On: " + currentDateandTime);
 
-                for (int i = 0; i < qrList.toArray().length; i++) {
-                    byte[] image = Base64.decode(qrList.get(i).toString(), Base64.DEFAULT);
-
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(image, 0, image.length);
-                    printer.printText("-----------------------------");
-                    printer.printText("Name: " + names.get(i));
-
-                    printer.printText("-----------------------------");
-
-                    printer.printBitmap(getContext(), decodedByte);
-                    printer.printEndLine();
-                    //printer.printText("-----------------------------");
-                    //Thread.sleep(4000);
-
-                }
+                printer.printText("Signature: ______________");
+                printer.printText("-----------------------------");
+                printer.printEndLine();
+                printer.printEndLine();
 
 
 
 
-                printer.print(this);
+
+
+
+
+              //  printer.print(this);
                 return "Successfully Printed";
 
             }
             else if(CsPrinter.getPrinterStatus()==-1){
 
-                CsPrinter printer=new CsPrinter();
 
 
-                for (int i = 0; i < qrList.toArray().length; i++) {
-                    byte[] image = Base64.decode(qrList.get(i).toString(), Base64.DEFAULT);
+                printer.printText("-----------------------------");
+                printer.printText("Name: " + names);
+                printer.printText("Reserve: " + reserve);
+                printer.printText("Entry Point: " + entry_point);
+                printer.printText("Fee: " + fee);
+                printer.printText("Receipt No: " + receiptNo);
+                printer.printText("Valid Days: " + validDays);
+                printer.printText("Printed On: " + currentDateandTime);
 
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(image, 0, image.length);
-                    printer.printText("-----------------------------");
-                    printer.printText("Name: " + names.get(i));
 
-                    printer.printText("-----------------------------");
+                printer.printText("-----------------------------");
 
-                    printer.printBitmap(getContext(), decodedByte);
-                    printer.printText("-----------------------------");
-                    Thread.sleep(4000);
 
-                }
 
 
 
@@ -545,7 +573,7 @@ public class WelcomeActivity extends FlutterActivity {
 
         }catch (Exception e){
             System.out.println(e.getMessage());
-            return "Failed To Print";
+            return e.getMessage();
         }
 
     }
@@ -597,7 +625,7 @@ public class WelcomeActivity extends FlutterActivity {
         return  null;
     }
 
-    public String printQr(List qrList,List names) {
+    public String printQr(List qrList,String names, String reserve,String entry_point,String fee,String receiptNo,String validDays) {
         //        Bitmap decodedByte = BitmapFactory.decodeByteArray(image, 0, image.length);
 //        Bitmap decodedByte = BitmapFactory.decodeByteArray(image, 0, image.length);
 //        Bitmap decodedQr = BitmapFactory.decodeByteArray(qr, 0, qr.length);
@@ -612,7 +640,7 @@ public class WelcomeActivity extends FlutterActivity {
                 if(!printer.isPrinterOperation()) {
 
                     if (printer.voltageCheck()){
-                        printQrContent(qrList,names);
+                        printQrContent(qrList,names, reserve, entry_point, fee, receiptNo, validDays);
                         return "Successfully Printed";
                     }
 
@@ -780,9 +808,16 @@ if (type.equals("receipt")){
                        // printer.printText("Paid On : "+ paidDate,1,false);
                         printer.printText("Printed On: "+ currentDateandTime,1,false);
                         printer.printText("---------------",2,false);
-                        printer.printText("Total  Amount :  "+ amount,1,false);
+                        printer.printText("Description(s)",1,false);
                         printer.printText("---------------",2,false);
 
+                        for (int i = 0; i < itemsAmount.toArray().length; i++) {
+
+                            printer.printText(itemsDesc.get(i) +" "+    itemsAmount.get(i)      ,1,false);
+                        }
+                        printer.printText("---------------",2,false);
+                        printer.printText("Total  Amount :  "+ amount,1,false);
+                        printer.printText("---------------",2,false);
 
                         printer.printBitmap(qr,1);
 
@@ -838,7 +873,7 @@ if (type.equals("receipt")){
         }).start();
     }
 
-    public void printQrContent(List qrList,List names ){
+    public void printQrContent(List qrList,String names,String reserve,String entry_point,String fee,String receiptNo,String validDays ){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         String currentDateandTime = sdf.format(new Date());
 
@@ -851,24 +886,22 @@ if (type.equals("receipt")){
 
 
 
-                    //    printer.printText("---------------",2,false);
+                        printer.printText("Entry Form Permit For Persons,Animals Or Vehicles Into Forest Reserve",2,false);
 
-
-
-                    for (int i = 0; i < qrList.toArray().length; i++) {
-                        byte[] image=   Base64.decode(qrList.get(i).toString(), Base64.DEFAULT);
-
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(image, 0, image.length);
-                        printer.printText("Entrance Ticket: ",1,false);
-                        printer.printText("Printed On: "+ currentDateandTime,1,false);
                         printer.printText("---------------",2,false);
-                        printer.printText("Name: "+ names.get(i),1,false);
+                        printer.printText("Name: "+ names,1,false);
+                    printer.printText("Reserve: "+ reserve,1,false);
+                    printer.printText("Entry Point: "+ entry_point,1,false);
+                    printer.printText("Fee: "+ fee,1,false);
+                    printer.printText("Receipt No: "+ receiptNo,1,false);
+                    printer.printText("Valid Days: "+ validDays,1,false);
+                    printer.printText("Printed On: "+ currentDateandTime,1,false);
                         printer.printText("---------------",2,false);
 
-                        printer.printBitmap(decodedByte,1);
+
                         printer.printEndLine();
                         Thread.sleep(4000);
-                    }
+
 
 
 

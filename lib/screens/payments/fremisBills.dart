@@ -28,11 +28,14 @@ class _FremisBillsState extends State<FremisBills> {
   final _gfsTextController = TextEditingController();
   final _dealerEditTextController = TextEditingController();
   List billData = [];
+  List distributions = [];
   String? desc;
+  String? billdesc;
   double? unitAmount;
   String? gfcCode;
   String? levelTwoCode;
   bool isVerify = false;
+  bool isBillDescrAvailable = false;
   final value = NumberFormat("#,##0.00", "en_US");
   bool isLoading = false;
   bool isCustomerSelected = false;
@@ -62,15 +65,16 @@ class _FremisBillsState extends State<FremisBills> {
   double total = 0;
   final _formKey = GlobalKey<FormState>();
   final _formKey1 = GlobalKey<FormState>();
+  var overallSumation;
   double calculateSum() {
     double sumation = 0;
     for (var i = 0; i < billData.length; i++) {
       setState(() {
-        //////print(amount);
+        ////////print(amount);
         sumation = sumation + double.parse(billData[i]["amount"].toString());
         total = sumation;
       });
-      ////print(sumation);
+      //////print(sumation);
     }
     return sumation;
   }
@@ -86,7 +90,7 @@ class _FremisBillsState extends State<FremisBills> {
     setState(() {
       isLoading = true;
     });
-    print(billData);
+    ////print(billData);
 
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
@@ -108,7 +112,7 @@ class _FremisBillsState extends State<FremisBills> {
         "payer_name": customerName,
         "payer_cell_no": mobileNumber,
         "payer_email": email,
-        "bill_desc": "bill",
+        "bill_desc": billdesc,
         "bill_amount": total,
         "station_id": stationId,
         "checkpoint_id": checkpoint,
@@ -120,13 +124,13 @@ class _FremisBillsState extends State<FremisBills> {
         // setState(() {
         //   uploadMessage = sent.toString();
         // });
-        ////print('$sent $total');
+        //////print('$sent $total');
       });
       print(response.statusCode);
       print(response.statusMessage);
       print(response.data);
       var res = response.data;
-      print(res);
+      //print(res);
       if (response.statusCode == 201) {
         message(
           'Bill Generated Successfully',
@@ -138,21 +142,21 @@ class _FremisBillsState extends State<FremisBills> {
           return;
         }
       } else {
-        message('Failed To Save Data', 'error');
+        message(res["message"].toString(), 'error');
       }
     } on DioError catch (e) {
-      ////print('dio package');
+      //////print('dio package');
       if (DioErrorType.receiveTimeout == e.type ||
           DioErrorType.connectTimeout == e.type) {
         message('Server Can Not Be Reached.', 'error');
         // throw Exception('Server Can Not Be Reached');
-        ////print(e);
+        //////print(e);
       } else if (DioErrorType.response == e.type) {
         // throw Exception('Server Can Not Be Reached');
 
         message('Failed To Get Response From Server.', 'error');
         // throw Exception('Server Can Not Be Reached');
-        ////print(e);
+        //////print(e);
       } else if (DioErrorType.other == e.type) {
         if (e.message.contains('SocketException')) {
           // throw Exception('Server Can Not Be Reached');
@@ -161,14 +165,14 @@ class _FremisBillsState extends State<FremisBills> {
             'error',
           );
 
-          ////print(e);
+          //////print(e);
         }
       } else {
         //  throw Exception('Server Can Not Be Reached');
         message('error',
             'Network Connectivity Problem. Data Has Been Stored Localy');
         // throw Exception('Server Can Not Be Reached');
-        ////print(e);
+        //////print(e);
       }
     }
     setState(() {
@@ -179,100 +183,44 @@ class _FremisBillsState extends State<FremisBills> {
   Widget _submitButton() {
     return InkWell(
       onTap: () async {
-        // if (customerName != null && mobileNumber != null) {
-        //   message("Are You Sure You Want To Create This Bill", "info",
-        //       isBillMessage: true);
-        // } else {
-        //   message("Please Fill Customer Name and Phone Number", "info");
-        // }
-        message("Are You Sure You Want To Create This Bill", "info",
+        Navigator.pop(context);
+        message("Are You Sure You Want To Generate This Bill", "info",
             isBillMessage: true);
       },
-      child: isLoading
-          ? SpinKitFadingCircle(
-              color: kPrimaryColor,
-              size: 35.0.sp,
-            )
-          : Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
-              child: Container(
-                height: 50,
-                width: getProportionateScreenWidth(200),
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(5)),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                          color: Colors.grey.shade200,
-                          offset: const Offset(2, 4),
-                          blurRadius: 5,
-                          spreadRadius: 2)
-                    ],
-                    gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [kPrimaryColor, Colors.green[50]!])),
-                child: Padding(
-                  padding: const EdgeInsets.all(0.0),
-                  child: Text(
-                    'Generate Bill',
-                    style: TextStyle(fontSize: 13.0.sp, color: Colors.black),
-                  ),
-                ),
-              ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
+        child: Container(
+          height: 50,
+          width: getProportionateScreenWidth(200),
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                    color: Colors.grey.shade200,
+                    offset: const Offset(2, 4),
+                    blurRadius: 5,
+                    spreadRadius: 2)
+              ],
+              gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [kPrimaryColor, Colors.green[50]!])),
+          child: Padding(
+            padding: const EdgeInsets.all(0.0),
+            child: Text(
+              'Generate Bill',
+              style: TextStyle(fontSize: 13.0.sp, color: Colors.black),
             ),
+          ),
+        ),
+      ),
     );
   }
 
-  enterTpNoPrompt(String tokens) {
-    return Alert(
-        context: context,
-        title: "Failed Scanning Enter Permit Number",
-        content: Column(
-          children: <Widget>[
-            TextField(
-              onChanged: (value) {
-                // permitNumber = value;
-                // ////print(permitNumber);
-              },
-              cursorColor: kPrimaryColor,
-              decoration: const InputDecoration(
-                icon: Icon(Icons.folder_open),
-                labelText: 'Enter Bill Id',
-              ),
-            ),
-          ],
-        ),
-        buttons: [
-          DialogButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              // setState(() {
-              //   isVerify = true;
-              // });
-              // await verify(permitNumber!, tokens);
-              // setState(() {
-              //   isVerify = false;
-              // });
-            },
-            child: const Text(
-              "Submit",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ),
-          DialogButton(
-            color: Colors.red,
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "CANCEL",
-              style: TextStyle(color: Colors.red, fontSize: 20),
-            ),
-          )
-        ]).show();
-  }
-
-  message(String desc, String type, {int? index, bool? isBillMessage}) {
+  message(String desc, String type,
+      {int? index, bool? isBillMessage, StateSetter? updateState}) {
     return Alert(
       context: context,
       type: type == 'error'
@@ -286,8 +234,9 @@ class _FremisBillsState extends State<FremisBills> {
         DialogButton(
           onPressed: () async {
             if (index != null) {
-              setState(() {
+              updateState!(() {
                 billData.removeAt(index);
+                overallSumation = calculateSum();
                 // honeyId.removeAt(index);
                 // quantities.removeAt(index);
               });
@@ -471,7 +420,8 @@ class _FremisBillsState extends State<FremisBills> {
         ]).show();
   }
 
-  Future computeQuantity({int? index, int? quantit}) {
+  Future computeQuantity(StateSetter updateState,
+      {int? index, double? quantit}) {
     return Alert(
         context: context,
         title: "Enter Quantity",
@@ -530,15 +480,15 @@ class _FremisBillsState extends State<FremisBills> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                ////print(index);
-                setState(() {
+                //////print(index);
+                updateState(() {
                   if (index != null) {
                     billData[index]["quantity"] = quantity;
                     // quantities[index] = quantity;
-                    // ////print(quantities);
+                    // //////print(quantities);
                   }
 
-                  ////print(billData);
+                  //////print(billData);
                 });
               }
               Navigator.pop(context);
@@ -592,18 +542,21 @@ class _FremisBillsState extends State<FremisBills> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: forms(),
+      child: isLoading
+          ? SpinKitFadingCircle(
+              color: kPrimaryColor,
+              size: 35.0.sp,
+            )
+          : forms(),
     );
   }
 
   forms() {
-    return SingleChildScrollView(
-        child: Column(children: [
+    return Column(children: [
       SizedBox(
-        height: getProportionateScreenHeight(1100),
+        height: getProportionateScreenHeight(670),
         child: Column(
           children: <Widget>[
-            // Adding the form here
             Form(
               key: _formKey1,
               child: Expanded(
@@ -644,6 +597,14 @@ class _FremisBillsState extends State<FremisBills> {
                                 width: double.infinity,
                                 decoration: const BoxDecoration(
                                   color: Color(0xfff3f3f4),
+                                  // boxShadow: <BoxShadow>[
+                                  //   // BoxShadow(color: Colors.grey)
+                                  //   // BoxShadow(
+                                  //   //     color: Colors.grey.shade200,
+                                  //   //     offset: Offset(2, 4),
+                                  //   //     blurRadius: 5,
+                                  //   //     spreadRadius: 2)
+                                  // ],
                                   border: Border(
                                     bottom: BorderSide(
                                         width: 1, color: kPrimaryColor),
@@ -706,7 +667,7 @@ class _FremisBillsState extends State<FremisBills> {
                                     ),
                                     fillColor: const Color(0xfff3f3f4),
                                     filled: true,
-                                    labelText: "Search",
+                                    labelText: "Search By First Name",
                                     border: InputBorder.none,
                                     isDense: true,
                                     contentPadding: const EdgeInsets.fromLTRB(
@@ -863,10 +824,11 @@ class _FremisBillsState extends State<FremisBills> {
                                   unitAmount = double.parse(data.amount);
                                   gfcCode = data.gfsCode;
                                   levelTwoCode = data.levelTwoId;
-                                  //print(levelTwoCode);
-                                  //print(desc);
+                                  distributions = data.distributions;
+                                  //print(distributions);
+                                  ////print(desc);
                                 });
-                                // ////print(amount);
+                                // //////print(amount);
                               },
 
                               popupItemBuilder: _customPopupItemBuilderGFSCode,
@@ -1012,222 +974,144 @@ class _FremisBillsState extends State<FremisBills> {
                                             },
                                           ),
                                         ),
+                          !isBillDescrAvailable
+                              ? Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10, right: 10, left: 10),
+                                  child: TextFormField(
+                                    keyboardType: TextInputType.text,
+                                    key: const Key("name"),
+                                    maxLines: 4,
+                                    decoration: InputDecoration(
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        borderSide: const BorderSide(
+                                          color: Colors.cyan,
+                                        ),
+                                      ),
+                                      fillColor: const Color(0xfff3f3f4),
+                                      filled: true,
+                                      labelText: "Enter Bill Description",
+                                      border: InputBorder.none,
+                                      isDense: true,
+                                      contentPadding: const EdgeInsets.fromLTRB(
+                                          30, 10, 15, 10),
+                                    ),
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return "This Field Is Required";
+                                      }
+                                      return null;
+                                    },
+                                    onSaved: (value) {
+                                      billdesc = value;
+                                    },
+                                  ),
+                                )
+                              : Container(),
                           SizedBox(
                             height: getProportionateScreenHeight(10),
                           ),
-                          _saveData()
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              SizedBox(
+                                height: getProportionateScreenHeight(30),
+                              ),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    if (_formKey1.currentState!.validate()) {
+                                      _formKey1.currentState!.save();
+                                      ////print(bill)0p9
+
+                                      var amt;
+                                      levelTwoCode == "4"
+                                          ? amt = compountAmt
+                                          : levelTwoCode == "14" &&
+                                                  (desc ==
+                                                          "Receipts from sale of Confiscated Forest Products" ||
+                                                      desc ==
+                                                          "Inspection Fee For Private Planted Trees - 20% of original")
+                                              ? amt = compountAmt
+                                              : unitAmount == 0
+                                                  ? amt = compountAmt
+                                                  : amt =
+                                                      (unitAmount! * quantity);
+
+                                      Map billElements = {
+                                        "amount": amt,
+                                        "product_name": desc,
+                                        "gfs_code": gfcCode,
+                                        "quantity": quantity,
+                                        "prod_desc": desc
+                                      };
+                                      //////print(billElements);
+
+                                      billData.add(billElements);
+                                      //////print(billData);
+
+                                      setState(() {
+                                        desc = null;
+                                        unitAmount = null;
+                                        gfcCode = null;
+                                        quantity = 0;
+                                        isBillDescrAvailable = true;
+                                        cardB.currentState?.collapse();
+
+                                        overallSumation = calculateSum();
+                                      });
+                                      // _dealerEditTextController = TextEditingController();
+                                      _formKey1.currentState!.reset();
+                                      showModal();
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.green, // Background color
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.inventory_outlined),
+                                      SizedBox(
+                                        width: getProportionateScreenWidth(10),
+                                      ),
+                                      const Text("Save Bill Item")
+                                    ],
+                                  )),
+                              SizedBox(
+                                height: getProportionateScreenHeight(20),
+                              ),
+                            ],
+                          )
                         ],
                       ),
                     ),
                     SizedBox(
                       height: getProportionateScreenHeight(10),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                      child: ExpansionTileCard(
-                        key: cardC,
-                        expandedTextColor: Colors.black,
-                        shadowColor: kPrimaryColor,
-                        duration: const Duration(milliseconds: 500),
-                        animateTrailing: true,
-                        baseColor: const Color(0xfff3f3f4),
-                        elevation: 10,
-                        borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.zero,
-                            bottomRight: Radius.zero,
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20)),
-                        leading: const CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            child: Icon(
-                              Icons.production_quantity_limits_rounded,
-                              color: kPrimaryColor,
-                            )),
-                        title: const Text('Products List'),
-                        children: <Widget>[
-                          const Divider(
-                            thickness: 1.0,
-                            height: 1.0,
-                            color: Colors.brown,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: getProportionateScreenHeight(10),
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                              showModal();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.green, // Background color
+                            ),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: const [
-                                Expanded(
-                                    flex: 1,
-                                    child: Center(
-                                      child: Text(
-                                        "S/N",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black),
-                                      ),
-                                    )),
-                                Expanded(
-                                    flex: 3,
-                                    child: Center(
-                                      child: Text(
-                                        "desc",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black),
-                                      ),
-                                    )),
-                                Expanded(
-                                    flex: 3,
-                                    child: Center(
-                                      child: Text(
-                                        "SubTotal",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black),
-                                      ),
-                                    )),
-                                Expanded(
-                                    flex: 2,
-                                    child: Center(
-                                      child: Text(
-                                        "Action",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black),
-                                      ),
-                                    )),
+                              children: [
+                                const Icon(Icons.mail),
+                                SizedBox(
+                                  width: getProportionateScreenWidth(10),
+                                ),
+                                const Text("Show Bill(s) Item")
                               ],
-                            ),
-                          ),
-                          const Divider(
-                            thickness: 1.0,
-                            height: 1.0,
-                            color: Colors.brown,
-                          ),
-                          for (var i = 0; i < billData.length; i++)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                          flex: 1,
-                                          child: Center(
-                                            child: Text(
-                                              (i + 1).toString(),
-                                            ),
-                                          )),
-                                      Expanded(
-                                          flex: 3,
-                                          child: Center(
-                                            child: Text(
-                                              billData[i]["product_name"]
-                                                  .toString(),
-                                            ),
-                                          )),
-                                      Expanded(
-                                          flex: 3,
-                                          child: Center(
-                                            child: Text(
-                                              (billData[i]["amount"])
-                                                  .toString(),
-                                            ),
-                                          )),
-                                      Expanded(
-                                          flex: 2,
-                                          child: Center(
-                                              child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Expanded(
-                                                child: IconButton(
-                                                    onPressed: () {
-                                                      computeQuantity(
-                                                          index: i,
-                                                          quantit: billData[i]
-                                                              ["quantity"]);
-                                                    },
-                                                    icon: const Icon(
-                                                      Icons.edit,
-                                                      size: 17,
-                                                      color: Colors.blue,
-                                                    )),
-                                              ),
-                                              Expanded(
-                                                child: IconButton(
-                                                    onPressed: () {
-                                                      message(
-                                                          "Are You Sure You Want To Remove Item?",
-                                                          "info",
-                                                          index: i);
-                                                    },
-                                                    icon: const Icon(
-                                                      Icons
-                                                          .remove_circle_outline_sharp,
-                                                      size: 17,
-                                                      color: Colors.red,
-                                                    )),
-                                              ),
-                                            ],
-                                          ))),
-                                    ],
-                                  ),
-                                  // SizedBox(
-                                  //   height: getProportionateScreenHeight(5),
-                                  // ),
-                                  const Divider(
-                                    thickness: 1.0,
-                                    height: 0.0,
-                                    color: Colors.grey,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          SizedBox(
-                            height: getProportionateScreenHeight(10),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              const Expanded(
-                                  flex: 1, child: Center(child: Text(" "))),
-                              const Expanded(
-                                  flex: 3,
-                                  child: Center(
-                                    child: Text(
-                                      "Total amount:  ",
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  )),
-                              Expanded(
-                                  flex: 3,
-                                  child: Center(
-                                    child: Text(
-                                      value.format(calculateSum()),
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  )),
-                              const Expanded(
-                                  flex: 2, child: Center(child: Text(" "))),
-                            ],
-                          ),
-                          SizedBox(
-                            height: getProportionateScreenHeight(10),
-                          ),
-                          isLoading
-                              ? SpinKitFadingCircle(
-                                  color: kPrimaryColor,
-                                  size: 35.0.sp,
-                                )
-                              : _submitButton(),
-                        ],
-                      ),
-                    ),
+                            )),
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -1235,89 +1119,293 @@ class _FremisBillsState extends State<FremisBills> {
           ],
         ),
       ),
-    ]));
+    ]);
   }
 
-  Widget _saveData() {
-    return InkWell(
-      onTap: () async {
-        if (_formKey1.currentState!.validate()) {
-          _formKey1.currentState!.save();
-          var amt;
-          levelTwoCode == "4"
-              ? amt = compountAmt
-              : levelTwoCode == "14" &&
-                      (desc ==
-                              "Receipts from sale of Confiscated Forest Products" ||
-                          desc ==
-                              "Inspection Fee For Private Planted Trees - 20% of original")
-                  ? amt = compountAmt
-                  : unitAmount == 0
-                      ? amt = compountAmt
-                      : amt = (unitAmount! * quantity);
-
-          Map billElements = {
-            "amount": amt,
-            "product_name": desc,
-            "gfs_code": gfcCode,
-            "quantity": quantity,
-            "prod_desc": desc
-          };
-          ////print(billElements);
-
-          billData.add(billElements);
-          ////print(billData);
-
-          setState(() {
-            desc = null;
-            unitAmount = null;
-            gfcCode = null;
-            quantity = 0;
-            cardB.currentState?.collapse();
-
-            cardC.currentState?.expand();
-
-            calculateSum();
-          });
-          // _dealerEditTextController = TextEditingController();
-          _formKey1.currentState!.reset();
-        }
-      },
-      child: isLoading
-          ? SpinKitFadingCircle(
-              color: kPrimaryColor,
-              size: 35.0.sp,
-            )
-          : Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
-              child: Container(
-                height: 50,
-                width: getProportionateScreenWidth(200),
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(5)),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                          color: Colors.grey.shade200,
-                          offset: const Offset(2, 4),
-                          blurRadius: 5,
-                          spreadRadius: 2)
-                    ],
-                    gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [kPrimaryColor, Colors.green[50]!])),
-                child: Padding(
-                  padding: const EdgeInsets.all(0.0),
-                  child: Text(
-                    'Save Data',
-                    style: TextStyle(fontSize: 13.0.sp, color: Colors.black),
-                  ),
+  showModal() {
+    return showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        isDismissible: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(20.0),
+          ),
+        ),
+        builder: (context) {
+          return StatefulBuilder(builder: (context, state) {
+            return Wrap(children: [
+              ListTile(
+                leading: const Icon(
+                  Icons.select_all_outlined,
+                  color: Colors.green,
+                ),
+                title: const Text(
+                  "Bills Item(s) List",
+                ),
+                trailing: InkWell(
+                  onTap: (() => Navigator.of(context).pop()),
+                  child: CircleAvatar(
+                      radius: 10.sp,
+                      backgroundColor: Colors.grey,
+                      child: Icon(
+                        Icons.close_outlined,
+                        size: 10.sp,
+                      )),
                 ),
               ),
+              const Divider(
+                thickness: 1.0,
+                height: 3.0,
+                color: Colors.grey,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                      child: Row(
+                        children: [
+                          Icon(Icons.add, size: 13.sp),
+                          const Text("Add Item"),
+                        ],
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        cardB.currentState?.expand();
+                      }),
+                ],
+              ),
+              const Divider(
+                thickness: 1.0,
+                height: 3.0,
+                color: Colors.grey,
+              ),
+              Column(
+                //mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const Divider(
+                    thickness: 1.0,
+                    height: 1.0,
+                    color: Colors.grey,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: const [
+                        Expanded(
+                            flex: 1,
+                            child: Center(
+                              child: Text(
+                                "S/N",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                            )),
+                        Expanded(
+                            flex: 3,
+                            child: Center(
+                              child: Text(
+                                "desc",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                            )),
+                        Expanded(
+                            flex: 3,
+                            child: Center(
+                              child: Text(
+                                "SubTotal",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                            )),
+                        Expanded(
+                            flex: 2,
+                            child: Center(
+                              child: Text(
+                                "Action",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                            )),
+                      ],
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1.0,
+                    height: 1.0,
+                    color: Colors.brown,
+                  ),
+                  for (var i = 0; i < billData.length; i++)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                  flex: 1,
+                                  child: Center(
+                                    child: Text(
+                                      "${i + 1}.",
+                                    ),
+                                  )),
+                              Expanded(
+                                  flex: 3,
+                                  child: Center(
+                                    child: Text(
+                                      billData[i]["product_name"].toString(),
+                                    ),
+                                  )),
+                              Expanded(
+                                  flex: 3,
+                                  child: Center(
+                                    child: Text(
+                                      value.format(billData[i]["amount"]),
+                                    ),
+                                  )),
+                              Expanded(
+                                  flex: 2,
+                                  child: Center(
+                                      child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Expanded(
+                                        child: IconButton(
+                                            onPressed: () {
+                                              computeQuantity(state,
+                                                  index: i,
+                                                  quantit: billData[i]
+                                                          ["quantity"]
+                                                      .toDouble());
+                                            },
+                                            icon: const Icon(
+                                              Icons.edit,
+                                              size: 17,
+                                              color: Colors.blue,
+                                            )),
+                                      ),
+                                      Expanded(
+                                        child: IconButton(
+                                            onPressed: () {
+                                              message(
+                                                "Are You Sure You Want To Remove Item?",
+                                                "info",
+                                                index: i,
+                                                updateState: state,
+                                              );
+                                            },
+                                            icon: const Icon(
+                                              Icons.remove_circle_outline_sharp,
+                                              size: 17,
+                                              color: Colors.red,
+                                            )),
+                                      ),
+                                    ],
+                                  ))),
+                            ],
+                          ),
+                          // SizedBox(
+                          //   height: getProportionateScreenHeight(5),
+                          // ),
+                          const Divider(
+                            thickness: 1.0,
+                            height: 0.0,
+                            color: Colors.grey,
+                          ),
+                        ],
+                      ),
+                    ),
+                  SizedBox(
+                    height: getProportionateScreenHeight(10),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        const Expanded(
+                            flex: 1, child: Center(child: Text(" "))),
+                        const Expanded(
+                            flex: 3,
+                            child: Center(
+                              child: Text(
+                                "Total amount:  ",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            )),
+                        Expanded(
+                            flex: 3,
+                            child: Center(
+                              child: Text(
+                                overallSumation == null
+                                    ? "0"
+                                    : value.format(overallSumation),
+                                style: const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            )),
+                        const Expanded(
+                            flex: 2, child: Center(child: Text(" "))),
+                      ],
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Divider(
+                      thickness: 1.0,
+                      height: 1.0,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  SizedBox(
+                    height: getProportionateScreenHeight(10),
+                  ),
+                  isLoading
+                      ? SpinKitFadingCircle(
+                          color: kPrimaryColor,
+                          size: 35.0.sp,
+                        )
+                      : _submitButton(),
+                  SizedBox(
+                    height: getProportionateScreenHeight(30),
+                  ),
+                ],
+              ),
+            ]);
+          });
+        });
+  }
+
+  loading() {
+    return Alert(
+        context: context,
+        desc: "Generating Bill...",
+        style: AlertStyle(
+            descStyle: TextStyle(
+              fontSize: 13.sp,
+              fontFamily: "Ubuntu",
             ),
-    );
+            isButtonVisible: false,
+            isCloseButton: false),
+        onWillPopActive: true,
+        content: Column(
+          children: [
+            SpinKitThreeBounce(
+              color: kPrimaryColor,
+              size: 20.sp,
+            )
+          ],
+        )).show();
   }
 
   Widget _customPopupItemBuilderGFSCode(
@@ -1361,7 +1449,7 @@ class _FremisBillsState extends State<FremisBills> {
     String url;
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
-    ////print(tokens);
+    //////print(tokens);
     var headers = {"Authorization": "Bearer ${tokens!}"};
     url = "$baseUrlTest/api/v1/dealers";
     var response = await Dio().get(url,
@@ -1371,7 +1459,7 @@ class _FremisBillsState extends State<FremisBills> {
         options: Options(headers: headers));
 
     final data = response.data;
-    ////print(data['dealers']);
+    //////print(data['dealers']);
 
     return DealerModel.fromJsonList(data['dealers']);
   }
@@ -1420,7 +1508,7 @@ class _FremisBillsState extends State<FremisBills> {
 
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
-    ////print(tokens);
+    //print(tokens);
     var headers = {"Authorization": "Bearer ${tokens!}"};
     url = "$baseUrlTest/api/v1/gfs_codes/pos";
     var response = await Dio().get(url,

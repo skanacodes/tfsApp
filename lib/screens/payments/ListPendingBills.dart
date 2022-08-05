@@ -9,6 +9,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizer/sizer.dart';
 import 'package:tfsappv1/screens/payments/payments.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/modal/receiptArguments.dart';
@@ -40,10 +41,10 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       String stationId = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getInt('station_id').toString());
 
-      ////print(stationId);
+      //////print(stationId);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      ////print(tokens);
+      //////print(tokens);
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url;
       widget.system == "PMIS"
@@ -52,7 +53,8 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      ////print(response.statusCode);
+      print(response.statusCode);
+      print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
@@ -69,7 +71,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -79,7 +81,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        ////print(e);
+        //////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -93,7 +95,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
-      // ////print(tokens);
+      // //////print(tokens);
       // var headers = {"Authorization": "Bearer " + tokens!};
       var url =
           Uri.parse('https://mis.tfs.go.tz/e-auction/api/Bill/AccountsBill');
@@ -102,12 +104,12 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       );
       var res;
       //final sharedP prefs=await
-      ////print(response.statusCode);
+      //////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -117,7 +119,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -127,7 +129,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        ////print(e);
+        //////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -141,19 +143,19 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      // ////print(tokens);
+      // //////print(tokens);
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('$baseUrlTest/api/v1/search-bills/$controlNo');
 
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      ////print(response.statusCode);
+      //////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -163,7 +165,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -173,7 +175,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        ////print(e);
+        //////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -189,7 +191,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
           .then((prefs) => prefs.getInt('station_id').toString());
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      ////print(tokens);
+      //////print(tokens);
       var headers = {"Authorization": "Bearer " + tokens!};
       var url = Uri.parse(
           '$baseUrlHoneyTraceability/api/v1/pending-bills/$stationId');
@@ -197,13 +199,13 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      //print(response.statusCode);
-      //print(response.body);
+      ////print(response.statusCode);
+      ////print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -213,7 +215,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -223,7 +225,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        ////print(e);
+        //////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -237,20 +239,20 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      ////print(tokens);
+      //////print(tokens);
       var headers = {"Authorization": "Bearer " + tokens!};
       var url = Uri.parse('$baseUrlSeed/api/v1/bills');
 
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      //print(response.statusCode);
-      //print(response.body);
+      ////print(response.statusCode);
+      ////print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -260,7 +262,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -270,7 +272,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        ////print(e);
+        //////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -320,7 +322,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      // ////print(tokens);
+      // //////print(tokens);
       var headers = {"Authorization": "Bearer " + tokens!};
       var url = widget.system == "seedmis"
           ? Uri.parse('$baseUrlSeed/api/v1/bill-by-controlnumber/$controlNo/2')
@@ -333,12 +335,12 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      ////print(response.statusCode);
+      //////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -348,7 +350,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -358,7 +360,61 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        ////print(e);
+        //////print(e);
+        messages('Server Or Connectivity Error', 'error');
+      });
+    }
+    _refreshController.refreshCompleted();
+  }
+
+  Future searchDataPMIS() async {
+    BigInt controlNumber = BigInt.parse(controlNo.toString());
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      //print(controlNumber);
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      //print(tokens);
+      var headers = {"Authorization": "Bearer ${tokens!}"};
+      var url = Uri.parse(
+        '$baseUrlPMIS/api/Bill/SearchAccountsBill/$controlNumber',
+      );
+
+      final response = await http.get(
+        url,
+        headers: headers,
+      );
+      var res;
+      //final sharedP prefs=await
+      print(response.statusCode);
+      print(response.body);
+      switch (response.statusCode) {
+        case 200:
+          setState(() {
+            res = json.decode(response.body);
+
+            data = res["Result"]['data'];
+            isLoading = false;
+          });
+
+          break;
+
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            //////print(res);
+            isLoading = false;
+            messages('Ohps! Something Went Wrong', 'error');
+          });
+
+          break;
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        //////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -393,7 +449,9 @@ class _ListPendingBillsState extends State<ListPendingBills> {
                               _formKey.currentState!.save();
                               widget.system == "Fremis"
                                   ? await searchDataFremis()
-                                  : await searchData();
+                                  : widget.system == "PMIs"
+                                      ? await searchDataPMIS()
+                                      : await searchData();
                             }
                           },
                           child: const Icon(
@@ -435,6 +493,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -447,7 +506,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       body: SingleChildScrollView(
           child: SingleChildScrollView(
               child: SizedBox(
-        height: getProportionateScreenHeight(700),
+        height: getProportionateScreenHeight(900),
         child: SmartRefresher(
           enablePullDown: true,
           enablePullUp: true,
@@ -535,7 +594,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
                             ),
                           )
                         : Container(
-                            height: getProportionateScreenHeight(530),
+                            height: getProportionateScreenHeight(700),
                             color: Colors.white,
                             child: AnimationLimiter(
                               child: ListView.builder(
@@ -548,100 +607,312 @@ class _ListPendingBillsState extends State<ListPendingBills> {
                                     child: SlideAnimation(
                                       verticalOffset: 50.0,
                                       child: FadeInAnimation(
-                                        child: Card(
-                                          elevation: 10,
-                                          shadowColor: Colors.grey,
-                                          child: ListTile(
-                                            onTap: () async {
-                                              var station =
-                                                  await SharedPreferences
-                                                          .getInstance()
-                                                      .then((prefs) =>
-                                                          prefs.getString(
-                                                              'StationName'));
-                                              var fname =
-                                                  await SharedPreferences
-                                                          .getInstance()
-                                                      .then((prefs) => prefs
-                                                          .getString('fname'));
-                                              var lname =
-                                                  await SharedPreferences
-                                                          .getInstance()
-                                                      .then((prefs) => prefs
-                                                          .getString('lname'));
-                                              var username =
-                                                  "${fname!} ${lname!}";
+                                        child: InkWell(
+                                          onTap: (() async {
+                                            var station =
+                                                await SharedPreferences
+                                                        .getInstance()
+                                                    .then((prefs) =>
+                                                        prefs.getString(
+                                                            'StationName'));
+                                            var fname = await SharedPreferences
+                                                    .getInstance()
+                                                .then((prefs) =>
+                                                    prefs.getString('fname'));
+                                            var lname = await SharedPreferences
+                                                    .getInstance()
+                                                .then((prefs) =>
+                                                    prefs.getString('lname'));
+                                            var username =
+                                                "${fname!} ${lname!}";
 
-                                              widget.system == "E-Auction"
-                                                  ? null
-                                                  : Navigator.pushNamed(context,
-                                                      Payments.routeName,
-                                                      arguments:
-                                                          ReceiptScreenArguments(
-                                                              data[index]["DealerName"]
-                                                                  .toString(),
-                                                              data[index]["ControlNumber"]
-                                                                  .toString(),
-                                                              data[index]["bank_receipt_no"]
-                                                                  .toString(),
-                                                              widget.system ==
-                                                                          "E-Auction" ||
-                                                                      widget.system ==
-                                                                          "PMIS"
-                                                                  ? data[index][
-                                                                      "BillAmount"]
-                                                                  : widget.system ==
-                                                                          "honeytraceability"
-                                                                      ? data[index]["BillAmount"]
-                                                                          .toDouble()
-                                                                      : double.parse(
-                                                                          data[index][
-                                                                              "BillAmount"]),
-                                                              true,
-                                                              data[index][
-                                                                      "BillDesc"]
-                                                                  .toString(),
-                                                              username,
-                                                              station: station,
-                                                              currency: data[index]
-                                                                      ["currency"]
-                                                                  .toString()));
-                                            },
-                                            trailing: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: const [
-                                                Icon(
-                                                  Icons
-                                                      .pending_actions_outlined,
-                                                  color: Colors.pink,
-                                                  size: 15,
-                                                ),
-                                              ],
-                                            ),
-                                            leading: IntrinsicHeight(
-                                                child: SizedBox(
-                                                    height: double.maxFinite,
-                                                    width:
-                                                        getProportionateScreenHeight(
-                                                            50),
+                                            widget.system == "E-Auction"
+                                                ? null
+                                                : Navigator.pushNamed(
+                                                    context, Payments.routeName,
+                                                    arguments:
+                                                        ReceiptScreenArguments(
+                                                            data[index]["DealerName"]
+                                                                .toString(),
+                                                            data[index]["ControlNumber"]
+                                                                .toString(),
+                                                            data[index]["bank_receipt_no"]
+                                                                .toString(),
+                                                            widget.system ==
+                                                                        "E-Auction" ||
+                                                                    widget.system ==
+                                                                        "PMIS"
+                                                                ? data[index][
+                                                                    "BillAmount"]
+                                                                : widget.system ==
+                                                                        "honeytraceability"
+                                                                    ? data[index]["BillAmount"]
+                                                                        .toDouble()
+                                                                    : double.parse(
+                                                                        data[index][
+                                                                            "BillAmount"]),
+                                                            true,
+                                                            data[index]["BillDesc"]
+                                                                .toString(),
+                                                            username,
+                                                            station: station,
+                                                            currency: data[index]
+                                                                    ["currency"]
+                                                                .toString(),
+                                                            billId: data[index]
+                                                                    ["BillId"]
+                                                                .toString()));
+                                          }),
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 8, right: 8),
+                                            child: Container(
+                                              padding: const EdgeInsets.all(5),
+                                              margin: const EdgeInsets.only(
+                                                  bottom: 10),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  color: Colors.white,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey
+                                                          .withOpacity(0.5),
+                                                      spreadRadius: 0,
+                                                      blurRadius: 5,
+                                                      offset:
+                                                          const Offset(0, 1),
+                                                    ),
+                                                  ]),
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Expanded(
+                                                        child: Row(children: [
+                                                          SizedBox(
+                                                              width: 40,
+                                                              height: 40,
+                                                              child: ClipRRect(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            20),
+                                                                child: IntrinsicHeight(
+                                                                    child: SizedBox(
+                                                                        height: double.maxFinite,
+                                                                        width: getProportionateScreenHeight(40),
+                                                                        child: Row(
+                                                                          children: [
+                                                                            VerticalDivider(
+                                                                              color: index.isEven ? kPrimaryColor : Colors.green[200],
+                                                                              thickness: 5,
+                                                                            )
+                                                                          ],
+                                                                        ))),
+                                                              )),
+                                                          const SizedBox(
+                                                              width: 5),
+                                                          Flexible(
+                                                            child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                      "Name: ${data[index]["DealerName"]}",
+                                                                      style: TextStyle(
+                                                                          color: Colors
+                                                                              .black,
+                                                                          fontSize: 11
+                                                                              .sp,
+                                                                          fontWeight:
+                                                                              FontWeight.w500)),
+                                                                  const SizedBox(
+                                                                    height: 5,
+                                                                  ),
+                                                                  Text(
+                                                                      "Control #: ${data[index]["ControlNumber"]}",
+                                                                      style: const TextStyle(
+                                                                          color:
+                                                                              Colors.black54)),
+                                                                ]),
+                                                          )
+                                                        ]),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
                                                     child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
                                                       children: [
-                                                        VerticalDivider(
-                                                          color: index.isEven
-                                                              ? kPrimaryColor
-                                                              : Colors
-                                                                  .green[200],
-                                                          thickness: 5,
-                                                        )
+                                                        Expanded(
+                                                          flex: 4,
+                                                          child: Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                      //   border: Border.all(color: Colors.green),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              10),
+                                                                      color: Colors
+                                                                          .grey
+                                                                          .shade200),
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        8.0),
+                                                                child: Text(
+                                                                  "Amount: " +
+                                                                      data[index]
+                                                                              [
+                                                                              "BillAmount"]
+                                                                          .toString() +
+                                                                      " " +
+                                                                      data[index]
+                                                                              [
+                                                                              "currency"]
+                                                                          .toString(),
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    color: Colors
+                                                                        .green,
+                                                                  ),
+                                                                ),
+                                                              )),
+                                                        ),
+                                                        const Spacer(
+                                                          flex: 2,
+                                                        ),
+                                                        Expanded(
+                                                            flex: 1,
+                                                            child: CircleAvatar(
+                                                                radius: 12.sp,
+                                                                backgroundColor:
+                                                                    Colors.grey[
+                                                                        200],
+                                                                child: Icon(
+                                                                  Icons
+                                                                      .pending_actions,
+                                                                  color: Colors
+                                                                      .blue,
+                                                                  size: 11.sp,
+                                                                ))),
                                                       ],
-                                                    ))),
-                                            title: Text(
-                                                "Name: ${data[index]["DealerName"]}"),
-                                            subtitle: Text(
-                                                'Control #: ${data[index]["ControlNumber"]}'),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ),
+                                        // Card(
+                                        //   elevation: 10,
+                                        //   shadowColor: Colors.grey,
+                                        //   child: ListTile(
+                                        //     onTap: () async {
+                                        //       var station =
+                                        //           await SharedPreferences
+                                        //                   .getInstance()
+                                        //               .then((prefs) =>
+                                        //                   prefs.getString(
+                                        //                       'StationName'));
+                                        //       var fname =
+                                        //           await SharedPreferences
+                                        //                   .getInstance()
+                                        //               .then((prefs) => prefs
+                                        //                   .getString('fname'));
+                                        //       var lname =
+                                        //           await SharedPreferences
+                                        //                   .getInstance()
+                                        //               .then((prefs) => prefs
+                                        //                   .getString('lname'));
+                                        //       var username =
+                                        //           "${fname!} ${lname!}";
+
+                                        //       widget.system == "E-Auction"
+                                        //           ? null
+                                        //           : Navigator.pushNamed(context,
+                                        //               Payments.routeName,
+                                        //               arguments:
+                                        //                   ReceiptScreenArguments(
+                                        //                       data[index]["DealerName"]
+                                        //                           .toString(),
+                                        //                       data[index]["ControlNumber"]
+                                        //                           .toString(),
+                                        //                       data[index]["bank_receipt_no"]
+                                        //                           .toString(),
+                                        //                       widget.system ==
+                                        //                                   "E-Auction" ||
+                                        //                               widget.system ==
+                                        //                                   "PMIS"
+                                        //                           ? data[index][
+                                        //                               "BillAmount"]
+                                        //                           : widget.system ==
+                                        //                                   "honeytraceability"
+                                        //                               ? data[index]["BillAmount"]
+                                        //                                   .toDouble()
+                                        //                               : double.parse(
+                                        //                                   data[index][
+                                        //                                       "BillAmount"]),
+                                        //                       true,
+                                        //                       data[index]["BillDesc"]
+                                        //                           .toString(),
+                                        //                       username,
+                                        //                       station: station,
+                                        //                       currency:
+                                        //                           data[index]["currency"]
+                                        //                               .toString(),
+                                        //                       billId: data[index]
+                                        //                               ["BillId"]
+                                        //                           .toString()));
+                                        //     },
+                                        //     trailing: Column(
+                                        //       mainAxisAlignment:
+                                        //           MainAxisAlignment.center,
+                                        //       children: const [
+                                        //         Icon(
+                                        //           Icons
+                                        //               .pending_actions_outlined,
+                                        //           color: Colors.pink,
+                                        //           size: 15,
+                                        //         ),
+                                        //       ],
+                                        //     ),
+                                        //     leading: IntrinsicHeight(
+                                        //         child: SizedBox(
+                                        //             height: double.maxFinite,
+                                        //             width:
+                                        //                 getProportionateScreenHeight(
+                                        //                     50),
+                                        //             child: Row(
+                                        //               children: [
+                                        //                 VerticalDivider(
+                                        //                   color: index.isEven
+                                        //                       ? kPrimaryColor
+                                        //                       : Colors
+                                        //                           .green[200],
+                                        //                   thickness: 5,
+                                        //                 )
+                                        //               ],
+                                        //             ))),
+                                        //     title: Text(
+                                        //         "Name: ${data[index]["DealerName"]}"),
+                                        //     subtitle: Text(
+                                        //         'Control #: ${data[index]["ControlNumber"]}'),
+                                        //   ),
+                                        // ),
                                       ),
                                     ),
                                   );
@@ -670,20 +941,20 @@ class _ListPendingBillsState extends State<ListPendingBills> {
           : 'admin@localhost';
       String password =
           widget.system == "HoneyTraceability" ? '12345678' : 'muyenjwa';
-      ////print(email);
-      ////print(password);
+      //////print(email);
+      //////print(password);
       final response = await http.post(
         url,
         body: {'email': email, 'password': password},
       );
       var res;
       //final sharedP prefs=await
-      ////print(response.statusCode);
+      //////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
             seedToken = res["token"];
           });
           await getDataSeed();
@@ -693,7 +964,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         case 403:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
           });
           return 'fail';
           // ignore: dead_code
@@ -702,7 +973,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         case 1200:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
             // addError(
             //     error:
             //         'Your Device Is Locked Please Contact User Support Team');
@@ -714,7 +985,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            //////print(res);
             // addError(error: 'Something Went Wrong');
             // isLoading = false;
           });
@@ -724,7 +995,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       }
     } catch (e) {
       setState(() {
-        ////print(e);
+        //////print(e);
 
         // addError(error: 'Server Or Network Connectivity Error');
         // isLoading = false;
