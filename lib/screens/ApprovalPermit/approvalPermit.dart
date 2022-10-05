@@ -31,6 +31,7 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
+      //  print(tokens);
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('$baseUrl/api/v1/exp_appr_req/fw');
 
@@ -264,134 +265,175 @@ class _ApprovalPermittState extends State<ApprovalPermitt> {
                   color: kPrimaryColor,
                 ),
               )
-            : Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: getProportionateScreenHeight(10),
+            : Data.isEmpty
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: SizedBox(
+                        // height: getProportionateScreenHeight(60),
+                        child: Card(
+                          elevation: 10,
+                          child: ListTile(
+                            trailing: Icon(Icons.donut_large_outlined),
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.grey,
+                              child: Icon(
+                                Icons.hourglass_empty_outlined,
+                                color: kPrimaryColor,
+                              ),
+                            ),
+                            title: Text(
+                              "No Data Found",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            // subtitle: Text(""),
+                          ),
+                        ),
+                      ),
                     ),
-                    SizedBox(
-                      height: getProportionateScreenHeight(650),
-                      child: ListView.builder(
-                        itemCount: Data.length,
-                        //shrinkWrap: true,
-                        //scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: getProportionateScreenWidth(10),
-                            vertical: getProportionateScreenHeight(10)),
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ApprovalDetails(
-                                            data: [Data[index]],
-                                          ))).then((value) async {
-                                await getData();
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(10),
-                              margin: const EdgeInsets.only(bottom: 15),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      spreadRadius: 0,
-                                      blurRadius: 5,
-                                      offset: const Offset(0, 1),
-                                    ),
-                                  ]),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: getProportionateScreenHeight(10),
+                        ),
+                        SizedBox(
+                          height: getProportionateScreenHeight(650),
+                          child: ListView.builder(
+                            itemCount: Data.length,
+                            //shrinkWrap: true,
+                            //scrollDirection: Axis.horizontal,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: getProportionateScreenWidth(10),
+                                vertical: getProportionateScreenHeight(10)),
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ApprovalDetails(
+                                                data: [Data[index]],
+                                              ))).then((value) async {
+                                    await getData();
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  margin: const EdgeInsets.only(bottom: 15),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.2),
+                                          spreadRadius: 0,
+                                          blurRadius: 5,
+                                          offset: const Offset(0, 1),
+                                        ),
+                                      ]),
+                                  child: Column(
                                     children: [
-                                      Expanded(
-                                        flex: 5,
-                                        child: Row(children: [
-                                          SizedBox(
-                                              width: 20,
-                                              height: 40,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                child: IntrinsicHeight(
-                                                    child: SizedBox(
-                                                        height:
-                                                            double.maxFinite,
-                                                        width:
-                                                            getProportionateScreenHeight(
-                                                                50),
-                                                        child: Row(
-                                                          children: [
-                                                            VerticalDivider(
-                                                              color: index
-                                                                      .isEven
-                                                                  ? kPrimaryColor
-                                                                  : Colors.green[
-                                                                      200],
-                                                              thickness: 5,
-                                                            )
-                                                          ],
-                                                        ))),
-                                              )),
-                                          const SizedBox(width: 5),
-                                          Flexible(
-                                            flex: 4,
-                                            child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                      "Client Name: ${Data[index]["client_name"]}",
-                                                      style: const TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 15,
-                                                          fontWeight:
-                                                              FontWeight.w500)),
-                                                  const SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                  Text(
-                                                      "Address: ${Data[index]["postal_address"]}",
-                                                      style: TextStyle(
-                                                          color: Colors
-                                                              .grey[500])),
-                                                  Text(
-                                                      "Approval Type: ${Data[index]["approval_type"].toUpperCase()}",
-                                                      style: TextStyle(
-                                                          color: Colors
-                                                              .grey[500])),
-                                                  Text(
-                                                      "Station to be Issued: ${Data[index]["station_name"]}",
-                                                      style: TextStyle(
-                                                          color: Colors
-                                                              .grey[500])),
-                                                ]),
-                                          )
-                                        ]),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            flex: 5,
+                                            child: Row(children: [
+                                              SizedBox(
+                                                  width: 20,
+                                                  height: 40,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    child: IntrinsicHeight(
+                                                        child: SizedBox(
+                                                            height: double
+                                                                .maxFinite,
+                                                            width:
+                                                                getProportionateScreenHeight(
+                                                                    50),
+                                                            child: Row(
+                                                              children: [
+                                                                VerticalDivider(
+                                                                  color: index
+                                                                          .isEven
+                                                                      ? kPrimaryColor
+                                                                      : Colors.green[
+                                                                          200],
+                                                                  thickness: 5,
+                                                                )
+                                                              ],
+                                                            ))),
+                                                  )),
+                                              const SizedBox(width: 5),
+                                              Flexible(
+                                                flex: 4,
+                                                child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                          "Client Name: ${Data[index]["client_name"]}",
+                                                          style: const TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500)),
+                                                      const SizedBox(
+                                                        height: 5,
+                                                      ),
+                                                      Text(
+                                                          "Email: ${Data[index]["email"]}",
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .grey[500])),
+                                                      Text(
+                                                          "Phone No: ${Data[index]["phone_number"]}",
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .grey[500])),
+                                                      Text(
+                                                          "Address: ${Data[index]["postal_address"]}",
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .grey[500])),
+                                                      Text(
+                                                          "Approval Type: ${Data[index]["approval_type"].toUpperCase()}",
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .grey[500])),
+                                                      Text(
+                                                          "Station to be Issued: ${Data[index]["station_name"]}",
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .grey[500])),
+                                                    ]),
+                                              )
+                                            ]),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 20,
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  ],
-                ),
-              ),
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
       ),
     );
   }

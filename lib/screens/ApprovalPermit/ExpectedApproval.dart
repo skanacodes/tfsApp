@@ -40,8 +40,8 @@ class _ExpectedApprovalsState extends State<ExpectedApprovals> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      // print(response.statusCode);
-      // print(response.body);
+      print(response.statusCode);
+      print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
@@ -327,6 +327,22 @@ class _ExpectedApprovalsState extends State<ExpectedApprovals> {
                                                               "assessment_time"]
                                                           .toString()
                                                       : "${DateTime.now().difference(DateTime.parse(Data[index]["assessment_time"].toString())).inDays} day(s) ago",
+                                              Data[index]["zm_time"]
+                                                          .toString() ==
+                                                      "null"
+                                                  ? ""
+                                                  : DateTime.now()
+                                                              .difference(DateTime
+                                                                  .parse(Data[index]
+                                                                          [
+                                                                          "zm_time"]
+                                                                      .toString()))
+                                                              .inDays
+                                                              .toString() ==
+                                                          "0"
+                                                      ? Data[index]["zm_time"]
+                                                          .toString()
+                                                      : "${DateTime.now().difference(DateTime.parse(Data[index]["zm_time"].toString())).inDays} day(s) ago",
                                               Data[index]["submission_time"]
                                                           .toString() ==
                                                       "null"
@@ -423,7 +439,16 @@ class _ExpectedApprovalsState extends State<ExpectedApprovals> {
                                                                   .toString() ==
                                                               "null"
                                                           ? ""
-                                                          : "Submission Time: ${DateTime.now().difference(DateTime.parse(Data[index]["submission_time"].toString())).inDays} day(s) ago",
+                                                          : "DFC Submission Time: ${DateTime.now().difference(DateTime.parse(Data[index]["submission_time"].toString())).inDays} day(s) ago",
+                                                      style: TextStyle(
+                                                          color: Colors
+                                                              .grey[500])),
+                                                  Text(
+                                                      Data[index]["zm_time"]
+                                                                  .toString() ==
+                                                              "null"
+                                                          ? ""
+                                                          : "Zonal Review Time: ${DateTime.now().difference(DateTime.parse(Data[index]["zm_time"].toString())).inDays} day(s) ago",
                                                       style: TextStyle(
                                                           color: Colors
                                                               .grey[500])),
@@ -432,16 +457,16 @@ class _ExpectedApprovalsState extends State<ExpectedApprovals> {
                                                                   .toString() ==
                                                               "null"
                                                           ? ""
-                                                          : "Assessment Time: ${Data[index]["assessment_time"]}",
+                                                          : "Licensing Assessment Time: ${DateTime.now().difference(DateTime.parse(Data[index]["assessment_time"].toString())).inDays} day(s) ago",
                                                       style: TextStyle(
                                                           color: Colors
                                                               .grey[500])),
                                                   Text(
-                                                      Data[index]["review_time"]
+                                                      Data[index]["review_time"]  
                                                                   .toString() ==
                                                               "null"
                                                           ? ""
-                                                          : "Review Time: ${Data[index]["review_time"]}",
+                                                          : "DMRU Review Time:  ${DateTime.now().difference(DateTime.parse(Data[index]["review_time"].toString())).inDays} day(s) ago",
                                                       style: TextStyle(
                                                           color: Colors
                                                               .grey[500])),

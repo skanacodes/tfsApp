@@ -148,11 +148,6 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
     ).show();
   }
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   Future getApprovalRejectStatus(String operation, int id) async {
     try {
       setState(() {
@@ -541,9 +536,7 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
                                               .toString() ==
                                           "null"
                                       ? " "
-                                      : widget.data![0]["exp_products"][i]
-                                              ["length"]
-                                          .toString()),
+                                      : "${widget.data![0]["exp_products"][i]["length"]} ${widget.data![0]["exp_products"][i]["length_unit"]}"),
                                 ),
                               ],
                             ),
@@ -558,9 +551,7 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
                                               .toString() ==
                                           "null"
                                       ? " "
-                                      : widget.data![0]["exp_products"][i]
-                                              ["width"]
-                                          .toString()),
+                                      : "${widget.data![0]["exp_products"][i]["width"]} ${widget.data![0]["exp_products"][i]["width_unit"]}"),
                                 ),
                               ],
                             ),
@@ -576,9 +567,7 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
                                               .toString() ==
                                           "null"
                                       ? " "
-                                      : widget.data![0]["exp_products"][i]
-                                              ["thickness"]
-                                          .toString()),
+                                      : "${widget.data![0]["exp_products"][i]["thickness"]} ${widget.data![0]["exp_products"][i]["thickness_unit"]}"),
                                 ),
                               ],
                             ),

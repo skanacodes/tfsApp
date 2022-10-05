@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tfsappv1/screens/ExportImport/permitList.dart';
+import 'package:tfsappv1/screens/Inventory/forestInventoryScreen.dart';
 import 'package:tfsappv1/screens/NfrScreen/nfrScreen.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/screens/dashboard/drawer.dart';
@@ -607,11 +608,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                     InkWell(
                                       onTap: () {
-                                        // Navigator.pushNamed(
-                                        //   context,
-                                        //   ForestInventoryScreen.routeName,
-                                        // ).then((_) => RealTimeCommunication()
-                                        //     .createConnection("3"));
+                                        Navigator.pushNamed(
+                                          context,
+                                          ForestInventoryScreen.routeName,
+                                        ).then((_) => RealTimeCommunication()
+                                            .createConnection("3"));
                                       },
                                       child: Container(
                                           decoration: BoxDecoration(

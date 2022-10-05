@@ -149,7 +149,7 @@ class _BillManagementState extends State<BillManagement> {
     final bottom = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(
-        resizeToAvoidBottomInset: false,
+        //resizeToAvoidBottomInset: false,
         appBar: AppBar(
           backgroundColor: kPrimaryColor,
           title: const Text(
@@ -158,7 +158,7 @@ class _BillManagementState extends State<BillManagement> {
           ),
         ),
         body: SingleChildScrollView(
-          reverse: true,
+          // reverse: true,
           child: Padding(
             padding: EdgeInsets.only(bottom: bottom),
             child: Column(
@@ -218,7 +218,7 @@ class _BillManagementState extends State<BillManagement> {
                           ),
                           children: <Widget>[
                             Container(
-                                height: getProportionateScreenHeight(670),
+                                //  height: getProportionateScreenHeight(720),
                                 color: Colors.transparent,
                                 child: widget.system == "HoneyTraceability"
                                     ? HoneyTraceAbility(seedToken!)

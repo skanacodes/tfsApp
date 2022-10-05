@@ -131,8 +131,8 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       var res;
 
-      ////print((response.statusCode);
-      ////print((response.body);
+      print(response.statusCode);
+      print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
@@ -479,7 +479,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          Text('tfsappv2.6.2+8'),
+          Text('tfsappv3.1.0+2'),
           Expanded(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10),
@@ -567,8 +567,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final Uri toLaunch = Uri(
-      scheme: 'https',
-      host: 'mis.tfs.go.tz',
+      scheme: 'http',
+      host: '41.59.228.37',
       path: '/fremis/download_APK',
     );
     return Scaffold(

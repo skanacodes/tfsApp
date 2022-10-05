@@ -1,5 +1,7 @@
 // ignore_for_file: file_names, avoid_//print
 
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
@@ -12,6 +14,7 @@ import 'package:tfsappv1/services/constants.dart';
 
 import 'package:tfsappv1/services/modal/dealer.dart';
 import 'package:tfsappv1/services/modal/gfsCodes.dart';
+import 'package:tfsappv1/services/renew_session.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
 import 'package:sizer/sizer.dart';
@@ -64,17 +67,18 @@ class _FremisBillsState extends State<FremisBills> {
   double? compountAmt;
   double total = 0;
   final _formKey = GlobalKey<FormState>();
+  final _formKeydescr = GlobalKey<FormState>();
   final _formKey1 = GlobalKey<FormState>();
   var overallSumation;
   double calculateSum() {
     double sumation = 0;
     for (var i = 0; i < billData.length; i++) {
       setState(() {
-        ////////print(amount);
+        ////////////print(amount);
         sumation = sumation + double.parse(billData[i]["amount"].toString());
         total = sumation;
       });
-      //////print(sumation);
+      //////////print(sumation);
     }
     return sumation;
   }
@@ -124,39 +128,44 @@ class _FremisBillsState extends State<FremisBills> {
         // setState(() {
         //   uploadMessage = sent.toString();
         // });
-        //////print('$sent $total');
+        //////////print('$sent $total');
       });
-      print(response.statusCode);
-      print(response.statusMessage);
-      print(response.data);
+      ////print(response.statusCode);
+      ////print(response.statusMessage);
+      ////print(response.data);
       var res = response.data;
-      //print(res);
+      //////print(res);
       if (response.statusCode == 201) {
         message(
           'Bill Generated Successfully',
           'success',
         );
       } else if (response.statusCode == 200) {
-        if (res["status"] == "Token is Expired") {
-          messages("error", "Token Expired.. Please Login Again");
-          return;
+        if (res["status"].toString() == "Token is Expired") {
+          // messages("error", "Token Expired.. Please Login Again");
+          // ignore: use_build_context_synchronously
+          RenewSession().renewSessionForm(
+            context,
+          );
+        } else {
+          message(res["message"].toString(), 'error');
         }
       } else {
         message(res["message"].toString(), 'error');
       }
     } on DioError catch (e) {
-      //////print('dio package');
+      //////////print('dio package');
       if (DioErrorType.receiveTimeout == e.type ||
           DioErrorType.connectTimeout == e.type) {
         message('Server Can Not Be Reached.', 'error');
         // throw Exception('Server Can Not Be Reached');
-        //////print(e);
+        //////////print(e);
       } else if (DioErrorType.response == e.type) {
         // throw Exception('Server Can Not Be Reached');
 
         message('Failed To Get Response From Server.', 'error');
         // throw Exception('Server Can Not Be Reached');
-        //////print(e);
+        //////////print(e);
       } else if (DioErrorType.other == e.type) {
         if (e.message.contains('SocketException')) {
           // throw Exception('Server Can Not Be Reached');
@@ -165,14 +174,14 @@ class _FremisBillsState extends State<FremisBills> {
             'error',
           );
 
-          //////print(e);
+          //////////print(e);
         }
       } else {
         //  throw Exception('Server Can Not Be Reached');
         message('error',
             'Network Connectivity Problem. Data Has Been Stored Localy');
         // throw Exception('Server Can Not Be Reached');
-        //////print(e);
+        //////////print(e);
       }
     }
     setState(() {
@@ -268,7 +277,8 @@ class _FremisBillsState extends State<FremisBills> {
   createUser() {
     return Alert(
         context: context,
-        title: "Register New Dealer",
+        title: "Add Dealer",
+        style: AlertStyle(titleStyle: TextStyle(fontSize: 12.sp)),
         content: Form(
           key: _formKey,
           child: Column(
@@ -291,6 +301,7 @@ class _FremisBillsState extends State<FremisBills> {
                         color: Colors.cyan,
                       ),
                     ),
+                    labelStyle: TextStyle(fontSize: 12.sp),
                     fillColor: const Color(0xfff3f3f4),
                     filled: true,
                     labelText: "Full Name",
@@ -321,6 +332,7 @@ class _FremisBillsState extends State<FremisBills> {
                         color: Colors.cyan,
                       ),
                     ),
+                    labelStyle: TextStyle(fontSize: 12.sp),
                     fillColor: const Color(0xfff3f3f4),
                     filled: true,
                     labelText: "Phone Number",
@@ -351,6 +363,7 @@ class _FremisBillsState extends State<FremisBills> {
                         color: Colors.cyan,
                       ),
                     ),
+                    labelStyle: TextStyle(fontSize: 12.sp),
                     fillColor: const Color(0xfff3f3f4),
                     filled: true,
                     labelText: "Email Address",
@@ -404,17 +417,17 @@ class _FremisBillsState extends State<FremisBills> {
                 Navigator.pop(context);
               }
             },
-            child: const Text(
+            child: Text(
               "Register",
-              style: TextStyle(color: Colors.white, fontSize: 17),
+              style: TextStyle(color: Colors.white, fontSize: 12.sp),
             ),
           ),
           DialogButton(
             color: Colors.red,
             onPressed: () => Navigator.pop(context),
-            child: const Text(
+            child: Text(
               "Cancel",
-              style: TextStyle(color: Colors.white, fontSize: 17),
+              style: TextStyle(color: Colors.white, fontSize: 12.sp),
             ),
           )
         ]).show();
@@ -480,16 +493,96 @@ class _FremisBillsState extends State<FremisBills> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                //////print(index);
+                //////////print(index);
                 updateState(() {
                   if (index != null) {
                     billData[index]["quantity"] = quantity;
                     // quantities[index] = quantity;
-                    // //////print(quantities);
+                    // //////////print(quantities);
                   }
 
-                  //////print(billData);
+                  ////print(billData);
                 });
+              }
+              Navigator.pop(context);
+            },
+            child: const Text(
+              "Ok",
+              style: TextStyle(color: Colors.white, fontSize: 17),
+            ),
+          ),
+          DialogButton(
+            color: Colors.red,
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              "Cancel",
+              style: TextStyle(color: Colors.white, fontSize: 17),
+            ),
+          )
+        ]).show();
+  }
+
+  Future billDescr() {
+    return Alert(
+        context: context,
+        onWillPopActive: true,
+        title: "Enter Bill Description",
+        content: Form(
+          key: _formKeydescr,
+          child: Column(
+            children: <Widget>[
+              const Divider(
+                thickness: 1.0,
+                height: 1.0,
+                color: Colors.black26,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
+                child: TextFormField(
+                  keyboardType: TextInputType.text,
+                  key: const Key("name"),
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: const BorderSide(
+                        color: Colors.cyan,
+                      ),
+                    ),
+                    fillColor: const Color(0xfff3f3f4),
+                    filled: true,
+                    labelText: "Enter Bill Description",
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "This Field Is Required";
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    billdesc = value;
+                  },
+                ),
+              ),
+              SizedBox(
+                height: getProportionateScreenHeight(10),
+              ),
+              const Divider(
+                thickness: 1.0,
+                height: 1.0,
+                color: Colors.grey,
+              ),
+            ],
+          ),
+        ),
+        buttons: [
+          DialogButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
               }
               Navigator.pop(context);
             },
@@ -554,7 +647,7 @@ class _FremisBillsState extends State<FremisBills> {
   forms() {
     return Column(children: [
       SizedBox(
-        height: getProportionateScreenHeight(670),
+        height: getProportionateScreenHeight(1200),
         child: Column(
           children: <Widget>[
             Form(
@@ -825,10 +918,14 @@ class _FremisBillsState extends State<FremisBills> {
                                   gfcCode = data.gfsCode;
                                   levelTwoCode = data.levelTwoId;
                                   distributions = data.distributions;
-                                  //print(distributions);
-                                  ////print(desc);
+                                  !isBillDescrAvailable
+                                      ? billdesc = data.description
+                                      : "";
+
+                                  //////print(distributions);
+                                  ////////print(desc);
                                 });
-                                // //////print(amount);
+                                // //////////print(amount);
                               },
 
                               popupItemBuilder: _customPopupItemBuilderGFSCode,
@@ -1023,7 +1120,7 @@ class _FremisBillsState extends State<FremisBills> {
                                   onPressed: () {
                                     if (_formKey1.currentState!.validate()) {
                                       _formKey1.currentState!.save();
-                                      ////print(bill)0p9
+                                      ////////print(bill)0p9
 
                                       var amt;
                                       levelTwoCode == "4"
@@ -1046,10 +1143,10 @@ class _FremisBillsState extends State<FremisBills> {
                                         "quantity": quantity,
                                         "prod_desc": desc
                                       };
-                                      //////print(billElements);
+                                      //////////print(billElements);
 
                                       billData.add(billElements);
-                                      //////print(billData);
+                                      //////////print(billData);
 
                                       setState(() {
                                         desc = null;
@@ -1063,6 +1160,7 @@ class _FremisBillsState extends State<FremisBills> {
                                       });
                                       // _dealerEditTextController = TextEditingController();
                                       _formKey1.currentState!.reset();
+                                      //billDescr();
                                       showModal();
                                     }
                                   },
@@ -1449,7 +1547,7 @@ class _FremisBillsState extends State<FremisBills> {
     String url;
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
-    //////print(tokens);
+    //////////print(tokens);
     var headers = {"Authorization": "Bearer ${tokens!}"};
     url = "$baseUrlTest/api/v1/dealers";
     var response = await Dio().get(url,
@@ -1459,7 +1557,12 @@ class _FremisBillsState extends State<FremisBills> {
         options: Options(headers: headers));
 
     final data = response.data;
-    //////print(data['dealers']);
+    if (data["status"].toString() == "Token is Expired") {
+      // ignore: use_build_context_synchronously
+      RenewSession().renewSessionForm(
+        context,
+      );
+    }
 
     return DealerModel.fromJsonList(data['dealers']);
   }
@@ -1508,7 +1611,7 @@ class _FremisBillsState extends State<FremisBills> {
 
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
-    //print(tokens);
+    //////print(tokens);
     var headers = {"Authorization": "Bearer ${tokens!}"};
     url = "$baseUrlTest/api/v1/gfs_codes/pos";
     var response = await Dio().get(url,
@@ -1518,7 +1621,16 @@ class _FremisBillsState extends State<FremisBills> {
         options: Options(headers: headers));
 
     final data = response.data;
-    //print(data['data']);
+    ////print(data);
+    // var res = jsonDecode(data);
+    // ////print(res["status"]);
+    if (data["status"].toString() == "Token is Expired") {
+      // messages("error", "Token Expired.. Please Login Again");
+      // ignore: use_build_context_synchronously
+      RenewSession().renewSessionForm(
+        context,
+      );
+    }
     if (data != null) {
       return GfsModel.fromJsonList(data['data']);
     }

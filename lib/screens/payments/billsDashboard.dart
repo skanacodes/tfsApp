@@ -90,9 +90,11 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
         ? getDataSeed()
         : widget.system == "HoneyTraceability"
             ? getUserDetails()
-            : widget.system == "E-Auction"
-                ? ""
-                : getStats();
+            : widget.system == "PMIS"
+                ? getStatsPMIS()
+                : widget.system == "PMIS"
+                    ? "e_auction"
+                    : getStats();
 
     super.initState();
   }
@@ -678,6 +680,53 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
       //print(tokens);
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('$baseUrlTest/api/v1/bill-stats/$stationId');
+      final response = await http.get(url, headers: headers);
+      var res;
+      //final sharedP prefs=await
+      //print(response.);
+      switch (response.statusCode) {
+        case 200:
+          setState(() {
+            res = json.decode(response.body);
+            //print(res);
+            dataStats = res['data'];
+          });
+
+          break;
+
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            //print(res);
+            isLoading = false;
+          });
+
+          break;
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        //print(e);
+        //messages('Server Or Connectivity Error', 'error');
+      });
+    }
+    // _refreshController.refreshCompleted();
+  }
+
+  Future getStatsPMIS() async {
+    setState(() {
+      // isLoading = true;
+    });
+    // String stationId = await SharedPreferences.getInstance()
+    //     .then((prefs) => prefs.getInt('station_id').toString());
+
+    //print(stationId);
+    try {
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      //print(tokens);
+      var headers = {"Authorization": "Bearer ${tokens!}"};
+      var url = Uri.parse('$baseUrlTest/api/v1/bill-stats');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await

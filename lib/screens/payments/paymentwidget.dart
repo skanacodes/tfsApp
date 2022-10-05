@@ -66,10 +66,10 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       //     .then((prefs) => prefs.getString('email').toString());
       //       String id = await SharedPreferences.getInstance()
       // .then((prefs) => prefs.getInt('email').toString());
-      print(controlNumber);
+      //////print(controlNumber);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      print(tokens);
+      //////print(tokens);
       var headers = {
         "Authorization": "Bearer ${tokens!}",
         "Accept": "application/json",
@@ -82,22 +82,22 @@ class _PaymentWidgetState extends State<PaymentWidget> {
               : systemtype == "PMIS"
                   ? Uri.parse('$baseUrlPMIS/api/Bill/UpdatePrintStatus')
                   : Uri.parse('$baseUrlTest/api/v1/print_status');
-      //print(billId);
+      ////////print(billId);
       // var url =
       //     Uri.parse('http://mis.tfs.go.tz/e-auction/api/v1/Bill/PrintReceipt');
-      print(url);
+      //////print(url);
       final response = await http.post(url,
           body: json.encode({"control_number": controlNumber}),
           headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
-      print(response.body);
+      //////print(response.statusCode);
+      //////print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //print(res);
+            ////////print(res);
             data = res['message'].toString();
           });
 
@@ -106,7 +106,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //print(res);
+            ////////print(res);
 
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -115,7 +115,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       }
     } catch (e) {
       setState(() {
-        //print(e);
+        ////////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -131,12 +131,12 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       // String stationId = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getInt('station_id').toString());
 
-      ////print(stationId);
+      //////////print(stationId);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
       var headers = {"Authorization": "Bearer ${tokens!}"};
-      print(billId);
-      print(system);
+      ////print(billId);
+      ////print(system);
       var url = system == "E-Auction"
           ? Uri.parse(
               'https://mis.tfs.go.tz/e-auction/api/Bill/GetPriceDistribution/$billId')
@@ -148,17 +148,17 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                   : system == "seedmis"
                       ? Uri.parse('$baseUrlSeed/api/v1/bill-items/$billId')
                       : Uri.parse('$baseUrlTest/api/v1/bill-items/$billId');
-      print(url);
+      //////print(url);
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
-      print(response.body);
+      // //print(response.statusCode);
+      // //print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //print(res);
+            ////////print(res);
             isItems = true;
             system == "PMIS"
                 ? dataItems = res['Result']
@@ -172,7 +172,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
           setState(() {
             isItems = true;
             res = json.decode(response.body);
-            //print(res);
+            ////////print(res);
 
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -181,7 +181,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       }
     } catch (e) {
       setState(() {
-        //print(e);
+        ////////print(e);
         isItems = true;
         messages('Server Or Connectivity Error', 'error');
       });
@@ -222,19 +222,19 @@ class _PaymentWidgetState extends State<PaymentWidget> {
 
     for (var i = 0; i < dataItems.length; i++) {
       desc.add(dataItems[i]["ItemDescr"]);
-      //print(dataItems[i]["BillItemAmt"]);
-      //print(dataItems[i]["BillItemAmt"].runtimeType);
+      ////////print(dataItems[i]["BillItemAmt"]);
+      ////////print(dataItems[i]["BillItemAmt"].runtimeType);
       amounts.add(formatNumber.format(dataItems[i]["BillItemAmt"]));
     }
-    //print(desc);
-    //print(amounts);
+    ////////print(desc);
+    ////////print(amounts);
     await screenshotController.capture().then((Uint8List? image) {
       //Capture Done
       setState(() {
         _imageFile = image!;
       });
     }).catchError((onError) {
-      //print(onError);
+      ////////print(onError);
     });
     await screenshotController1.capture().then((Uint8List? image) {
       //Capture Done
@@ -242,7 +242,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         _imageFile1 = image!;
       });
     }).catchError((onError) {
-      //print(onError);
+      ////////print(onError);
     });
 
     try {
@@ -251,7 +251,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
           content: Text("Starting Printer"),
         ),
       );
-      // //print(_imageFile1);
+      // ////////print(_imageFile1);
       final String result = await platform.invokeMethod('getBatteryLevel', {
         "imageData": base64Encode(_imageFile!),
         "brand": brand,
@@ -271,7 +271,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         "type": isBill! ? "bill" : "receipt"
       });
 
-      //print(result);
+      ////////print(result);
       if (result == "Successfully Printed") {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -293,7 +293,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         );
       }
     } on PlatformException catch (e) {
-      //print(e);
+      ////////print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("$e"),
@@ -357,10 +357,10 @@ class _PaymentWidgetState extends State<PaymentWidget> {
     setState(() {
       isPrinting = true;
     });
-    //print(username);
+    ////////print(username);
     final args =
         ModalRoute.of(context)!.settings.arguments as ReceiptScreenArguments;
-    //print(args);
+    ////////print(args);
     isItems
         ? null
         : args.billId == null
@@ -1087,8 +1087,8 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       final String paths = '$dirPath/${userEmail + formattedDate}.pdf';
       final File file = File(paths);
       var x = await file.writeAsBytes(await doc.save());
-      print(x);
-      //print(paths);
+      //////print(x);
+      ////////print(paths);
       Future.delayed(const Duration(milliseconds: 500), () async {
         var emailRes = await MailSending().sendMails(paths, userEmail);
         if (emailRes == "Email Sent Successfull") {
@@ -1098,7 +1098,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
           });
 
           var del = await FilesManupalation().deleteFile(File(paths));
-          //print(del);
+          ////////print(del);
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -1119,7 +1119,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
   }
 
   userMail(ReceiptScreenArguments args) {
-    // //print(args.);
+    // ////////print(args.);
     return isEmail || isSms
         ? Padding(
             padding: const EdgeInsets.fromLTRB(13, 8, 13, 0),
@@ -1223,8 +1223,8 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                 PopupMenuItem(
                   onTap: () async {
                     // double amount= args.system== "PMIS"?double()
-                    // //print(args.amount.runtimeType);
-                    // //print(dataItems);
+                    // ////////print(args.amount.runtimeType);
+                    // ////////print(dataItems);
 
                     await _getPrinter(
                         amount:
@@ -1263,11 +1263,11 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                 ),
                 PopupMenuItem(
                   onTap: () {
-                    ////print("mail");
+                    //////////print("mail");
                     setState(() {
                       isEmail = true;
                       isSms = false;
-                      //print(isEmail);
+                      ////////print(isEmail);
                     });
                   },
                   child: Row(
@@ -1354,7 +1354,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
             'Accept': 'application/json',
           });
       //final sharedP prefs=await
-      //print(response.statusCode);
+      ////////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           ScaffoldMessenger.of(context).showSnackBar(

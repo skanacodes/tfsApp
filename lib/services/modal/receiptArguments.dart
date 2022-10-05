@@ -16,12 +16,14 @@ class ReceiptScreenArguments {
   bool? isPrinted;
   final String? currency;
   final String? billId;
+  final String? quantity;
 
   ReceiptScreenArguments(this.payerName, this.controlNumber, this.receiptNo,
       this.amount, this.isBill, this.desc, this.issuer,
       {this.bankReceipt,
       this.isPrinted,
       this.payedDate,
+      this.quantity,
       this.system,
       this.billId,
       this.station,

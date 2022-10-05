@@ -51,9 +51,14 @@ Color kGradientColorOne = const Color.fromARGB(255, 249, 241, 16);
 Color kGradientColorTwo = const Color.fromARGB(255, 4, 127, 41);
 
 const kAnimationDuration = Duration(milliseconds: 200);
-var baseUrl = "https://mis.tfs.go.tz/fremis";
-var baseUrlTest = "https://mis.tfs.go.tz/fremis";
-var baseUrlSeed = "https://mis.tfs.go.tz/seed-mis";
+// var baseUrl = "https://mis.tfs.go.tz/fremis";
+// var baseUrlTest = "https://mis.tfs.go.tz/fremis";
+// var baseUrlSeed = "https://mis.tfs.go.tz/seed-mis";
+// var baseUrlPMIS = "https://mis.tfs.go.tz/pmis";
+// var baseUrlHoneyTraceability = "https://mis.tfs.go.tz/honey-traceability";
+var baseUrl = "https://mis.tfs.go.tz/fremis-test";
+var baseUrlTest = "https://mis.tfs.go.tz/fremis-test";
+var baseUrlSeed = "https://mis.tfs.go.tz/seedmis";
 var baseUrlPMIS = "https://mis.tfs.go.tz/pmis";
 var baseUrlHoneyTraceability = "https://mis.tfs.go.tz/honey-traceability";
 String filepathImages = "assets/images/";

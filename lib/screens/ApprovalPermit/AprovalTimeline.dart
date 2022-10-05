@@ -49,7 +49,7 @@ class _ApprovalTimelineState extends State<ApprovalTimeline> {
               itemCount: 1,
               itemBuilder: (context, index) {
                 final tpdata = widget.data.reversed.toList();
-                print(tpdata);
+                //print(tpdata);
                 return Center(
                   child: SizedBox(
                     width: getProportionateScreenWidth(400),
@@ -219,10 +219,12 @@ class _DeliveryProcesses extends StatelessWidget {
                     children: [
                       Text(
                         index == 0
-                            ? "Client"
+                            ? "Client/DFC"
                             : index == 1
-                                ? "Licensing Officer"
-                                : "DMRU",
+                                ? "Zonal Manager"
+                                : index == 2
+                                    ? "Licensing Officer"
+                                    : "DMRU",
                         style: DefaultTextStyle.of(context).style.copyWith(
                             fontSize: 15.0,
                             color: Colors.black,
@@ -236,10 +238,14 @@ class _DeliveryProcesses extends StatelessWidget {
                             : index == 1
                                 ? processes[index] == ""
                                     ? "Scheduled"
-                                    : "Assessment Time: ${processes[index]} "
-                                : processes[index] == ""
-                                    ? "Scheduled"
-                                    : "Review Time: ${processes[index]} ",
+                                    : "Review Time: ${processes[index]} "
+                                : index == 2
+                                    ? processes[index] == ""
+                                        ? "Scheduled"
+                                        : "Assessment Time: ${processes[index]} "
+                                    : processes[index] == ""
+                                        ? "Scheduled"
+                                        : "Review Time: ${processes[index]} ",
                         " ",
                         "",
                       ]),

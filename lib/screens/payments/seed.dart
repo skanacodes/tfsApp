@@ -1,4 +1,4 @@
-// ignore_for_file: use_key_in_widget_constructors, avoid_print, unrelated_type_equality_checks, prefer_typing_uninitialized_variables, library_private_types_in_public_api
+// ignore_for_file: use_key_in_widget_constructors, avoid_//print(, unrelated_type_equality_checks, prefer_typing_uninitialized_variables, library_private_types_in_public_api
 
 import 'dart:convert';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -78,13 +78,13 @@ class _SeedsState extends State<Seeds> {
     for (var i = 0; i < orderData.length; i++) {
       double price = double.parse(orderData[i]["price"].toString()) *
           double.parse(orderData[i]["quantity"].toString());
-      print(price);
+      //print((price);
       setState(() {
-        //print(quantity);
+        ////print((quantity);
         sumation = sumation + price;
         //sum = sumation;
       });
-      print(sumation);
+      //print((sumation);
     }
     return sumation;
   }
@@ -92,10 +92,10 @@ class _SeedsState extends State<Seeds> {
   Future postBill() async {
     setState(() {
       isLoading = true;
-      print(orderData);
+      //print((orderData);
     });
     try {
-      // print(widget.token);
+      // //print((widget.token);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
       var headers = {
@@ -126,12 +126,12 @@ class _SeedsState extends State<Seeds> {
         // setState(() {
         //   uploadMessage = sent.toString();
         // });
-        print('$sent $total');
+        //print(('$sent $total');
       });
-      print(response.statusCode);
-      print(response.statusMessage);
+      //print((response.statusCode);
+      //print((response.statusMessage);
       var res = response.data;
-      print(res);
+      //print((res);
       if (response.statusCode == 200) {
         if (res["status"].toString() == "Token is Expired") {
           message("Token Is Expired Please Login Again", "info");
@@ -160,24 +160,24 @@ class _SeedsState extends State<Seeds> {
           message("Problem while Processing", "error");
         }
       } else if (response.statusCode == "500") {
-        print(res.toString());
+        //print((res.toString());
       } else {
         message('Failed To Save Data', 'error');
       }
     } on DioError catch (e) {
-      print('dio package');
+      //print(('dio package');
       if (DioErrorType.receiveTimeout == e.type ||
           DioErrorType.connectTimeout == e.type) {
-        print(e.toString());
+        //print((e.toString());
         message('Server Can Not Be Reached.', 'error');
         // throw Exception('Server Can Not Be Reached');
-        print(e);
+        //print((e);
       } else if (DioErrorType.response == e.type) {
         // throw Exception('Server Can Not Be Reached');
-        // print(e.message);
+        // //print((e.message);
         message('Failed To Get Response From Server.', 'error');
         // throw Exception('Server Can Not Be Reached');
-        print(e);
+        //print((e);
       } else if (DioErrorType.other == e.type) {
         if (e.message.contains('SocketException')) {
           // throw Exception('Server Can Not Be Reached');
@@ -186,14 +186,14 @@ class _SeedsState extends State<Seeds> {
             'error',
           );
 
-          print(e);
+          //print((e);
         }
       } else {
         //  throw Exception('Server Can Not Be Reached');
         message('error',
             'Network Connectivity Problem. Data Has Been Stored Localy');
         // throw Exception('Server Can Not Be Reached');
-        print(e);
+        //print((e);
       }
     }
     setState(() {
@@ -203,12 +203,12 @@ class _SeedsState extends State<Seeds> {
 
   postBills() async {
     try {
-      print(widget.token);
+      //print((widget.token);
       var headers = {
         "Authorization": "Bearer ${widget.token}",
       };
       var url = Uri.parse('$baseUrlSeed/api/v1/generate-bill');
-      print("yaaa");
+      //print(("yaaa");
       final response = await http.post(url, headers: headers, body: {
         "customer_id": customerId,
         "full_name": fullname,
@@ -229,17 +229,17 @@ class _SeedsState extends State<Seeds> {
       });
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print((response.statusCode);
       setState(() {
         res = json.decode(response.body);
       });
-      print(res);
+      //print((res);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
           });
-          print(res);
+          //print((res);
           Future.delayed(const Duration(seconds: 5), () async {
 // Here you can write your code
             await getControllNumber(res["data"]["bill_id"]);
@@ -250,7 +250,7 @@ class _SeedsState extends State<Seeds> {
         case 403:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print((res);
           });
           return 'fail';
           // ignore: dead_code
@@ -259,7 +259,7 @@ class _SeedsState extends State<Seeds> {
         case 1200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print((res);
             // addError(
             //     error:
             //         'Your Device Is Locked Please Contact User Support Team');
@@ -271,7 +271,7 @@ class _SeedsState extends State<Seeds> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print((res);
             // addError(error: 'Something Went Wrong');
             // isLoading = false;
           });
@@ -281,7 +281,7 @@ class _SeedsState extends State<Seeds> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        //print((e);
 
         // addError(error: 'Server Or Network Connectivity Error');
         // isLoading = false;
@@ -391,7 +391,7 @@ class _SeedsState extends State<Seeds> {
                         value == "Domestic Customer"
                             ? categoryId = "1"
                             : categoryId = "3";
-                        print(categoryId);
+                        //print((categoryId);
                       });
                     },
                     onSaved: (value) {
@@ -401,7 +401,7 @@ class _SeedsState extends State<Seeds> {
                         value == "Domestic Customer"
                             ? categoryId = "1"
                             : categoryId = "3";
-                        print(categoryId);
+                        //print((categoryId);
                       });
                     },
                   ),
@@ -817,7 +817,7 @@ class _SeedsState extends State<Seeds> {
                                   typeSeed == "Seed"
                                       ? isSeed = true
                                       : isSeed = false;
-                                  print(typeSeed);
+                                  //print((typeSeed);
                                 });
                               },
                             ),
@@ -893,8 +893,8 @@ class _SeedsState extends State<Seeds> {
                                     price = double.parse(data.price);
                                     seedId = data.id;
 
-                                    // print(seedname);
-                                    // print(price);
+                                    // //print((seedname);
+                                    // //print((price);
                                   },
 
                                   popupItemBuilder: _customPopupItemBuilderSeed,
@@ -969,9 +969,9 @@ class _SeedsState extends State<Seeds> {
                                     seedname = data!.name;
                                     price = double.parse(data.price);
                                     seedlingId = data.id;
-                                    print(seedlingId.toString());
-                                    print(seedname);
-                                    print(price);
+                                    //print((seedlingId.toString());
+                                    //print((seedname);
+                                    //print((price);
                                   },
 
                                   popupItemBuilder:
@@ -1050,8 +1050,8 @@ class _SeedsState extends State<Seeds> {
                                     // acc = int.parse(data.price);
                                     //seedId = data.id;
 
-                                    // print(seedname);
-                                    // print(price);
+                                    // //print((seedname);
+                                    // //print((price);
                                   },
 
                                   popupItemBuilder:
@@ -1337,11 +1337,11 @@ class _SeedsState extends State<Seeds> {
               });
             }
             Navigator.pop(context);
-            print(orderData);
-            print(customerId);
-            print(customerName);
-            print(mobileNumber);
-            print(categoryId);
+            //print((orderData);
+            //print((customerId);
+            //print((customerName);
+            //print((mobileNumber);
+            //print((categoryId);
             isBillMessage! ? await postBill() : "";
           },
           width: 120,
@@ -1473,7 +1473,7 @@ class _SeedsState extends State<Seeds> {
                     orderData[index]["quantity"] = quantity.toString();
                   }
 
-                  print(orderData);
+                  //print((orderData);
                 });
               }
               Navigator.pop(context);
@@ -1523,7 +1523,7 @@ class _SeedsState extends State<Seeds> {
             accessionNumber = null;
 
             cardB.currentState?.collapse();
-            //print(orderData);
+            ////print((orderData);
 
             cardC.currentState?.expand();
 
@@ -1674,7 +1674,7 @@ class _SeedsState extends State<Seeds> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("name${item.name}",
+                              Text("name: ${item.name}",
                                   style: const TextStyle(
                                       color: Colors.black,
                                       fontSize: 15,
@@ -1682,7 +1682,7 @@ class _SeedsState extends State<Seeds> {
                               const SizedBox(
                                 height: 5,
                               ),
-                              Text("Price${item.price}",
+                              Text("Price: ${item.price}",
                                   style: TextStyle(color: Colors.grey[500])),
                             ]),
                       )
@@ -1714,25 +1714,91 @@ class _SeedsState extends State<Seeds> {
               ),
               SizedBox(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 15),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: Colors.grey.shade200),
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 15),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.blue.shade50),
+                        child: Center(
                           child: Text(
-                            "Balance: ${item.balance}",
+                            item.balance == "null"
+                                ? " "
+                                : "Balance: ${item.balance}",
                             style: const TextStyle(color: Colors.black),
                           ),
                         ),
-                        const SizedBox(
-                          width: 10,
+                      ),
+                    ),
+                    SizedBox(width: getProportionateScreenWidth(30)),
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 15),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.deepPurple.shade50),
+                        child: Center(
+                          child: Text(
+                            item.size == "null"
+                                ? "Size: "
+                                : "Size: ${item.size}",
+                            style: const TextStyle(color: Colors.black),
+                          ),
                         ),
-                      ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: getProportionateScreenHeight(5),
+              ),
+              SizedBox(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 15),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.green.shade50),
+                        child: Center(
+                          child: Text(
+                            item.category == "null"
+                                ? "Category: "
+                                : "Category: ${item.category}",
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: getProportionateScreenWidth(30)),
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 15),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.cyan.shade50),
+                        child: Center(
+                          child: Text(
+                            item.type == "null"
+                                ? "Type: "
+                                : "Type: ${item.type}",
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -1783,7 +1849,7 @@ class _SeedsState extends State<Seeds> {
     String url;
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
-    print(tokens);
+    //print((tokens);
     var headers = {"Authorization": "Bearer $tokens"};
     url = "$baseUrlSeed/api/v1/customers";
     var response = await Dio().get(url,
@@ -1793,7 +1859,7 @@ class _SeedsState extends State<Seeds> {
         options: Options(headers: headers));
 
     final data = response.data;
-    print(data['data']);
+    //print((data['data']);
     if (data != null) {
       setState(() {
         // datas = data[];
@@ -1809,7 +1875,7 @@ class _SeedsState extends State<Seeds> {
     String url;
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
-    print(tokens);
+    //print((tokens);
     var headers = {"Authorization": "Bearer $tokens"};
     url = "$baseUrlSeed/api/v1/accession-number/$seedId";
     var response = await Dio().get(url,
@@ -1819,7 +1885,7 @@ class _SeedsState extends State<Seeds> {
         options: Options(headers: headers));
 
     final data = response.data;
-    print(data['data']);
+    //print((data['data']);
     if (data != null) {
       setState(() {
         // datas = data[];
@@ -1834,7 +1900,7 @@ class _SeedsState extends State<Seeds> {
     String url;
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
-    print(tokens);
+    //print((tokens);
     var headers = {"Authorization": "Bearer $tokens"};
     url = "$baseUrlSeed/api/v1/seeds";
     var response = await Dio().get(url,
@@ -1842,7 +1908,7 @@ class _SeedsState extends State<Seeds> {
         options: Options(headers: headers));
 
     final data = response.data;
-    print(data);
+    //print((data);
     if (data != null) {
       setState(() {
         // datas = data[];
@@ -1857,7 +1923,7 @@ class _SeedsState extends State<Seeds> {
     String url;
     var tokens = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('token'));
-    print(tokens);
+    //print((tokens);
     var headers = {"Authorization": "Bearer $tokens"};
     url = "$baseUrlSeed/api/v1/seedlings";
     var response = await Dio().get(url,
@@ -1865,7 +1931,7 @@ class _SeedsState extends State<Seeds> {
         options: Options(headers: headers));
 
     final data = response.data;
-    print(data['data']);
+    //print((data['data']);
     if (data != null) {
       setState(() {
         // datas = data[];
@@ -1883,22 +1949,22 @@ class _SeedsState extends State<Seeds> {
     try {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
-      print(id);
-      print("djvnjdw");
+      //print((id);
+      //print(("djvnjdw");
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      print(tokens);
+      //print((tokens);
       var headers = {"Authorization": "Bearer $tokens"};
       var url = Uri.parse('$baseUrlSeed/api/v1/bills/$id');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print((response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print((res);
           });
           await getControllNumber(4);
           break;
@@ -1906,7 +1972,7 @@ class _SeedsState extends State<Seeds> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print((res);
             messages('Ohps! Something Went Wrong', 'error');
           });
 
@@ -1914,7 +1980,7 @@ class _SeedsState extends State<Seeds> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        //print((e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -1930,22 +1996,22 @@ class _SeedsState extends State<Seeds> {
     try {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
-      // print(tokens);
-      // print(id.toString());
+      // //print((tokens);
+      // //print((id.toString());
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      print(tokens);
+      //print((tokens);
       var headers = {"Authorization": "Bearer $tokens"};
       var url = Uri.parse('$baseUrlSeed/api/v1/controlnumber/$billId');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
+      //print((response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print((res);
             //widget.callback(jsonEncode(res["data"]));
             messages("success", "C/N:  ${res["data"]["control_number"]}");
           });
@@ -1955,7 +2021,7 @@ class _SeedsState extends State<Seeds> {
         default:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            //print((res);
             messages('Ohps! Something Went Wrong', 'error');
           });
 
@@ -1963,7 +2029,7 @@ class _SeedsState extends State<Seeds> {
       }
     } catch (e) {
       setState(() {
-        print(e);
+        //print((e);
         messages('Server Or Connectivity Error', 'error');
       });
     }

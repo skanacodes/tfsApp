@@ -191,7 +191,8 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
                                                     });
                                                   }
                                                   await Future.delayed(
-                                                      const Duration(seconds: 30));
+                                                      const Duration(
+                                                          seconds: 30));
                                                   if (mounted) {
                                                     setState(() {
                                                       isSelected = false;
@@ -204,7 +205,8 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
                                                                 gridIndex ==
                                                                     index
                                                             ? Colors.green
-                                                            : const Color(0xfff3f3f4),
+                                                            : const Color(
+                                                                0xfff3f3f4),
                                                         boxShadow: const [
                                                           BoxShadow(
                                                               color:
@@ -237,7 +239,8 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
                                                                     animationType:
                                                                         BadgeAnimationType
                                                                             .scale,
-                                                                    padding: const EdgeInsets.symmetric(
+                                                                    padding: const EdgeInsets
+                                                                            .symmetric(
                                                                         horizontal:
                                                                             5,
                                                                         vertical:
@@ -279,7 +282,7 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
                                                           style: TextStyle(
                                                               color: Colors
                                                                   .black87,
-                                                              fontSize: 5.sp,
+                                                              fontSize: 9.sp,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold),

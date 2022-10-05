@@ -15,6 +15,7 @@ import 'package:tfsappv1/screens/payments/payments.dart';
 
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/modal/receiptArguments.dart';
+import 'package:tfsappv1/services/renew_session.dart';
 
 import 'package:tfsappv1/services/size_config.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -52,7 +53,7 @@ class _PaymentListState extends State<PaymentList> {
       String stationId = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getInt('station_id').toString());
 
-      ////print(stationId);
+      ////////////print(stationId);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
       var headers = {"Authorization": "Bearer ${tokens!}"};
@@ -63,14 +64,18 @@ class _PaymentListState extends State<PaymentList> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
-      print(response.body);
+      ////////print(response.statusCode);
+      ////////print(response.body);
       switch (response.statusCode) {
         case 201:
           setState(() {
             res = json.decode(response.body);
-            //print(res);
-            data = res['data'];
+            //////////print(res);
+            // data = res['data'];
+            if (res["success"] && widget.system != "PMIS") {
+              data = res['data'];
+            }
+
             isLoading = false;
           });
 
@@ -79,8 +84,23 @@ class _PaymentListState extends State<PaymentList> {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
-            widget.system == "PMIS" ? data = res["Result"]["data"] : null;
+            ////////////print(res);
+
+            if (res["success"].toString() == "false" &&
+                widget.system != "PMIS") {
+              messages(res["message"].toString(), 'error');
+            }
+            if (res["status"].toString() == "Token is Expired") {
+              //////////print("tokens");
+              RenewSession().renewSessionForm(
+                context,
+              );
+            }
+
+            if (widget.system == "PMIS") {
+              data = res["Result"]["data"];
+            }
+
             isLoading = false;
           });
           break;
@@ -88,9 +108,9 @@ class _PaymentListState extends State<PaymentList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            ////////////print(res);
             isLoading = false;
-            messages('Ohps! Something Went Wrong', 'error');
+            messages('Ohps! Something Went Wrong', res["message"].toString());
           });
 
           break;
@@ -98,8 +118,8 @@ class _PaymentListState extends State<PaymentList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        ////print(e);
-        messages('Server Or Connectivity Error', 'error');
+        ////////////print(e);
+        messages('Server Or Connectivity Error', e.toString());
       });
     }
     _refreshController.refreshCompleted();
@@ -120,13 +140,13 @@ class _PaymentListState extends State<PaymentList> {
       );
       var res;
       //final sharedP prefs=await
-      ////print(response.statusCode);
+      ////////////print(response.statusCode);
 
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            ////////////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -136,7 +156,7 @@ class _PaymentListState extends State<PaymentList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            ////////////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -146,7 +166,7 @@ class _PaymentListState extends State<PaymentList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        ////print(e);
+        ////////////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -160,7 +180,7 @@ class _PaymentListState extends State<PaymentList> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      ////print(tokens);
+      ////////////print(tokens);
       var url = Uri.parse('$baseUrlSeed/api/v1/paid-bills');
 
       var headers = {"Authorization": "Bearer " + tokens!};
@@ -168,12 +188,12 @@ class _PaymentListState extends State<PaymentList> {
       final response = await http.get(url, headers: headers);
       var res;
 
-      //print(response.statusCode);
+      //////////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //print(res);
+            //////////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -183,7 +203,7 @@ class _PaymentListState extends State<PaymentList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            ////////////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -193,7 +213,7 @@ class _PaymentListState extends State<PaymentList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        ////print(e);
+        ////////////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -209,7 +229,7 @@ class _PaymentListState extends State<PaymentList> {
           .then((prefs) => prefs.getInt('station_id').toString());
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      ////print(tokens);
+      ////////////print(tokens);
       var headers = {"Authorization": "Bearer " + tokens!};
       var url =
           Uri.parse('$baseUrlHoneyTraceability/api/v1/paid-bills/$stationId');
@@ -217,13 +237,13 @@ class _PaymentListState extends State<PaymentList> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      //print(response.statusCode);
-      //print(response.body);
+      //////////print(response.statusCode);
+      //////////print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            ////////////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -233,7 +253,7 @@ class _PaymentListState extends State<PaymentList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            ////////////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -243,7 +263,7 @@ class _PaymentListState extends State<PaymentList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        ////print(e);
+        ////////////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -255,10 +275,10 @@ class _PaymentListState extends State<PaymentList> {
       isLoading = true;
     });
     try {
-      ////print(duration);
+      ////////////print(duration);
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
-      // ////print(tokens);
+      // ////////////print(tokens);
       var headers = {"Authorization": "Bearer " + seedToken};
       var url = widget.system == "seedMIS"
           ? Uri.parse(
@@ -269,12 +289,12 @@ class _PaymentListState extends State<PaymentList> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      //print(response.statusCode);
+      //////////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //print(res);
+            //////////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -284,7 +304,7 @@ class _PaymentListState extends State<PaymentList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            ////////////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -294,7 +314,7 @@ class _PaymentListState extends State<PaymentList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        ////print(e);
+        ////////////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -308,7 +328,7 @@ class _PaymentListState extends State<PaymentList> {
     try {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
-      // ////print(tokens);
+      // ////////////print(tokens);
       var headers = {"Authorization": "Bearer " + seedToken};
       var url = widget.system == "seedMIS"
           ? Uri.parse(
@@ -319,12 +339,12 @@ class _PaymentListState extends State<PaymentList> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      //print(response.statusCode);
+      //////////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //print(res);
+            //////////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -334,7 +354,7 @@ class _PaymentListState extends State<PaymentList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            ////////////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -344,7 +364,7 @@ class _PaymentListState extends State<PaymentList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        ////print(e);
+        ////////////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -365,13 +385,13 @@ class _PaymentListState extends State<PaymentList> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
-      print(response.body);
+      ////////print(response.statusCode);
+      ////////print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            print(res);
+            ////////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -381,7 +401,7 @@ class _PaymentListState extends State<PaymentList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            ////print(res);
+            ////////////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -391,7 +411,7 @@ class _PaymentListState extends State<PaymentList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        ////print(e);
+        ////////////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -412,10 +432,10 @@ class _PaymentListState extends State<PaymentList> {
       isLoading = true;
     });
     try {
-      print(controlNumber);
+      ////////print(controlNumber);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      //print(tokens);
+      //////////print(tokens);
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse(
         '$baseUrlPMIS/api/Bill/SearchAccountsPayments/$controlNumber',
@@ -427,8 +447,8 @@ class _PaymentListState extends State<PaymentList> {
       );
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
-      print(response.body);
+      ////////print(response.statusCode);
+      ////////print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
@@ -443,7 +463,7 @@ class _PaymentListState extends State<PaymentList> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //////print(res);
+            //////////////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -453,7 +473,7 @@ class _PaymentListState extends State<PaymentList> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        //////print(e);
+        //////////////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -524,7 +544,7 @@ class _PaymentListState extends State<PaymentList> {
                           onTap: () async {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              //////print(controlNo);
+                              //////////////print(controlNo);
                               widget.system == "Fremis"
                                   ? await searchDataFremis()
                                   : widget.system == "PMIS"
@@ -869,20 +889,24 @@ class _PaymentListState extends State<PaymentList> {
                                                                               "IsPrinted"]
                                                                           .toString() ==
                                                                       "0"
-                                                                  ? const Text(
-                                                                      "Printing Status: Not Printed",
+                                                                  ? Text(
+                                                                      "Status: Not Printed",
                                                                       style:
                                                                           TextStyle(
+                                                                        fontSize:
+                                                                            11.sp,
                                                                         color: Colors
-                                                                            .black54,
+                                                                            .blue,
                                                                       ),
                                                                     )
-                                                                  : const Text(
-                                                                      "Printing Status: Printed",
+                                                                  : Text(
+                                                                      "Status: Printed",
                                                                       style:
                                                                           TextStyle(
+                                                                        fontSize:
+                                                                            11.sp,
                                                                         color: Colors
-                                                                            .black54,
+                                                                            .green,
                                                                       ),
                                                                     ),
                                                             ),
@@ -905,7 +929,7 @@ class _PaymentListState extends State<PaymentList> {
                                                                         Icons
                                                                             .radio_button_unchecked_outlined,
                                                                         color: Colors
-                                                                            .red,
+                                                                            .blue,
                                                                         size: 13
                                                                             .sp,
                                                                       )

@@ -13,6 +13,7 @@ import 'package:sizer/sizer.dart';
 import 'package:tfsappv1/screens/payments/payments.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/modal/receiptArguments.dart';
+import 'package:tfsappv1/services/renew_session.dart';
 import 'package:tfsappv1/services/size_config.dart';
 
 class ListPendingBills extends StatefulWidget {
@@ -40,11 +41,11 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       String stationId = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getInt('station_id').toString());
-
-      //////print(stationId);
+      // ////print("kaza");
+      //////////print(stationId);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      //////print(tokens);
+
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url;
       widget.system == "PMIS"
@@ -53,16 +54,36 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
-      print(response.body);
+      ////print(response.statusCode);
+      ////print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //print(res);
-            widget.system == "PMIS"
-                ? data = res["Result"]["data"]
-                : data = res['data'];
+            // ////print(res);
+            // RenewSession().renewSessionForm(context);
+
+            if (res["success"].toString() == "true" &&
+                widget.system != "PMIS") {
+              data = res['data'];
+            }
+            if (res["success"].toString() == "false" &&
+                widget.system != "PMIS") {
+              messages(res["message"].toString(), 'error');
+            }
+            if (res["status"].toString() == "Token is Expired") {
+              ////print("tokens");
+              RenewSession().renewSessionForm(
+                context,
+              );
+            }
+            if (widget.system == "PMIS") {
+              data = res["Result"]["data"];
+            }
+
+            // widget.system == "PMIS"
+            //     ? data = res["Result"]["data"]
+            //     : data = res['data'];
             isLoading = false;
           });
 
@@ -71,9 +92,9 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //////print(res);
+
             isLoading = false;
-            messages('Ohps! Something Went Wrong', 'error');
+            messages(res["message"].toString(), 'error');
           });
 
           break;
@@ -81,8 +102,8 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        //////print(e);
-        messages('Server Or Connectivity Error', 'error');
+
+        messages(e.toString(), e.toString());
       });
     }
     _refreshController.refreshCompleted();
@@ -95,7 +116,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
-      // //////print(tokens);
+      // //////////print(tokens);
       // var headers = {"Authorization": "Bearer " + tokens!};
       var url =
           Uri.parse('https://mis.tfs.go.tz/e-auction/api/Bill/AccountsBill');
@@ -104,12 +125,12 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       );
       var res;
       //final sharedP prefs=await
-      //////print(response.statusCode);
+      //////////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //////print(res);
+            //////////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -119,7 +140,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //////print(res);
+            //////////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -129,7 +150,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        //////print(e);
+        //////////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -143,19 +164,19 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      // //////print(tokens);
+      // //////////print(tokens);
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('$baseUrlTest/api/v1/search-bills/$controlNo');
 
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      //////print(response.statusCode);
+      //////////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //////print(res);
+            //////////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -165,7 +186,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //////print(res);
+            //////////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -175,7 +196,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        //////print(e);
+        //////////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -191,7 +212,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
           .then((prefs) => prefs.getInt('station_id').toString());
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      //////print(tokens);
+      //////////print(tokens);
       var headers = {"Authorization": "Bearer " + tokens!};
       var url = Uri.parse(
           '$baseUrlHoneyTraceability/api/v1/pending-bills/$stationId');
@@ -199,13 +220,13 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      ////print(response.statusCode);
-      ////print(response.body);
+      //print(response.statusCode);
+      //print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //////print(res);
+            //////////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -215,7 +236,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //////print(res);
+            //////////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -225,7 +246,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        //////print(e);
+        //////////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -239,20 +260,20 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      //////print(tokens);
+      //////////print(tokens);
       var headers = {"Authorization": "Bearer " + tokens!};
       var url = Uri.parse('$baseUrlSeed/api/v1/bills');
 
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      ////print(response.statusCode);
-      ////print(response.body);
+      //print(response.statusCode);
+      //print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //////print(res);
+            //////////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -262,7 +283,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //////print(res);
+            //////////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -272,7 +293,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        //////print(e);
+        //////////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -322,7 +343,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      // //////print(tokens);
+      // //////////print(tokens);
       var headers = {"Authorization": "Bearer " + tokens!};
       var url = widget.system == "seedmis"
           ? Uri.parse('$baseUrlSeed/api/v1/bill-by-controlnumber/$controlNo/2')
@@ -335,12 +356,12 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      //////print(response.statusCode);
+      //////////print(response.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //////print(res);
+            //////////print(res);
             data = res['data'];
             isLoading = false;
           });
@@ -350,7 +371,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //////print(res);
+            //////////print(res);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -360,7 +381,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        //////print(e);
+        //////////print(e);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -373,13 +394,13 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       isLoading = true;
     });
     try {
-      //print(controlNumber);
+      //////print(controlNumber);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      //print(tokens);
+      //////print(tokens);
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse(
-        '$baseUrlPMIS/api/Bill/SearchAccountsBill/$controlNumber',
+        '$baseUrlPMIS/api/Bill/SearchAccountsPayments/$controlNumber',
       );
 
       final response = await http.get(
@@ -388,8 +409,8 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       );
       var res;
       //final sharedP prefs=await
-      print(response.statusCode);
-      print(response.body);
+      ////print(response.statusCode);
+      ////print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
@@ -404,9 +425,9 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //////print(res);
+            //////////print(res);
             isLoading = false;
-            messages('Ohps! Something Went Wrong', 'error');
+            //  messages('Ohps! Something Went Wrong', 'Not Found');
           });
 
           break;
@@ -414,8 +435,8 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        //////print(e);
-        messages('Server Or Connectivity Error', 'error');
+        //////////print(e);
+        messages('Server Or Connectivity Error', 'Not Found');
       });
     }
     _refreshController.refreshCompleted();
@@ -449,7 +470,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
                               _formKey.currentState!.save();
                               widget.system == "Fremis"
                                   ? await searchDataFremis()
-                                  : widget.system == "PMIs"
+                                  : widget.system == "PMIS"
                                       ? await searchDataPMIS()
                                       : await searchData();
                             }
@@ -638,8 +659,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
                                                                 .toString(),
                                                             data[index]["bank_receipt_no"]
                                                                 .toString(),
-                                                            widget.system ==
-                                                                        "E-Auction" ||
+                                                            widget.system == "E-Auction" ||
                                                                     widget.system ==
                                                                         "PMIS"
                                                                 ? data[index][
@@ -648,20 +668,22 @@ class _ListPendingBillsState extends State<ListPendingBills> {
                                                                         "honeytraceability"
                                                                     ? data[index]["BillAmount"]
                                                                         .toDouble()
-                                                                    : double.parse(
-                                                                        data[index][
-                                                                            "BillAmount"]),
+                                                                    : double.parse(data[index][
+                                                                        "BillAmount"]),
                                                             true,
                                                             data[index]["BillDesc"]
                                                                 .toString(),
                                                             username,
+                                                            system:
+                                                                widget.system,
                                                             station: station,
                                                             currency: data[index]
                                                                     ["currency"]
                                                                 .toString(),
-                                                            billId: data[index]
-                                                                    ["BillId"]
-                                                                .toString()));
+                                                            billId: widget.system == "seedmis"
+                                                                ? data[index]["id"]
+                                                                    .toString()
+                                                                : data[index]["BillId"].toString()));
                                           }),
                                           child: Padding(
                                             padding: const EdgeInsets.only(
@@ -773,21 +795,20 @@ class _ListPendingBillsState extends State<ListPendingBills> {
                                                                     const EdgeInsets
                                                                             .all(
                                                                         8.0),
-                                                                child: Text(
-                                                                  "Amount: " +
-                                                                      data[index]
-                                                                              [
-                                                                              "BillAmount"]
-                                                                          .toString() +
-                                                                      " " +
-                                                                      data[index]
-                                                                              [
-                                                                              "currency"]
-                                                                          .toString(),
-                                                                  style:
-                                                                      const TextStyle(
-                                                                    color: Colors
-                                                                        .green,
+                                                                child: Center(
+                                                                  child: Text(
+                                                                    data[index]["BillAmount"]
+                                                                            .toString() +
+                                                                        " " +
+                                                                        data[index]["currency"]
+                                                                            .toString(),
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          11.sp,
+                                                                      color: Colors
+                                                                          .green,
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               )),
@@ -926,81 +947,5 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         ),
       ))),
     );
-  }
-
-  Future<String> getUserDetails() async {
-    try {
-      setState(() {
-        isLoading = true;
-      });
-      var url = Uri.parse(widget.system == "HoneyTraceability"
-          ? "https://mis.tfs.go.tz/honey-traceability/api/v1/login"
-          : '$baseUrlSeed/api/v1/login');
-      String email = widget.system == "HoneyTraceability"
-          ? 'onestpaul8@gmail.com'
-          : 'admin@localhost';
-      String password =
-          widget.system == "HoneyTraceability" ? '12345678' : 'muyenjwa';
-      //////print(email);
-      //////print(password);
-      final response = await http.post(
-        url,
-        body: {'email': email, 'password': password},
-      );
-      var res;
-      //final sharedP prefs=await
-      //////print(response.statusCode);
-      switch (response.statusCode) {
-        case 200:
-          setState(() {
-            res = json.decode(response.body);
-            //////print(res);
-            seedToken = res["token"];
-          });
-          await getDataSeed();
-          return 'success';
-          // ignore: dead_code
-          break;
-        case 403:
-          setState(() {
-            res = json.decode(response.body);
-            //////print(res);
-          });
-          return 'fail';
-          // ignore: dead_code
-          break;
-
-        case 1200:
-          setState(() {
-            res = json.decode(response.body);
-            //////print(res);
-            // addError(
-            //     error:
-            //         'Your Device Is Locked Please Contact User Support Team');
-          });
-          return 'fail';
-          // ignore: dead_code
-          break;
-
-        default:
-          setState(() {
-            res = json.decode(response.body);
-            //////print(res);
-            // addError(error: 'Something Went Wrong');
-            // isLoading = false;
-          });
-          return 'fail';
-          // ignore: dead_code
-          break;
-      }
-    } catch (e) {
-      setState(() {
-        //////print(e);
-
-        // addError(error: 'Server Or Network Connectivity Error');
-        // isLoading = false;
-      });
-      return 'fail';
-    }
   }
 }
