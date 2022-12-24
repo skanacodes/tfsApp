@@ -39,13 +39,14 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       isLoading = true;
     });
     try {
+      print("kaza");
       String stationId = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getInt('station_id').toString());
-      // ////print("kaza");
-      //////////print(stationId);
+      print("kaza");
+      ////////////(printstationId);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-
+      print(tokens);
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url;
       widget.system == "PMIS"
@@ -53,14 +54,16 @@ class _ListPendingBillsState extends State<ListPendingBills> {
           : url = Uri.parse('$baseUrlTest/api/v1/unpaid-bills/$stationId');
       final response = await http.get(url, headers: headers);
       var res;
+      print("sfdswf");
       //final sharedP prefs=await
-      ////print(response.statusCode);
-      ////print(response.body);
+      (response.body);
+      (response.statusCode);
+      (response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            // ////print(res);
+            // //////(printres);
             // RenewSession().renewSessionForm(context);
 
             if (res["success"].toString() == "true" &&
@@ -72,7 +75,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
               messages(res["message"].toString(), 'error');
             }
             if (res["status"].toString() == "Token is Expired") {
-              ////print("tokens");
+              //////(print"tokens");
               RenewSession().renewSessionForm(
                 context,
               );
@@ -116,7 +119,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       // var tokens = await SharedPreferences.getInstance()
       //     .then((prefs) => prefs.getString('token'));
-      // //////////print(tokens);
+      // ////////////(printtokens);
       // var headers = {"Authorization": "Bearer " + tokens!};
       var url =
           Uri.parse('https://mis.tfs.go.tz/e-auction/api/Bill/AccountsBill');
@@ -125,12 +128,12 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       );
       var res;
       //final sharedP prefs=await
-      //////////print(response.statusCode);
+      ////////////(printresponse.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //////////print(res);
+            ////////////(printres);
             data = res['data'];
             isLoading = false;
           });
@@ -140,7 +143,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //////////print(res);
+            ////////////(printres);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -150,7 +153,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        //////////print(e);
+        ////////////(printe);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -164,19 +167,19 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      // //////////print(tokens);
+      // ////////////(printtokens);
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('$baseUrlTest/api/v1/search-bills/$controlNo');
 
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      //////////print(response.statusCode);
+      ////////////(printresponse.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //////////print(res);
+            ////////////(printres);
             data = res['data'];
             isLoading = false;
           });
@@ -186,7 +189,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //////////print(res);
+            ////////////(printres);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -196,7 +199,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        //////////print(e);
+        ////////////(printe);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -212,7 +215,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
           .then((prefs) => prefs.getInt('station_id').toString());
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      //////////print(tokens);
+      ////////////(printtokens);
       var headers = {"Authorization": "Bearer " + tokens!};
       var url = Uri.parse(
           '$baseUrlHoneyTraceability/api/v1/pending-bills/$stationId');
@@ -220,13 +223,13 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      //print(response.statusCode);
-      //print(response.body);
+      ////(printresponse.statusCode);
+      ////(printresponse.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //////////print(res);
+            ////////////(printres);
             data = res['data'];
             isLoading = false;
           });
@@ -236,7 +239,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //////////print(res);
+            ////////////(printres);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -246,7 +249,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        //////////print(e);
+        ////////////(printe);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -260,20 +263,20 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      //////////print(tokens);
+      ////////////(printtokens);
       var headers = {"Authorization": "Bearer " + tokens!};
       var url = Uri.parse('$baseUrlSeed/api/v1/bills');
 
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      //print(response.statusCode);
-      //print(response.body);
+      ////(printresponse.statusCode);
+      ////(printresponse.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //////////print(res);
+            ////////////(printres);
             data = res['data'];
             isLoading = false;
           });
@@ -283,7 +286,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //////////print(res);
+            ////////////(printres);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -293,7 +296,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        //////////print(e);
+        ////////////(printe);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -343,7 +346,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     try {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      // //////////print(tokens);
+      // ////////////(printtokens);
       var headers = {"Authorization": "Bearer " + tokens!};
       var url = widget.system == "seedmis"
           ? Uri.parse('$baseUrlSeed/api/v1/bill-by-controlnumber/$controlNo/2')
@@ -356,12 +359,12 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      //////////print(response.statusCode);
+      ////////////(printresponse.statusCode);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //////////print(res);
+            ////////////(printres);
             data = res['data'];
             isLoading = false;
           });
@@ -371,7 +374,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //////////print(res);
+            ////////////(printres);
             isLoading = false;
             messages('Ohps! Something Went Wrong', 'error');
           });
@@ -381,7 +384,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        //////////print(e);
+        ////////////(printe);
         messages('Server Or Connectivity Error', 'error');
       });
     }
@@ -394,10 +397,10 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       isLoading = true;
     });
     try {
-      //////print(controlNumber);
+      ////////(printcontrolNumber);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
-      //////print(tokens);
+      ////////(printtokens);
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse(
         '$baseUrlPMIS/api/Bill/SearchAccountsPayments/$controlNumber',
@@ -409,8 +412,8 @@ class _ListPendingBillsState extends State<ListPendingBills> {
       );
       var res;
       //final sharedP prefs=await
-      ////print(response.statusCode);
-      ////print(response.body);
+      //////(printresponse.statusCode);
+      //////(printresponse.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
@@ -425,7 +428,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
         default:
           setState(() {
             res = json.decode(response.body);
-            //////////print(res);
+            ////////////(printres);
             isLoading = false;
             //  messages('Ohps! Something Went Wrong', 'Not Found');
           });
@@ -435,7 +438,7 @@ class _ListPendingBillsState extends State<ListPendingBills> {
     } catch (e) {
       setState(() {
         isLoading = false;
-        //////////print(e);
+        ////////////(printe);
         messages('Server Or Connectivity Error', 'Not Found');
       });
     }

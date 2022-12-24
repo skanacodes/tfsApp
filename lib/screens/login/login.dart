@@ -1,9 +1,10 @@
-// ignore_for_file: unused_import, prefer_typing_uninitialized_variables, avoid_////print(, library_private_types_in_public_api, use_build_context_synchronously
+// ignore_for_file: unused_import, prefer_typing_uninitialized_variables, avoid_//////(print, library_private_types_in_public_api, use_build_context_synchronously
 
 import 'dart:convert';
 
 //import 'package:tfsappv1/screens/dashboard/dashboardScreen.dart';
 
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/screens/dashboard/dashboardScreen.dart';
 
@@ -105,7 +106,9 @@ class _LoginScreenState extends State<LoginScreen> {
           body = {
             'email': username,
             'password': password,
-            'android_id': devId!
+            'android_id': devId!,
+            'version_no': '3.4.6+6',
+            'application_type': 'fremis'
           };
         });
       } else if (sys == "seedmis") {
@@ -123,24 +126,24 @@ class _LoginScreenState extends State<LoginScreen> {
           body = {"UserName": username, "Password": password};
         });
       }
-      //////print((body);
-      //////print((url);
+      ////////(print(body);
+      ////////(print(url);
       final response = await http.post(url, body: json.encode(body), headers: {
         "Accept": "application/json",
         "content-type": "application/json"
       });
       var res;
 
-      print(response.statusCode);
-      print(response.body);
+      //(printresponse.statusCode);
+      //(printresponse.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            // //////print((res);
+            // ////////(print(res);
           });
           if (sys == "seedmis") {
-            //////print((sys);
+            ////////(print(sys);
             await createUser(
                 res['access_token'],
                 res['user']['id'],
@@ -158,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
             return 'success';
           }
           if (sys == "honeytraceability") {
-            //////print(("traceability");
+            ////////(print("traceability");
             await createUser(
                 res['access_token'],
                 res['user']['user_id'],
@@ -212,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
               addError(error: 'Incorrect Password or Email');
             }
             if (res["Result"]["access_token"] != null) {
-              // //////print((res["Result"]['user']["access_token"].toString());
+              // ////////(print(res["Result"]['user']["access_token"].toString());
               await createUser(
                   res["Result"]["access_token"].toString(),
                   0,
@@ -237,7 +240,7 @@ class _LoginScreenState extends State<LoginScreen> {
         case 401:
           setState(() {
             res = json.decode(response.body);
-            ////////print((res);
+            //////////(print(res);
             if (res["error"] == "INVALID_LOGIN") {
               addError(error: 'Incorrect Password or Email');
             }
@@ -248,7 +251,7 @@ class _LoginScreenState extends State<LoginScreen> {
         case 403:
           setState(() {
             res = json.decode(response.body);
-            // //////print((res);
+            // ////////(print(res);
             if (res['message'] == 'Invalid Credentials') {
               addError(error: 'Incorrect Password or Email');
             } else if (res['message'] ==
@@ -256,6 +259,9 @@ class _LoginScreenState extends State<LoginScreen> {
               addError(
                   error:
                       'Your Device Is Locked Please Contact User Support Team');
+            } else if (res['message'] ==
+                'Your Version is out Of date Please update') {
+              message("error", "Your Version is out Of date Please update");
             }
 
             isLoading = false;
@@ -267,7 +273,7 @@ class _LoginScreenState extends State<LoginScreen> {
         case 1200:
           setState(() {
             res = json.decode(response.body);
-            // //////print((res);
+            // ////////(print(res);
             addError(
                 error:
                     'Your Device Is Locked Please Contact User Support Team');
@@ -289,13 +295,32 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       setState(() {
-        // //////print((e);
+        // ////////(print(e);
 
         addError(error: 'Server Or Network Connectivity Error');
         isLoading = false;
       });
       return 'fail';
     }
+  }
+
+  message(String hint, String message) {
+    return Alert(
+      context: context,
+      type: hint == "error" ? AlertType.info : AlertType.success,
+      title: "Information",
+      desc: message,
+      buttons: [
+        DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        )
+      ],
+    ).show();
   }
 
   void addError({required String error}) {
@@ -400,7 +425,7 @@ class _LoginScreenState extends State<LoginScreen> {
           });
           _formKey.currentState!.save();
 
-          ////////print((devId);
+          //////////(print(devId);
           var res = await getUserDetails();
           if (res == "success") {
             setState(() {
@@ -420,7 +445,7 @@ class _LoginScreenState extends State<LoginScreen> {
             // password == null;
             _formKey.currentState!.reset();
           } else {
-            //  //////print(('fail');
+            //  ////////(print('fail');
           }
           //  String val = await checkUserStatus(username!, password!);
 
@@ -479,7 +504,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          Text('tfsappv3.1.0+2'),
+          Text('tfsappv3.4.6+7'),
           Expanded(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10),
@@ -501,28 +526,27 @@ class _LoginScreenState extends State<LoginScreen> {
       textAlign: TextAlign.center,
       text: TextSpan(
           text: 'Tanzania  ',
-          style: GoogleFonts.portLligatSlab(
-            // textStyle: Theme.of(context).textTheme.bodyText1,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: const Color(0XFF105F01),
-          ),
-          children: const [
+          style: TextStyle(
+              fontFamily: "Port Lligat Slab",
+              fontSize: 14.sp,
+              fontWeight: FontWeight.bold,
+              color: kPrimaryColor),
+          children: [
             TextSpan(
               text: 'Forest  ',
-              style: TextStyle(color: Color(0XFF105F01), fontSize: 20),
+              style: TextStyle(color: const Color(0XFF105F01), fontSize: 14.sp),
             ),
             TextSpan(
               text: 'Services  ',
-              style: TextStyle(color: Color(0XFF105F01), fontSize: 20),
+              style: TextStyle(color: const Color(0XFF105F01), fontSize: 14.sp),
             ),
             TextSpan(
               text: 'Agency  ',
-              style: TextStyle(color: Color(0XFF105F01), fontSize: 20),
+              style: TextStyle(color: const Color(0XFF105F01), fontSize: 14.sp),
             ),
             TextSpan(
               text: '(TFS).',
-              style: TextStyle(color: Color(0XFF105F01), fontSize: 20),
+              style: TextStyle(color: const Color(0XFF105F01), fontSize: 14.sp),
             ),
           ]),
     );
@@ -533,20 +557,24 @@ class _LoginScreenState extends State<LoginScreen> {
       textAlign: TextAlign.center,
       text: TextSpan(
           text: ' TFS',
-          style: GoogleFonts.portLligatSans(
-            textStyle: Theme.of(context).textTheme.bodyText1,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: kPrimaryColor,
+          style: TextStyle(
+            fontFamily: "Port Lligat Slab",
+            fontSize: 14.sp,
           ),
-          children: const [
+          children: [
             TextSpan(
-              text: 'A',
-              style: TextStyle(color: Color(0XFF105F01), fontSize: 20),
+              text: 'TFS',
+              style: TextStyle(
+                  color: const Color(0XFF105F01),
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold),
             ),
             TextSpan(
-              text: 'pp',
-              style: TextStyle(color: kPrimaryColor, fontSize: 20),
+              text: 'App',
+              style: TextStyle(
+                  color: Colors.green[400],
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold),
             ),
           ]),
     );
@@ -568,8 +596,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final height = MediaQuery.of(context).size.height;
     final Uri toLaunch = Uri(
       scheme: 'http',
-      host: '41.59.228.37',
-      path: '/fremis/download_APK',
+      port: 8083,
+      host: '41.59.227.103',
+      path: '/download_APK',
     );
     return Scaffold(
         body: SizedBox(
@@ -680,7 +709,7 @@ class _LoginScreenState extends State<LoginScreen> {
       url,
       mode: LaunchMode.externalNonBrowserApplication,
     )) {
-      //print(url);
+      ////(printurl);
       throw 'Could not launch $url';
     }
   }

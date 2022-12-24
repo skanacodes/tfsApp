@@ -711,8 +711,8 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
                                     child: IconButton(
                                         onPressed: () {
                                           String? url =
-                                              "https://mis.tfs.go.tz/fremis/uploads/approval_docs/${widget.data![0]["exp_attachments"][i]["file_name"]}.pdf";
-                                          // print(url);
+                                              "$baseUrl/uploads/approval_docs/${widget.data![0]["exp_attachments"][i]["file_name"]}.pdf";
+                                          print(url);
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
@@ -723,6 +723,10 @@ class _ApprovalDetailsState extends State<ApprovalDetails> {
                                                                 "exp_attachments"]
                                                                 [i]["name"]
                                                             .toString(),
+                                                        letterType: false,
+                                                        id: widget.data![0][
+                                                                "exp_attachments"]
+                                                            [i]["file_name"],
                                                       )));
                                         },
                                         icon: CircleAvatar(

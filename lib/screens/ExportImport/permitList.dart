@@ -325,7 +325,7 @@ class _PermittListState extends State<PermittList> {
         case 200:
           setState(() {
             res = json.decode(response.body);
-            //print(res);
+            print(res);
             data = res['inspection'];
             //  //print(data[0]["dealer"].toString() + "hjsdkjdskjdsjk");
           });

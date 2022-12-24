@@ -15,10 +15,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 3.1.0+2
+version: 3.4.6+6
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -77,7 +77,7 @@ dependencies:
   otp: ^3.0.1
   intl: ^0.17.0
   item_selector:
-  
+  connectivity_plus: ^2.3.9
   ticket_widget: ^0.0.1
   settings_ui: ^2.0.2
   flutter_qr_bar_scanner: ^3.0.2
@@ -138,6 +138,10 @@ flutter:
     - family: ChicagoMakersPersonalUse
       fonts:
         - asset: assets/fonts/ChicagoMakersPersonalUse-6YEg6.otf
+          weight: 300
+    - family: Port Lligat Slab
+      fonts:
+        - asset: assets/fonts/PortLligatSlab/PortLligatSlab-Regular.ttf
           weight: 300
   # fonts:
   #   - family: Schyler

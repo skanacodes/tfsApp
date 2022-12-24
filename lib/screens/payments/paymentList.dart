@@ -53,9 +53,9 @@ class _PaymentListState extends State<PaymentList> {
       String stationId = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getInt('station_id').toString());
 
-      ////////////print(stationId);
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
+      print(tokens);
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url;
       widget.system == "PMIS"
@@ -65,7 +65,7 @@ class _PaymentListState extends State<PaymentList> {
       var res;
       //final sharedP prefs=await
       ////////print(response.statusCode);
-      ////////print(response.body);
+      print(response.body);
       switch (response.statusCode) {
         case 201:
           setState(() {

@@ -2,6 +2,7 @@ import 'package:tfsappv1/screens/ApprovalPermit/ApprovalDetails.dart';
 import 'package:tfsappv1/screens/ApprovalPermit/ApprovedList.dart';
 import 'package:tfsappv1/screens/ApprovalPermit/ExpectedApproval.dart';
 import 'package:tfsappv1/screens/ApprovalPermit/approvalPermit.dart';
+import 'package:tfsappv1/screens/ApprovalPermit/export_letters.dart';
 import 'package:tfsappv1/screens/ExportImport/InspectionForm.dart';
 import 'package:tfsappv1/screens/ExportImport/grading.dart';
 import 'package:tfsappv1/screens/ExportImport/permitList.dart';
@@ -88,5 +89,6 @@ final Map<String, WidgetBuilder> routes = {
   LoginWay.routeName: ((context) => const LoginWay()),
   SignatureScreen.routeName: ((context) => const SignatureScreen()),
   TPEditingDetails.routeName: (context) => const TPEditingDetails(),
-  ExpectedApprovals.routeName: ((context) => const ExpectedApprovals())
+  ExpectedApprovals.routeName: ((context) => const ExpectedApprovals()),
+  ExportLetters.routeName: ((context) => const ExportLetters())
 };

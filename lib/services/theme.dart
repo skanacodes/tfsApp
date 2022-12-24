@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sizer/sizer.dart';
 
 import 'constants.dart';
 
 ThemeData theme() {
   return ThemeData(
     scaffoldBackgroundColor: Colors.white,
-    fontFamily: 'Ubuntu',
+    fontFamily: 'Port Lligat Slab',
     appBarTheme: appBarTheme(),
     textTheme: textTheme(),
     inputDecorationTheme: inputDecorationTheme(),
@@ -37,15 +38,16 @@ TextTheme textTheme() {
 
 AppBarTheme appBarTheme() {
   return AppBarTheme(
-    color: Colors.white,
+    color: kPrimaryColor,
+    textTheme:
+        const TextTheme(titleMedium: TextStyle(fontFamily: "Port Lligat Slab")),
     elevation: 0,
-    iconTheme: const IconThemeData(color: Colors.black),
-    systemOverlayStyle: SystemUiOverlayStyle.dark,
-    toolbarTextStyle: const TextTheme(
-      headline6: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
-    ).bodyText2,
-    titleTextStyle: const TextTheme(
-      headline6: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
-    ).headline6,
+    systemOverlayStyle:
+        const SystemUiOverlayStyle(statusBarBrightness: Brightness.light),
+    iconTheme: const IconThemeData(color: Colors.white),
+    titleTextStyle: TextStyle(
+        color: Colors.white, fontSize: 12.sp, fontFamily: "Port Lligat Slab"),
+    toolbarTextStyle: TextStyle(
+        color: Colors.white, fontSize: 12.sp, fontFamily: "Port Lligat Slab"),
   );
 }

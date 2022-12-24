@@ -56,16 +56,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
       textAlign: TextAlign.start,
       text: TextSpan(
           text: 'Welcome: ',
-          style: GoogleFonts.portLligatSlab(
-            textStyle: Theme.of(context).textTheme.bodyText1,
-            fontSize: 13.sp,
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
+          style: TextStyle(
+              fontFamily: "Port Lligat Slab",
+              fontSize: 10.sp,
+              fontWeight: FontWeight.bold,
+              color: kPrimaryColor),
           children: [
             TextSpan(
               text: ' $usernames',
-              style: TextStyle(color: Colors.green[400], fontSize: 15.sp),
+              style: TextStyle(
+                color: Colors.green[400],
+                fontSize: 10.sp,
+              ),
             ),
           ]),
     );

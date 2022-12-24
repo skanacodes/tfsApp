@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'dart:ui' as ui;
@@ -57,13 +58,76 @@ class _GradingState extends State<Grading> {
   String? classy;
   String img1 = '';
   String img2 = '';
-
+  String? balance;
+  List balanceList = [];
+  List indexList = [];
+  bool isLoadingBalance = false;
+  String? qn;
+  List<String> qnList = [
+    'Yes',
+    'No',
+  ];
   bool isImageTaken = false;
+  List data3 = [];
   bool isImageTaken1 = false;
   final String uploadUrl = 'https://api.imgur.com/3/upload';
 
   //DateTime now = DateTime.now();
   String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+  Future getBalance(id) async {
+    setState(() {
+      isLoadingBalance = true;
+    });
+    try {
+      print(id);
+
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      var headers = {"Authorization": "Bearer ${tokens!}"};
+      var url = Uri.parse('$baseUrl/api/v1/tp-export/grading/$id');
+
+      final response = await http.get(url, headers: headers);
+      var res;
+      //final sharedP prefs=await
+      print(response.statusCode);
+      switch (response.statusCode) {
+        case 200:
+          setState(() {
+            res = json.decode(response.body);
+            if (res["success"]) {
+              data3 = res['data'];
+            } else {
+              message("error", res["message"]);
+            }
+            print(res);
+
+            //print(res);
+          });
+          break;
+
+        case 401:
+          setState(() {
+            res = json.decode(response.body);
+            message("error", res["message"]);
+          });
+          break;
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            message("error", res["message"]);
+          });
+          break;
+      }
+    } on SocketException {
+      setState(() {
+        message("error", "error processing request");
+      });
+    }
+    setState(() {
+      isLoadingBalance = false;
+    });
+  }
 
   Future getCategory() async {
     try {
@@ -281,7 +345,8 @@ class _GradingState extends State<Grading> {
       var formData = FormData.fromMap({
         'grading_id': jobId,
         'grading_class': ask1,
-        'identification_mark': base64Encode(bytes)
+        'identification_mark': base64Encode(bytes),
+        'balance[]': balanceList,
       });
 
       var response = await dio.post('$baseUrl/api/v1/export/grade/store',
@@ -748,6 +813,217 @@ class _GradingState extends State<Grading> {
                         ),
                       ),
                     ),
+                    SizedBox(
+                      height: getProportionateScreenHeight(10),
+                    ),
+                    SafeArea(
+                      child: Padding(
+                        padding:
+                            const EdgeInsets.only(top: 1, right: 16, left: 16),
+                        child: DropdownButtonFormField<String>(
+                          itemHeight: 50,
+                          decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                                borderSide: const BorderSide(
+                                  color: Colors.cyan,
+                                ),
+                              ),
+                              fillColor: const Color(0xfff3f3f4),
+                              filled: true,
+                              isDense: true,
+                              contentPadding:
+                                  const EdgeInsets.fromLTRB(30, 10, 15, 10),
+                              labelText: "Is Balance Available ?",
+                              border: InputBorder.none),
+                          isExpanded: true,
+
+                          value: qn,
+                          //elevation: 5,
+                          style: const TextStyle(
+                              color: Colors.white, fontFamily: 'Ubuntu'),
+                          iconEnabledColor: Colors.black,
+                          items: qnList
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem(
+                              value: value,
+                              child: Container(
+                                width: double.infinity,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xfff3f3f4),
+                                  border: Border(
+                                    bottom: BorderSide(
+                                        width: 1, color: kPrimaryColor),
+                                  ),
+                                ),
+                                child: Text(
+                                  value,
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          validator: (value) {
+                            if (value == null) {
+                              return "This Field is required";
+                            }
+                            return null;
+                          },
+                          onChanged: (value) async {
+                            setState(() {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              qn = value!;
+                              qn == "Yes" ? getBalance(id) : null;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: getProportionateScreenHeight(10),
+                    ),
+                    isLoadingBalance
+                        ? const CupertinoActivityIndicator(
+                            animating: true,
+                          )
+                        : Card(
+                            elevation: 10,
+                            child: Column(
+                              children: [
+                                for (var i = 0; i < data3.length; i++)
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Expanded(
+                                        flex: 4,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 5, right: 5, left: 5),
+                                          child: TextFormField(
+                                            initialValue: data3[i]["tp_number"]
+                                                .toString(),
+                                            keyboardType: TextInputType.number,
+                                            key: const Key("vol"),
+                                            enabled: false,
+                                            //onSaved: (val) => quantity = val!,
+                                            decoration: InputDecoration(
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                borderSide: const BorderSide(
+                                                  color: Colors.cyan,
+                                                ),
+                                              ),
+                                              fillColor:
+                                                  const Color(0xfff3f3f4),
+                                              filled: true,
+                                              labelText: "TP Number",
+                                              border: InputBorder.none,
+                                              isDense: true,
+                                              contentPadding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      30, 10, 15, 10),
+                                            ),
+                                            validator: (value) {
+                                              if (value == '')
+                                                return "* Required";
+                                              return null;
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 4,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 5, right: 5, left: 0),
+                                          child: TextFormField(
+                                            keyboardType: TextInputType.number,
+                                            key: const Key("vol"),
+                                            onChanged: (val) {
+                                              balance = val;
+                                            },
+                                            enabled: indexList.contains(i)
+                                                ? false
+                                                : true,
+                                            decoration: InputDecoration(
+                                              suffixIcon: indexList.contains(i)
+                                                  ? const Icon(
+                                                      Icons.check,
+                                                      color: Colors.green,
+                                                    )
+                                                  : null,
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                borderSide: const BorderSide(
+                                                  color: Colors.cyan,
+                                                ),
+                                              ),
+                                              fillColor:
+                                                  const Color(0xfff3f3f4),
+                                              filled: true,
+                                              labelText: "Balance",
+                                              border: InputBorder.none,
+                                              isDense: true,
+                                              contentPadding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      30, 10, 15, 10),
+                                            ),
+                                            validator: (value) {
+                                              if (value == '')
+                                                return "* Required";
+                                              return null;
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      indexList.contains(i)
+                                          ? Expanded(
+                                              flex: 2,
+                                              child: ElevatedButton(
+                                                child: const Text("Edit"),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    indexList.removeAt(i);
+                                                    balanceList.removeAt(i);
+                                                  });
+                                                },
+                                              ))
+                                          : Expanded(
+                                              flex: 2,
+                                              child: ElevatedButton(
+                                                child: const Text("Save"),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    balance == null
+                                                        ? message("error",
+                                                            "Enter Required Balance")
+                                                        : balanceList.add({
+                                                            "tp_number": data3[
+                                                                        i][
+                                                                    "tp_number"]
+                                                                .toString(),
+                                                            "balance": balance
+                                                          });
+                                                    balance == null
+                                                        ? null
+                                                        : indexList.add(i);
+                                                    print(balanceList);
+                                                    print(indexList);
+                                                    balance = null;
+                                                  });
+                                                },
+                                              ))
+                                    ],
+                                  ),
+                                SizedBox(
+                                  height: getProportionateScreenHeight(10),
+                                ),
+                              ],
+                            ),
+                          ),
                     SizedBox(
                       height: getProportionateScreenHeight(10),
                     ),

@@ -112,6 +112,45 @@ class _ScanQrState extends State<ScanQr> {
     }
   }
 
+  messageToUser(String hint, String message,
+      {String? tpNumber, String? token}) {
+    return Alert(
+      context: context,
+      type: hint == "info" ? AlertType.info : AlertType.success,
+      //title: "Information",
+      desc: message,
+      buttons: [
+        DialogButton(
+          onPressed: () async {
+            Navigator.pop(context);
+            print(tpNumber);
+            await verifyTp(tpNumber!, token!);
+          },
+          width: 120,
+          child: const Text(
+            "Yes, Verify",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
+        DialogButton(
+          color: Colors.red,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          width: 120,
+          child: const Text(
+            "Don't Verify",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        )
+      ],
+    ).show();
+  }
+
   _qrCallback(String? code) async {
     try {
       if (istp) {
@@ -123,7 +162,15 @@ class _ScanQrState extends State<ScanQr> {
         //  //print(_qrInfo!);
         String tokens = await SharedPreferences.getInstance()
             .then((prefs) => prefs.getString('token').toString());
-        verifyTp(_qrInfo!.substring(11, 19), tokens);
+        String? fname = await SharedPreferences.getInstance()
+            .then((prefs) => prefs.getString('fname'));
+        String? lname = await SharedPreferences.getInstance()
+            .then((prefs) => prefs.getString('lname'));
+        String? checkpoint = await SharedPreferences.getInstance()
+            .then((prefs) => prefs.getString('checkpointName'));
+        messageToUser("info",
+            "You are about to start verification for TP Number ${_qrInfo!.substring(11, 19)}, at $checkpoint checkpoint, Are you sure vehicle has arrived at $checkpoint Checkpoint? ",
+            tpNumber: _qrInfo!.substring(11, 19), token: tokens);
       }
       if (isreceipt) {
         setState(() {
@@ -428,8 +475,12 @@ class _ScanQrState extends State<ScanQr> {
               setState(() {
                 _camState = false;
               });
+              String? checkpoint = await SharedPreferences.getInstance()
+                  .then((prefs) => prefs.getString('checkpointName'));
               istp
-                  ? await verifyTp(tpNumberPrompt!, tokens)
+                  ? messageToUser("info",
+                      "You are about to start verification for TP Number $tpNumberPrompt , at $checkpoint checkpoint, Are you sure vehicle has arrived at $checkpoint Checkpoint? ",
+                      token: tokens, tpNumber: tpNumberPrompt)
                   : await verifyReceipt(tpNumberPrompt!, tokens);
               setState(() {
                 isreceipt = false;
@@ -529,24 +580,22 @@ class _ScanQrState extends State<ScanQr> {
   @override
   Widget build(BuildContext context) {
     return _camState
-        ? WillPopScope(
-            onWillPop: _willPopCallback,
-            child: Center(
-              child: SizedBox(
-                height: getProportionateScreenHeight(400),
-                width: getProportionateScreenWidth(350),
-                child: QRBarScannerCamera(
-                  fit: BoxFit.cover,
-                  onError: (context, error) => Text(
-                    error.toString(),
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                  qrCodeCallback: (code) {
-                    _qrCallback(code);
-                  },
+        ? Center(
+            child: SizedBox(
+              height: getProportionateScreenHeight(400),
+              width: getProportionateScreenWidth(350),
+              child: QRBarScannerCamera(
+                fit: BoxFit.cover,
+                onError: (context, error) => Text(
+                  error.toString(),
+                  style: const TextStyle(color: Colors.red),
                 ),
+                qrCodeCallback: (code) {
+                  _qrCallback(code);
+                },
               ),
-            ))
+            ),
+          )
         : iSscanned == false
             ? AnimationLimiter(
                 child: Column(

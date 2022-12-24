@@ -1,9 +1,10 @@
 // ignore_for_file: prefer_typing_uninitialized_variables, avoid_print, library_private_types_in_public_api, use_build_context_synchronously
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/services.dart';
 
 import 'package:http/http.dart' as http;
@@ -57,6 +58,11 @@ class _PaymentWidgetState extends State<PaymentWidget> {
   //Create an instance of ScreenshotController
   ScreenshotController screenshotController = ScreenshotController();
   ScreenshotController screenshotController1 = ScreenshotController();
+  ConnectivityResult? _connectivityResult;
+
+  late StreamSubscription _connectivitySubscription;
+
+  bool? _isConnectionSuccessful;
   Future updatePrinterStatus(controlNumber) async {
     setState(() {
       isLoading = true;
@@ -344,8 +350,62 @@ class _PaymentWidgetState extends State<PaymentWidget> {
     // this.getData();
 
     getBrand();
+    _connectivitySubscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      print('Current connectivity status: $result');
+
+      setState(() {
+        _connectivityResult = result;
+      });
+    });
+    _checkConnectivityState();
+    _tryConnection();
 
     super.initState();
+  }
+
+  @override
+  dispose() {
+    super.dispose();
+
+    _connectivitySubscription.cancel();
+  }
+
+  Future<void> _checkConnectivityState() async {
+    final ConnectivityResult result = await Connectivity().checkConnectivity();
+
+    if (result == ConnectivityResult.wifi) {
+      print('Connected to a Wi-Fi network');
+    } else if (result == ConnectivityResult.mobile) {
+      print('Connected to a mobile network');
+    } else {
+      print('Not connected to any network');
+    }
+    //  print(_connectivityResult.toString() + "::::::::++++++:::::::");
+    setState(() {
+      _connectivityResult = result;
+    });
+  }
+
+  Future<void> _tryConnection() async {
+    try {
+      final response = await InternetAddress.lookup(
+        "41.59.227.103",
+      );
+      print(response);
+      setState(() {
+        _isConnectionSuccessful =
+            response.isNotEmpty && response[0].rawAddress.isNotEmpty;
+      });
+      //print(_isConnectionSuccessful.toString() + ":::::::::::::::");
+    } on SocketException catch (e) {
+      print(e);
+
+      setState(() {
+        _isConnectionSuccessful = false;
+      });
+    }
   }
 
   DateTime now = DateTime.now();
@@ -1222,23 +1282,32 @@ class _PaymentWidgetState extends State<PaymentWidget> {
           itemBuilder: (context) => [
                 PopupMenuItem(
                   onTap: () async {
-                    // double amount= args.system== "PMIS"?double()
-                    // ////////print(args.amount.runtimeType);
-                    // ////////print(dataItems);
-
-                    await _getPrinter(
-                        amount:
-                            "${formatNumber.format(args.amount)} ${args.currency!}",
-                        controlNo: args.controlNumber.toString(),
-                        issuer: args.issuer.toString(),
-                        name: args.payerName.toString(),
-                        paymentDate: args.payedDate.toString(),
-                        receiptNo: args.receiptNo.toString(),
-                        items: dataItems,
-                        description: args.desc.toString(),
-                        plotname: args.plotname.toString(),
-                        isBill: args.isBill ? true : false,
-                        station: args.station.toString());
+                    print("sfddssgfg fdbgbgbg");
+                    if (_connectivityResult == ConnectivityResult.wifi ||
+                        _connectivityResult == ConnectivityResult.mobile) {
+                      // await _tryConnection();
+                      //print("@@@@@@@@@@@@@@@@@@@@");
+                      await _getPrinter(
+                          amount:
+                              "${formatNumber.format(args.amount)} ${args.currency!}",
+                          controlNo: args.controlNumber.toString(),
+                          issuer: args.issuer.toString(),
+                          name: args.payerName.toString(),
+                          paymentDate: args.payedDate.toString(),
+                          receiptNo: args.receiptNo.toString(),
+                          items: dataItems,
+                          description: args.desc.toString(),
+                          plotname: args.plotname.toString(),
+                          isBill: args.isBill ? true : false,
+                          station: args.station.toString());
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                              "Connect Your Device To Internet Connection"),
+                        ),
+                      );
+                    }
                   },
                   child: Row(
                     children: [

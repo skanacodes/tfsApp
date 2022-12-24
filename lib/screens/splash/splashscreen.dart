@@ -136,7 +136,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     setState(() {
       _deviceData = deviceData;
-
+//print(_deviceData);
       prefs.setString("deviceId", _deviceData['androidId'].toString());
       prefs.setString("brand", _deviceData['brand'].toString());
       prefs.setBool("timer", true);
@@ -217,7 +217,6 @@ class _SplashScreenState extends State<SplashScreen> {
               textAlign: TextAlign.center,
               textStyle: const TextStyle(
                 fontSize: 30.0,
-                fontFamily: "ChicagoMakersPersonalUse",
                 fontWeight: FontWeight.bold,
               ),
               boxHeight: 150.0,

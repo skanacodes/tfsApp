@@ -127,7 +127,8 @@ class _CreateTourismState extends State<CreateTourism> {
           headers: headers);
       var res;
       //final sharedP prefs=await
-      ////print(response.statusCode);
+      print(response.statusCode);
+      print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {

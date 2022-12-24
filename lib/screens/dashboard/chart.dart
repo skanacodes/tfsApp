@@ -1,9 +1,16 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'dart:convert';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizer/sizer.dart';
 import 'package:tfsappv1/services/constants.dart';
+import 'package:http/http.dart' as http;
+import 'package:tfsappv1/services/size_config.dart';
 
 class Chart extends StatefulWidget {
   const Chart({Key? key}) : super(key: key);
@@ -13,23 +20,189 @@ class Chart extends StatefulWidget {
 }
 
 class _ChartState extends State<Chart> {
+  bool isLoading = false;
+  var data;
+  List dataHeight = [];
+  Future getDataInv() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      var tokens = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('token'));
+      // ////////////(printtokens);
+      var headers = {"Authorization": "Bearer ${tokens!}"};
+      var url = Uri.parse('$baseUrl/api/inv_stats');
+      final response = await http.get(url, headers: headers);
+      var res;
+      //final sharedP prefs=await
+      // print(response.statusCode);
+      // print(response.body);
+      switch (response.statusCode) {
+        case 200:
+          setState(() {
+            res = json.decode(response.body);
+            ////////////(printres);
+            data = res['data'];
+            dataHeight = res['data']['highest_dbh'];
+            isLoading = false;
+          });
+
+          break;
+
+        default:
+          setState(() {
+            res = json.decode(response.body);
+            ////////////(printres);
+            isLoading = false;
+          });
+
+          break;
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        ////////////(printe);
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // ignore: todo
+    // TODO: implement initState
+    super.initState();
+    getDataInv();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 10, right: 10),
-      child: SizedBox(
-        height: 220,
-        width: double.infinity,
-        child: FadeInUp(
-          duration: const Duration(milliseconds: 1300),
-          child: LineChart(
-            mainData(),
-            swapAnimationDuration: const Duration(milliseconds: 800),
-            swapAnimationCurve: Curves.linear,
-          ),
-        ),
-      ),
-    );
+    // print(data);
+    return dataHeight.isEmpty
+        ? CupertinoActivityIndicator(
+            radius: 10.sp,
+            animating: true,
+          )
+        : Padding(
+            padding: const EdgeInsets.only(left: 5, right: 5),
+            child: Column(
+              children: [
+                const Text(
+                  "DBH against Height Line Graph",
+                  style: TextStyle(color: Colors.black,),
+                ),
+                SizedBox(
+                  height: 200,
+                  width: double.infinity,
+                  child: FadeInUp(
+                    duration: const Duration(milliseconds: 1300),
+                    child: LineChart(
+                      mainData(),
+                      swapAnimationDuration: const Duration(milliseconds: 800),
+                      swapAnimationCurve: Curves.linear,
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child: SizedBox(
+                        height: getProportionateScreenHeight(100),
+                        //width: getProportionateScreenWidth(160),
+                        child: Card(
+                          elevation: 10,
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                  backgroundColor: Colors.grey[200],
+                                  child:
+                                      Image.asset("assets/images/volume.jpg")),
+                              const Text(
+                                "Total Volume",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              Text(data["total_volume"])
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 4,
+                      child: SizedBox(
+                        height: getProportionateScreenHeight(100),
+                        // width: getProportionateScreenWidth(160),
+                        child: Card(
+                          elevation: 10,
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                  backgroundColor: Colors.grey[200],
+                                  child: Image.asset("assets/images/map.png")),
+                              const Text(
+                                "Total Area",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              Text(data["total_area"])
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child: SizedBox(
+                        height: getProportionateScreenHeight(100),
+                        // width: getProportionateScreenWidth(160),
+                        child: Card(
+                          elevation: 10,
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                  backgroundColor: Colors.grey[200],
+                                  child: Image.asset("assets/images/tree.png")),
+                              const Text(
+                                "Living Tree",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              Text(data["living_trees"])
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 4,
+                      child: SizedBox(
+                        height: getProportionateScreenHeight(100),
+                        // width: getProportionateScreenWidth(160),
+                        child: Card(
+                          elevation: 10,
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                  backgroundColor: Colors.grey[200],
+                                  child: Image.asset(
+                                      "assets/images/dead-tree.png")),
+                              const Text(
+                                "Dead Tree",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
   }
 
   List<Color> gradientColors = [kGradientColorOne, kGradientColorTwo];
@@ -63,24 +236,22 @@ class _ChartState extends State<Chart> {
               color: kTextColor, fontWeight: FontWeight.bold, fontSize: 10),
           getTitles: (value) {
             switch (value.toInt()) {
-              case 0:
-                return 'Sun';
-              case 2:
-                return 'Mon';
-              case 4:
-                return 'Tue';
-              case 6:
-                return 'Wed';
-              case 8:
-                return 'Thu';
               case 10:
-                return 'Fri';
-              case 12:
-                return 'Sat';
+                return '10(m)';
+              case 20:
+                return '20(m)';
+              case 30:
+                return '30(m)';
+              case 40:
+                return '40(m)';
+              case 50:
+                return '50(m)';
+              case 60:
+                return '60(m)';
             }
             return '';
           },
-          margin: 10,
+          margin: 5,
         ),
         leftTitles: SideTitles(
           showTitles: true,
@@ -92,12 +263,14 @@ class _ChartState extends State<Chart> {
           ),
           getTitles: (value) {
             switch (value.toInt()) {
-              case 1:
-                return '10k';
-              case 3:
-                return '30k';
-              case 5:
-                return '50k';
+              case 30:
+                return '30';
+              case 60:
+                return '60';
+              case 90:
+                return '90';
+              case 120:
+                return '120';
             }
             return '';
           },
@@ -106,20 +279,15 @@ class _ChartState extends State<Chart> {
         ),
       ),
       minX: 0,
-      maxX: 11,
+      maxX: 60,
       minY: 0,
-      maxY: 6,
+      maxY: 120,
       lineBarsData: [
         LineChartBarData(
-          spots: [
-            const FlSpot(0, 3),
-            const FlSpot(2.4, 2),
-            const FlSpot(4.4, 3),
-            const FlSpot(6.4, 3.1),
-            const FlSpot(8, 4),
-            const FlSpot(9.5, 4),
-            const FlSpot(11, 5),
-          ],
+          spots: dataHeight
+              .map((point) => FlSpot(
+                  double.parse(point["height"]), double.parse(point["dbh"])))
+              .toList(),
           isCurved: true,
           colors: gradientColors,
           barWidth: 2,

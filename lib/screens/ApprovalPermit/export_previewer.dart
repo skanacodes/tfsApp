@@ -1,8 +1,8 @@
-// ignore_for_file: file_names
-
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:tfsappv1/services/constants.dart';
 
@@ -10,21 +10,19 @@ import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PdfPreviewComponent extends StatefulWidget {
+class ExportPreviewer extends StatefulWidget {
   final String? path;
   final String? name;
   final bool? letterType;
   final String? id;
-
-  const PdfPreviewComponent(
-      {Key? key, this.path, this.name, this.letterType, this.id})
-      : super(key: key);
+  const ExportPreviewer(
+      {super.key, this.path, this.name, this.letterType, this.id});
 
   @override
-  State<PdfPreviewComponent> createState() => _PdfPreviewComponentState();
+  State<ExportPreviewer> createState() => _ExportPreviewerState();
 }
 
-class _PdfPreviewComponentState extends State<PdfPreviewComponent> {
+class _ExportPreviewerState extends State<ExportPreviewer> {
   final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
   bool isLoading = false;
 
@@ -116,15 +114,18 @@ class _PdfPreviewComponentState extends State<PdfPreviewComponent> {
         backgroundColor: kPrimaryColor,
         actions: <Widget>[
           widget.letterType!
-              ? IconButton(
-                  icon: const Icon(
-                    Icons.save_outlined,
-                    color: Colors.white,
-                    semanticLabel: 'Save Data',
+              ? Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: const ButtonStyle(),
+                    onPressed: () async {
+                      await approveletter();
+                    },
+                    child: const Text(
+                      "Confirm",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                  onPressed: () async {
-                    await approveletter();
-                  },
                 )
               : Container()
           // IconButton(
@@ -139,16 +140,23 @@ class _PdfPreviewComponentState extends State<PdfPreviewComponent> {
           // ),
         ],
       ),
-      body: SfPdfViewer.network(
-        widget.path.toString(),
-        key: _pdfViewerKey,
-        // canShowScrollStatus: true,
-        // canShowScrollHead: true,
-        // enableDoubleTapZooming: true,
-        // enableTextSelection: true,
-        // pageLayoutMode: PdfPageLayoutMode.continuous,
-        // interactionMode: PdfInteractionMode.selection,
-      ),
+      body: isLoading
+          ? Center(
+              child: CupertinoActivityIndicator(
+                animating: true,
+                radius: 13.sp,
+              ),
+            )
+          : SfPdfViewer.network(
+              widget.path.toString(),
+              key: _pdfViewerKey,
+              // canShowScrollStatus: true,
+              // canShowScrollHead: true,
+              // enableDoubleTapZooming: true,
+              // enableTextSelection: true,
+              // pageLayoutMode: PdfPageLayoutMode.continuous,
+              // interactionMode: PdfInteractionMode.selection,
+            ),
     );
   }
 }

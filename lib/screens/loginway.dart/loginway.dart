@@ -144,7 +144,7 @@ class _LoginWayState extends State<LoginWay> {
                                           top: size.width * .15,
                                         ),
                                         child: Text('TFSApp',
-                                            style: GoogleFonts.portLligatSans(
+                                            style: TextStyle(
                                                 color: Colors.green,
                                                 fontSize: 25.sp)),
                                       ),
@@ -187,12 +187,11 @@ class _LoginWayState extends State<LoginWay> {
                                               child: Text(
                                                 'Fremis Sign In',
                                                 style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 13.sp,
-                                                    fontFamily:
-                                                        "ChicagoMakersPersonalUse"
-                                                    // fontWeight: FontWeight.w600,
-                                                    ),
+                                                  color: Colors.white,
+                                                  fontSize: 13.sp,
+
+                                                  // fontWeight: FontWeight.w600,
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -235,10 +234,9 @@ class _LoginWayState extends State<LoginWay> {
                                               child: Text(
                                                 'PMIS Sign In',
                                                 style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 13.sp,
-                                                    fontFamily:
-                                                        "ChicagoMakersPersonalUse"),
+                                                  color: Colors.white,
+                                                  fontSize: 13.sp,
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -281,10 +279,9 @@ class _LoginWayState extends State<LoginWay> {
                                               child: Text(
                                                 'HoneyTraceability Sign In',
                                                 style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 13.sp,
-                                                    fontFamily:
-                                                        "ChicagoMakersPersonalUse"),
+                                                  color: Colors.white,
+                                                  fontSize: 13.sp,
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -327,10 +324,9 @@ class _LoginWayState extends State<LoginWay> {
                                               child: Text(
                                                 'SeedMis Sign In',
                                                 style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 13.sp,
-                                                    fontFamily:
-                                                        "ChicagoMakersPersonalUse"),
+                                                  color: Colors.white,
+                                                  fontSize: 13.sp,
+                                                ),
                                               ),
                                             ),
                                           ),
