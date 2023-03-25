@@ -580,19 +580,22 @@ class _ScanQrState extends State<ScanQr> {
   @override
   Widget build(BuildContext context) {
     return _camState
-        ? Center(
-            child: SizedBox(
-              height: getProportionateScreenHeight(400),
-              width: getProportionateScreenWidth(350),
-              child: QRBarScannerCamera(
-                fit: BoxFit.cover,
-                onError: (context, error) => Text(
-                  error.toString(),
-                  style: const TextStyle(color: Colors.red),
+        ? WillPopScope(
+            onWillPop: _willPopCallback,
+            child: Center(
+              child: SizedBox(
+                height: getProportionateScreenHeight(400),
+                width: getProportionateScreenWidth(350),
+                child: QRBarScannerCamera(
+                  fit: BoxFit.cover,
+                  onError: (context, error) => Text(
+                    error.toString(),
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                  qrCodeCallback: (code) {
+                    _qrCallback(code);
+                  },
                 ),
-                qrCodeCallback: (code) {
-                  _qrCallback(code);
-                },
               ),
             ),
           )

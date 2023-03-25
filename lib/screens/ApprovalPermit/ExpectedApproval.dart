@@ -7,7 +7,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-import 'package:tfsappv1/screens/ApprovalPermit/ApprovalDetails.dart';
 import 'package:tfsappv1/screens/ApprovalPermit/AprovalTimeline.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
@@ -35,7 +34,7 @@ class _ExpectedApprovalsState extends State<ExpectedApprovals> {
       var tokens = await SharedPreferences.getInstance()
           .then((prefs) => prefs.getString('token'));
       var headers = {"Authorization": "Bearer ${tokens!}"};
-      var url = Uri.parse('$baseUrl/api/v1/exp_appr_req/fw');
+      var url = Uri.parse('$baseUrl/api/v1/exp_appr_req/status');
 
       final response = await http.get(url, headers: headers);
       var res;
@@ -462,7 +461,7 @@ class _ExpectedApprovalsState extends State<ExpectedApprovals> {
                                                           color: Colors
                                                               .grey[500])),
                                                   Text(
-                                                      Data[index]["review_time"]  
+                                                      Data[index]["review_time"]
                                                                   .toString() ==
                                                               "null"
                                                           ? ""

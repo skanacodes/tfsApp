@@ -36,8 +36,8 @@ class _ChartState extends State<Chart> {
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
-      // print(response.statusCode);
-      // print(response.body);
+      print(response.statusCode);
+      print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
@@ -89,7 +89,9 @@ class _ChartState extends State<Chart> {
               children: [
                 const Text(
                   "DBH against Height Line Graph",
-                  style: TextStyle(color: Colors.black,),
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
                 ),
                 SizedBox(
                   height: 200,
@@ -119,10 +121,10 @@ class _ChartState extends State<Chart> {
                                   child:
                                       Image.asset("assets/images/volume.jpg")),
                               const Text(
-                                "Total Volume",
+                                "Total Volume ",
                                 style: TextStyle(color: Colors.black),
                               ),
-                              Text(data["total_volume"])
+                              Text(data["total_volume"] + " (cbm)")
                             ],
                           ),
                         ),
@@ -141,10 +143,10 @@ class _ChartState extends State<Chart> {
                                   backgroundColor: Colors.grey[200],
                                   child: Image.asset("assets/images/map.png")),
                               const Text(
-                                "Total Area",
+                                "Total Area ",
                                 style: TextStyle(color: Colors.black),
                               ),
-                              Text(data["total_area"])
+                              Text(data["total_area"] + " (Ha)")
                             ],
                           ),
                         ),
@@ -193,6 +195,33 @@ class _ChartState extends State<Chart> {
                                 "Dead Tree",
                                 style: TextStyle(color: Colors.black),
                               ),
+                              Text(data["dead_trees"])
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 6,
+                      child: SizedBox(
+                        height: getProportionateScreenHeight(100),
+                        // width: getProportionateScreenWidth(160),
+                        child: Card(
+                          elevation: 10,
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                  backgroundColor: Colors.grey[200],
+                                  child: Image.asset("assets/images/tree.png")),
+                              const Text(
+                                "Survival Rate For Young Trees(Age Below 3 Years)",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              Text("${data["survival"]}%")
                             ],
                           ),
                         ),
