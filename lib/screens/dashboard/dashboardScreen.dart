@@ -293,13 +293,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   // _divider(),
                   roles.contains("HQ Officer")
-                      ? Column(
-                          children: const [
-                            ManagementOperation(),
-                            // ManagementScreen(),
-                            //CardList(),
-                          ],
+                      ? SizedBox(
+                          height: getProportionateScreenHeight(600),
+                          child: ListView(
+                            children: const [
+                              ManagementOperation(),
+                            ],
+                          ),
                         )
+                      // ManagementScreen(),
+                      //CardList(),
+
                       : Padding(
                           padding: const EdgeInsets.all(0.0),
                           child: Container(

@@ -454,7 +454,7 @@ class _InspectionFormState extends State<InspectionForm> {
                         filename: 'images',
                       ),
               ],
-              'balance[]': balanceList,
+              'balance': balanceList,
             })
           : FormData.fromMap({
               'inspection_id': jobId,
@@ -1238,6 +1238,10 @@ class _InspectionFormState extends State<InspectionForm> {
                                                         ? null
                                                         : indexList.add(i);
                                                     print(balanceList);
+                                                    print("**************");
+                                                    // print(json.decode(
+                                                    //     balanceList
+                                                    //         .toString()));
                                                     print(indexList);
                                                     balance = null;
                                                   });

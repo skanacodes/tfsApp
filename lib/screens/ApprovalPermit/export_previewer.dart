@@ -31,6 +31,43 @@ class _ExportPreviewerState extends State<ExportPreviewer> {
     super.initState();
   }
 
+  verificationMessage(String hint, String message) {
+    return Alert(
+      context: context,
+      type: hint == "info" ? AlertType.info : AlertType.success,
+      title: "",
+      desc: message,
+      buttons: [
+        DialogButton(
+          color: kPrimaryColor,
+          radius: const BorderRadius.all(Radius.circular(10)),
+          onPressed: () async {
+            Navigator.pop(context);
+
+            await approveletter();
+          },
+          width: 120,
+          child: const Text(
+            "Ok",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        ),
+        DialogButton(
+          color: Colors.red,
+          radius: const BorderRadius.all(Radius.circular(10)),
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          width: 120,
+          child: const Text(
+            "Cancel",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        )
+      ],
+    ).show();
+  }
+
   approveletter() async {
     setState(() {
       isLoading = true;
@@ -119,7 +156,8 @@ class _ExportPreviewerState extends State<ExportPreviewer> {
                   child: ElevatedButton(
                     style: const ButtonStyle(),
                     onPressed: () async {
-                      await approveletter();
+                      verificationMessage("info",
+                          "Are You Sure You Want to Approve This Letters ?");
                     },
                     child: const Text(
                       "Confirm",

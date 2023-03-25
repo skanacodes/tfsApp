@@ -346,7 +346,7 @@ class _GradingState extends State<Grading> {
         'grading_id': jobId,
         'grading_class': ask1,
         'identification_mark': base64Encode(bytes),
-        'balance[]': balanceList,
+        'balance': balanceList,
       });
 
       var response = await dio.post('$baseUrl/api/v1/export/grade/store',
@@ -356,8 +356,8 @@ class _GradingState extends State<Grading> {
         // });
         //print('$sent $total');
       });
-      //print(response.statusCode);
-      //print(response.statusMessage);
+      print(response.statusCode);
+      print(response.data);
       //print(res);
       if (response.statusCode == 201) {
         //var res = json.decode(response.data);

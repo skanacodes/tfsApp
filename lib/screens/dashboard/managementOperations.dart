@@ -5,6 +5,7 @@ import 'package:tfsappv1/screens/ApprovalPermit/ApprovedList.dart';
 import 'package:tfsappv1/screens/ApprovalPermit/ExpectedApproval.dart';
 import 'package:tfsappv1/screens/ApprovalPermit/approvalPermit.dart';
 import 'package:tfsappv1/screens/ApprovalPermit/export_letters.dart';
+import 'package:tfsappv1/screens/PoachingDetailsScreen/poaching_screen.dart';
 import 'package:tfsappv1/screens/dashboard/chart.dart';
 import 'package:tfsappv1/services/constants.dart';
 
@@ -125,6 +126,32 @@ class _ManagementOperationState extends State<ManagementOperation> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text("Approval Request Timeline"),
+                    CircleAvatar(
+                      radius: 15,
+                      backgroundColor: Colors.grey[200],
+                      child: const Icon(
+                        Icons.arrow_right,
+                        color: kPrimaryColor,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            const Divider(
+              color: Colors.grey,
+            ),
+            InkWell(
+              onTap: (() {
+                Navigator.pushNamed(
+                    context, PoachingActivitiesScreen.routeName);
+              }),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Poaching Activities"),
                     CircleAvatar(
                       radius: 15,
                       backgroundColor: Colors.grey[200],

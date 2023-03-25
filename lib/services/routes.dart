@@ -13,6 +13,7 @@ import 'package:tfsappv1/screens/NfrScreen/generateQr.dart';
 import 'package:tfsappv1/screens/NfrScreen/nfrScreen.dart';
 import 'package:tfsappv1/screens/NfrScreen/toursList.dart';
 import 'package:tfsappv1/screens/POSmanagement/posRegistration.dart';
+import 'package:tfsappv1/screens/PoachingDetailsScreen/poaching_screen.dart';
 import 'package:tfsappv1/screens/charts/charts_screen.dart';
 import 'package:tfsappv1/screens/dashboard/dashboardScreen.dart';
 import 'package:tfsappv1/screens/digitalSignature/digitalsignature.dart';
@@ -90,5 +91,7 @@ final Map<String, WidgetBuilder> routes = {
   SignatureScreen.routeName: ((context) => const SignatureScreen()),
   TPEditingDetails.routeName: (context) => const TPEditingDetails(),
   ExpectedApprovals.routeName: ((context) => const ExpectedApprovals()),
-  ExportLetters.routeName: ((context) => const ExportLetters())
+  ExportLetters.routeName: ((context) => const ExportLetters()),
+  PoachingActivitiesScreen.routeName: (context) =>
+      const PoachingActivitiesScreen()
 };

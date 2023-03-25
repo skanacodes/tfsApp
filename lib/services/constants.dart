@@ -56,10 +56,10 @@ const kAnimationDuration = Duration(milliseconds: 200);
 // var baseUrlSeed = "https://mis.tfs.go.tz/seed-mis";
 // var baseUrlPMIS = "https://mis.tfs.go.tz/pmis";
 // var baseUrlHoneyTraceability = "https://mis.tfs.go.tz/honey-traceability";
-//var baseUrl = "http://41.59.227.103:8083";
+var baseUrl = "http://41.59.227.103:8083";
 
-var baseUrl = "http://41.59.82.189:8080/fremis-test";
-var baseUrlTest = "http://41.59.82.189:8080/fremis-test";
+//var baseUrl = "http://41.59.82.189:8080/fremis-test";
+var baseUrlTest = "http://41.59.227.103:8083";
 var baseUrlSeed = "http://41.59.227.103:8081";
 var baseUrlPMIS = "https://mis.tfs.go.tz/pmis";
 var baseUrlHoneyTraceability = "http://41.59.82.189:8080/honey-traceability";
