@@ -9,11 +9,13 @@ class TextFieldConstant extends StatelessWidget {
   final String? textValue;
   final bool enabled;
   const TextFieldConstant(
-      {Key? key, required this.textName,
+      {Key? key,
+      required this.textName,
       this.hintText,
       this.suffixIcons,
       this.textValue,
-      required this.enabled}) : super(key: key);
+      required this.enabled})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,7 @@ class TextFieldConstant extends StatelessWidget {
                 labelText: hintText,
                 border: InputBorder.none,
                 isDense: true,
-                enabled: enabled == true ? true : false,
+                // enabled: enabled == true ? true : false,
                 contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
               ),
               validator: (value) {
@@ -63,7 +65,7 @@ class TextFieldConstant extends StatelessWidget {
                 labelStyle: const TextStyle(color: Colors.black),
                 border: InputBorder.none,
                 isDense: true,
-                enabled: false,
+                // enabled: false,
                 contentPadding: const EdgeInsets.fromLTRB(30, 10, 15, 10),
               ),
             ),

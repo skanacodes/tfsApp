@@ -258,7 +258,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         ),
       );
       // ////////print(_imageFile1);
-      final String result = await platform.invokeMethod('getBatteryLevel', {
+      var result = await platform.invokeMethod('getBatteryLevel', {
         "imageData": base64Encode(_imageFile!),
         "brand": brand,
         "name": name,
@@ -277,11 +277,12 @@ class _PaymentWidgetState extends State<PaymentWidget> {
         "type": isBill! ? "bill" : "receipt"
       });
 
-      ////////print(result);
-      if (result == "Successfully Printed") {
+      print(result.toString());
+      print("*******************************");
+      if (result == "Successfully Printed" || result.toString() == "null") {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result),
+            content: Text(result.toString()),
           ),
         );
         if (mounted) {
@@ -294,7 +295,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result),
+            content: Text(result.toString()),
           ),
         );
       }

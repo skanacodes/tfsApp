@@ -62,6 +62,7 @@ var baseUrl = "http://41.59.227.103:8083";
 var baseUrlTest = "http://41.59.227.103:8083";
 var baseUrlSeed = "http://41.59.227.103:8081";
 var baseUrlPMIS = "https://mis.tfs.go.tz/pmis";
+//var baseUrlHoneyTraceability = "http://41.59.228.113/honey-traceability";
 var baseUrlHoneyTraceability = "http://41.59.82.189:8080/honey-traceability";
 String filepathImages = "assets/images/";
 String filepathIcons = "assets/icons/";

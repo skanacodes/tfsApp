@@ -15,7 +15,7 @@ import 'package:tfsappv1/screens/payments/paymentList.dart';
 import 'package:tfsappv1/services/constants.dart';
 import 'package:tfsappv1/services/size_config.dart';
 import 'package:sizer/sizer.dart';
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as b;
 
 class BillsDashBoard extends StatefulWidget {
   static String routeName = "/billsDashboard";
@@ -228,11 +228,11 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                     padding:
                                                         const EdgeInsets.all(
                                                             8.0),
-                                                    child: Badge(
+                                                    child: b.Badge(
                                                       badgeColor: kPrimaryColor,
-                                                      animationType:
-                                                          BadgeAnimationType
-                                                              .scale,
+                                                      animationType: b
+                                                          .BadgeAnimationType
+                                                          .scale,
                                                       padding: const EdgeInsets
                                                               .symmetric(
                                                           horizontal: 5,
@@ -323,11 +323,11 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                     padding:
                                                         const EdgeInsets.all(
                                                             8.0),
-                                                    child: Badge(
+                                                    child: b.Badge(
                                                       badgeColor: kPrimaryColor,
-                                                      animationType:
-                                                          BadgeAnimationType
-                                                              .scale,
+                                                      animationType: b
+                                                          .BadgeAnimationType
+                                                          .scale,
                                                       padding: const EdgeInsets
                                                               .symmetric(
                                                           horizontal: 5,
@@ -419,11 +419,11 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                     padding:
                                                         const EdgeInsets.all(
                                                             8.0),
-                                                    child: Badge(
+                                                    child: b.Badge(
                                                       badgeColor: kPrimaryColor,
-                                                      animationType:
-                                                          BadgeAnimationType
-                                                              .scale,
+                                                      animationType: b
+                                                          .BadgeAnimationType
+                                                          .scale,
                                                       padding: const EdgeInsets
                                                               .symmetric(
                                                           horizontal: 5,
@@ -515,11 +515,11 @@ class _BillsDashBoardState extends State<BillsDashBoard> {
                                                     padding:
                                                         const EdgeInsets.all(
                                                             8.0),
-                                                    child: Badge(
+                                                    child: b.Badge(
                                                       badgeColor: kPrimaryColor,
-                                                      animationType:
-                                                          BadgeAnimationType
-                                                              .scale,
+                                                      animationType: b
+                                                          .BadgeAnimationType
+                                                          .scale,
                                                       padding: const EdgeInsets
                                                               .symmetric(
                                                           horizontal: 5,

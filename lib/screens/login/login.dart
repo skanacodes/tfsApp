@@ -107,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
             'email': username,
             'password': password,
             'android_id': devId!,
-            'version_no': '3.4.6+6',
+            'version_no': '3.8.6+6',
             'application_type': 'fremis'
           };
         });
@@ -135,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
       var res;
 
       //(printresponse.statusCode);
-      //(printresponse.body);
+      print(response.body);
       switch (response.statusCode) {
         case 200:
           setState(() {
@@ -448,7 +448,6 @@ class _LoginScreenState extends State<LoginScreen> {
             //  ////////(print('fail');
           }
           //  String val = await checkUserStatus(username!, password!);
-
         }
         setState(() {
           isLoading = false;
@@ -504,7 +503,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          Text('tfsappv3.4.6+7'),
+          Text('tfsappv3.8.6+6'),
           Expanded(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10),

@@ -157,7 +157,7 @@ class _BillFormState extends State<BillForm> {
           .then((prefs) => prefs.getString('token'));
       print(tokens);
       var headers = {"Authorization": "Bearer ${tokens!}"};
-      var url = Uri.parse('https://mis.tfs.go.tz/fremis-test/api/v1/dealers');
+      var url = Uri.parse('$baseUrl/api/v1/dealers');
       final response = await http.get(url, headers: headers);
       var res;
       //final sharedP prefs=await
@@ -447,8 +447,9 @@ class _BillFormState extends State<BillForm> {
                                             labelText: "Search",
                                             border: InputBorder.none,
                                             isDense: true,
-                                            contentPadding: const EdgeInsets.fromLTRB(
-                                                30, 10, 15, 10),
+                                            contentPadding:
+                                                const EdgeInsets.fromLTRB(
+                                                    30, 10, 15, 10),
                                             suffixIcon: IconButton(
                                               icon: const Icon(Icons.clear),
                                               color: Colors.red,
@@ -473,7 +474,8 @@ class _BillFormState extends State<BillForm> {
                                           filled: true,
                                           isDense: true,
                                           contentPadding:
-                                              const EdgeInsets.fromLTRB(30, 5, 10, 5),
+                                              const EdgeInsets.fromLTRB(
+                                                  30, 5, 10, 5),
                                           hintText: "Select Level 1 GFS Code",
                                           border: InputBorder.none),
                                       compareFn: (i, s) => i!.isEqual(s),
@@ -506,8 +508,7 @@ class _BillFormState extends State<BillForm> {
                                                 ? "This Field Is required"
                                                 : null,
                                             popupTitle: const Padding(
-                                              padding:
-                                                  EdgeInsets.all(8.0),
+                                              padding: EdgeInsets.all(8.0),
                                               child: Center(
                                                   child: Text(
                                                 'List of Level Two GFS-CODE',
@@ -522,11 +523,13 @@ class _BillFormState extends State<BillForm> {
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10.0),
-                                                    borderSide: const BorderSide(
+                                                    borderSide:
+                                                        const BorderSide(
                                                       color: Colors.cyan,
                                                     ),
                                                   ),
-                                                  fillColor: const Color(0xfff3f3f4),
+                                                  fillColor:
+                                                      const Color(0xfff3f3f4),
                                                   filled: true,
                                                   labelText: "Search",
                                                   border: InputBorder.none,
@@ -535,7 +538,8 @@ class _BillFormState extends State<BillForm> {
                                                       const EdgeInsets.fromLTRB(
                                                           30, 10, 15, 10),
                                                   suffixIcon: IconButton(
-                                                    icon: const Icon(Icons.clear),
+                                                    icon:
+                                                        const Icon(Icons.clear),
                                                     color: Colors.red,
                                                     onPressed: () {
                                                       _dealerEditTextController
@@ -553,7 +557,8 @@ class _BillFormState extends State<BillForm> {
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               5.0),
-                                                      borderSide: const BorderSide(
+                                                      borderSide:
+                                                          const BorderSide(
                                                         color: Colors.cyan,
                                                       ),
                                                     ),
@@ -562,7 +567,8 @@ class _BillFormState extends State<BillForm> {
                                                     filled: true,
                                                     isDense: true,
                                                     contentPadding:
-                                                        const EdgeInsets.fromLTRB(
+                                                        const EdgeInsets
+                                                                .fromLTRB(
                                                             30, 5, 10, 5),
                                                     hintText:
                                                         "Select Level 2 GFS Code",
@@ -598,8 +604,7 @@ class _BillFormState extends State<BillForm> {
                                                 ? "This Field Is required"
                                                 : null,
                                             popupTitle: const Padding(
-                                              padding:
-                                                  EdgeInsets.all(8.0),
+                                              padding: EdgeInsets.all(8.0),
                                               child: Center(
                                                   child: Text(
                                                 'List of Level Three GFS-CODE',
@@ -614,11 +619,13 @@ class _BillFormState extends State<BillForm> {
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10.0),
-                                                    borderSide: const BorderSide(
+                                                    borderSide:
+                                                        const BorderSide(
                                                       color: Colors.cyan,
                                                     ),
                                                   ),
-                                                  fillColor: const Color(0xfff3f3f4),
+                                                  fillColor:
+                                                      const Color(0xfff3f3f4),
                                                   filled: true,
                                                   labelText: "Search",
                                                   border: InputBorder.none,
@@ -627,7 +634,8 @@ class _BillFormState extends State<BillForm> {
                                                       const EdgeInsets.fromLTRB(
                                                           30, 10, 15, 10),
                                                   suffixIcon: IconButton(
-                                                    icon: const Icon(Icons.clear),
+                                                    icon:
+                                                        const Icon(Icons.clear),
                                                     color: Colors.red,
                                                     onPressed: () {
                                                       _dealerEditTextController
@@ -645,7 +653,8 @@ class _BillFormState extends State<BillForm> {
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               5.0),
-                                                      borderSide: const BorderSide(
+                                                      borderSide:
+                                                          const BorderSide(
                                                         color: Colors.cyan,
                                                       ),
                                                     ),
@@ -654,7 +663,8 @@ class _BillFormState extends State<BillForm> {
                                                     filled: true,
                                                     isDense: true,
                                                     contentPadding:
-                                                        const EdgeInsets.fromLTRB(
+                                                        const EdgeInsets
+                                                                .fromLTRB(
                                                             30, 5, 10, 5),
                                                     hintText:
                                                         "Select Level 3 GFS Code",
@@ -707,8 +717,9 @@ class _BillFormState extends State<BillForm> {
                                             labelText: "Search",
                                             border: InputBorder.none,
                                             isDense: true,
-                                            contentPadding: const EdgeInsets.fromLTRB(
-                                                30, 10, 15, 10),
+                                            contentPadding:
+                                                const EdgeInsets.fromLTRB(
+                                                    30, 10, 15, 10),
                                             suffixIcon: IconButton(
                                               icon: const Icon(Icons.clear),
                                               color: Colors.red,
@@ -733,7 +744,8 @@ class _BillFormState extends State<BillForm> {
                                           filled: true,
                                           isDense: true,
                                           contentPadding:
-                                              const EdgeInsets.fromLTRB(30, 5, 10, 5),
+                                              const EdgeInsets.fromLTRB(
+                                                  30, 5, 10, 5),
                                           hintText: "Select Dealer Name",
                                           border: InputBorder.none),
                                       compareFn: (i, s) => i!.isEqual(s),
@@ -744,8 +756,7 @@ class _BillFormState extends State<BillForm> {
                                         setState(() {
                                           dealerName = data!.companyName ==
                                                   "null"
-                                              ? " ${data.fname}" ==
-                                                      "null"
+                                              ? " ${data.fname}" == "null"
                                                   ? ""
                                                   : "${data.fname} ${data.mname}" ==
                                                           "null"
@@ -794,7 +805,8 @@ class _BillFormState extends State<BillForm> {
                                                     color: Colors.cyan,
                                                   ),
                                                 ),
-                                                fillColor: const Color(0xfff3f3f4),
+                                                fillColor:
+                                                    const Color(0xfff3f3f4),
                                                 filled: true,
                                                 labelText: "Amount",
                                                 border: InputBorder.none,
@@ -807,8 +819,7 @@ class _BillFormState extends State<BillForm> {
                                                 setState(() {
                                                   val.isEmpty
                                                       ? print(val)
-                                                      : amount =
-                                                          int.parse(val);
+                                                      : amount = int.parse(val);
                                                   getSum();
                                                 });
                                               },
@@ -827,8 +838,7 @@ class _BillFormState extends State<BillForm> {
                                             padding: const EdgeInsets.only(
                                                 top: 1, right: 1, left: 1),
                                             child: TextFormField(
-                                              initialValue:
-                                                  quantity.toString(),
+                                              initialValue: quantity.toString(),
                                               keyboardType:
                                                   TextInputType.number,
                                               key: const Key("plat"),
@@ -853,7 +863,8 @@ class _BillFormState extends State<BillForm> {
                                                     color: Colors.cyan,
                                                   ),
                                                 ),
-                                                fillColor: const Color(0xfff3f3f4),
+                                                fillColor:
+                                                    const Color(0xfff3f3f4),
                                                 filled: true,
                                                 border: InputBorder.none,
                                                 isDense: true,
@@ -894,9 +905,10 @@ class _BillFormState extends State<BillForm> {
                                                     focusedBorder:
                                                         OutlineInputBorder(
                                                       borderRadius:
-                                                          BorderRadius
-                                                              .circular(5.0),
-                                                      borderSide: const BorderSide(
+                                                          BorderRadius.circular(
+                                                              5.0),
+                                                      borderSide:
+                                                          const BorderSide(
                                                         color: Colors.cyan,
                                                       ),
                                                     ),
@@ -907,7 +919,8 @@ class _BillFormState extends State<BillForm> {
                                                     border: InputBorder.none,
                                                     isDense: true,
                                                     contentPadding:
-                                                        const EdgeInsets.fromLTRB(
+                                                        const EdgeInsets
+                                                                .fromLTRB(
                                                             30, 7, 15, 7),
                                                   ),
                                                   items: _currencyType,
@@ -916,8 +929,7 @@ class _BillFormState extends State<BillForm> {
                                                           null
                                                       ? "This Field is Required"
                                                       : null,
-                                                  onChanged:
-                                                      (value) async {}),
+                                                  onChanged: (value) async {}),
                                             ),
                                           ),
                                         ),
@@ -945,7 +957,8 @@ class _BillFormState extends State<BillForm> {
                                                     color: Colors.cyan,
                                                   ),
                                                 ),
-                                                fillColor: const Color(0xfff3f3f4),
+                                                fillColor:
+                                                    const Color(0xfff3f3f4),
                                                 filled: true,
                                                 border: InputBorder.none,
                                                 isDense: true,
@@ -997,7 +1010,8 @@ class _BillFormState extends State<BillForm> {
                                                     color: Colors.cyan,
                                                   ),
                                                 ),
-                                                fillColor: const Color(0xfff3f3f4),
+                                                fillColor:
+                                                    const Color(0xfff3f3f4),
                                                 filled: true,
                                                 labelText: "Bill Description",
                                                 border: InputBorder.none,
@@ -1143,11 +1157,9 @@ class _BillFormState extends State<BillForm> {
           title: Text(item.companyName == "null"
               ? " ${item.fname}" == "null"
                   ? ""
-                  : "${item.fname} ${item.mname}" ==
-                          "null"
+                  : "${item.fname} ${item.mname}" == "null"
                       ? ""
-                      : "${item.mname} ${item.lname}" ==
-                              "null"
+                      : "${item.mname} ${item.lname}" == "null"
                           ? "null"
                           : item.lname.toString()
               : item.companyName.toString() == "null"

@@ -3,7 +3,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
+//import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -30,17 +32,38 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
+// @pragma(
+//     'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
+// void callbackDispatcher() {
+//   Workmanager().executeTask((task, inputData) {
+//     print(
+//         "Native called background task: $simplePeriodicTask"); //simpleTask will be emitted here.
+//     return Future.value(true);
+//   });
+// }
+
 void main() async {
   HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
+  // AwesomeNotifications().initialize(null, [
+  //   // notification icon
+  //   NotificationChannel(
+  //     channelGroupKey: 'basic_test',
+  //     channelKey: 'basic',
+  //     channelName: 'Basic notifications',
+  //     channelDescription: 'Notification channel for basic tests',
+  //     channelShowBadge: true, //make it true, to show notifications counter
+  //   ),
+  // ]);
 
   Workmanager().initialize(
     callbackDispatcher,
-    // isInDebugMode: true,
+    //isInDebugMode: true,
   );
 
   Workmanager().registerPeriodicTask("3", simplePeriodicTask,
       initialDelay: const Duration(seconds: 120),
+      frequency: const Duration(minutes: 15),
       constraints: Constraints(
         networkType: NetworkType.connected,
       ));
@@ -123,6 +146,8 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+@pragma(
+    'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     HttpOverrides.global = MyHttpOverrides();
@@ -149,8 +174,8 @@ void callbackDispatcher() {
           var res;
 
           //final sharedP prefs=await
-          // print(response.statusCode);
-          // print(response.body);
+          print(response.statusCode);
+          print(response.body);
 
           if (response.statusCode == 200) {
             res = json.decode(response.body);
@@ -172,13 +197,27 @@ void callbackDispatcher() {
               );
 
               for (var i = 0; i < resp.length; i++) {
-                resp[i]["number"] > 0
-                    ? await notificationDefaultSound(
-                        index: i.toString(),
-                        body:
-                            'Request for ${resp[i]["type"]} Approval - ${resp[i]["number"]}',
-                        title: resp[i]["number"].toString())
-                    : null;
+                // resp[i]["number"] > 0
+                //     ? AwesomeNotifications().createNotification(
+                //         content: NotificationContent(
+                //           //simgple notification
+                //           id: i,
+                //           channelKey:
+                //               'basic', //set configuration wuth key "basic"
+                //           title: resp[i]["number"].toString(),
+                //           body:
+                //               'Request for ${resp[i]["type"]} Approval - ${resp[i]["number"]}',
+                //           payload: {"name": "TFS"},
+                //         ),
+                //       )
+                //     : null;
+
+                // await notificationDefaultSound(
+                //     index: i.toString(),
+                //     body:
+                //         'Request for ${resp[i]["type"]} Approval - ${resp[i]["number"]}',
+                //     title: resp[i]["number"].toString());
+
                 print("Notify");
                 Future.delayed(const Duration(milliseconds: 500), () {
                   print("Delay");
@@ -393,17 +432,19 @@ Future<Position> _determinePosition() async {
 Future notificationDefaultSound(
     {String? title, String? body, String? index}) async {
   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-    index.toString(),
-    'Channel Name',
-    channelDescription: 'Description',
-    importance: Importance.max,
-    priority: Priority.high,
-    enableVibration: true,
-    playSound: true,
-    groupKey: index,
-    setAsGroupSummary: true,
-    visibility: NotificationVisibility.public,
-  );
+      index.toString(), 'Channel Name',
+      channelDescription: 'Description',
+      importance: Importance.max,
+      priority: Priority.high,
+      enableVibration: true,
+      channelShowBadge: true,
+      fullScreenIntent: true,
+      number: 2,
+      playSound: true,
+      groupKey: index,
+      setAsGroupSummary: true,
+      visibility: NotificationVisibility.public,
+      showProgress: true);
 
   // var iOSPlatformChannelSpecifics = const IOSNotificationDetails();
 

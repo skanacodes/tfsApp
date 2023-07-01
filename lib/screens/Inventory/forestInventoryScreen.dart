@@ -1,6 +1,6 @@
 // ignore_for_file: file_names, prefer_typing_uninitialized_variables, avoid_print, library_private_types_in_public_api
 
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badge;
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
@@ -233,44 +233,39 @@ class _ForestInventoryScreenState extends State<ForestInventoryScreen> {
                                                                     const EdgeInsets
                                                                             .all(
                                                                         2.0),
-                                                                child: Badge(
-                                                                    badgeColor:
-                                                                        kPrimaryColor,
-                                                                    animationType:
-                                                                        BadgeAnimationType
+                                                                child:
+                                                                    badge.Badge(
+                                                                        badgeColor:
+                                                                            kPrimaryColor,
+                                                                        animationType: badge
+                                                                            .BadgeAnimationType
                                                                             .scale,
-                                                                    padding: const EdgeInsets
-                                                                            .symmetric(
-                                                                        horizontal:
-                                                                            5,
-                                                                        vertical:
-                                                                            1),
-                                                                    badgeContent:
-                                                                        Padding(
-                                                                      padding:
-                                                                          const EdgeInsets.all(
-                                                                              1.0),
-                                                                      child:
-                                                                          Icon(
-                                                                        isSelected &&
-                                                                                gridIndex == index
-                                                                            ? Icons.verified_user
-                                                                            : Icons.panorama_fish_eye_outlined,
-                                                                        size:
-                                                                            15,
-                                                                      ),
-                                                                    ),
-                                                                    child:
-                                                                        CircleAvatar(
-                                                                      backgroundColor:
-                                                                          Colors
-                                                                              .grey,
-                                                                      child: Text((index + 1).toString() ==
-                                                                              "10"
-                                                                          ? "0"
-                                                                          : (index + 1)
-                                                                              .toString()),
-                                                                    ))),
+                                                                        padding: const EdgeInsets.symmetric(
+                                                                            horizontal:
+                                                                                5,
+                                                                            vertical:
+                                                                                1),
+                                                                        badgeContent:
+                                                                            Padding(
+                                                                          padding:
+                                                                              const EdgeInsets.all(1.0),
+                                                                          child:
+                                                                              Icon(
+                                                                            isSelected && gridIndex == index
+                                                                                ? Icons.verified_user
+                                                                                : Icons.panorama_fish_eye_outlined,
+                                                                            size:
+                                                                                15,
+                                                                          ),
+                                                                        ),
+                                                                        child:
+                                                                            CircleAvatar(
+                                                                          backgroundColor:
+                                                                              Colors.grey,
+                                                                          child: Text((index + 1).toString() == "10"
+                                                                              ? "0"
+                                                                              : (index + 1).toString()),
+                                                                        ))),
                                                           ],
                                                         ),
                                                         Text(

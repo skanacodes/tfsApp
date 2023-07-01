@@ -167,7 +167,7 @@ class _ManagementOperationState extends State<ManagementOperation> {
             const Divider(
               color: Colors.grey,
             ),
-            Chart()
+            const Chart()
           ],
         ),
       ),

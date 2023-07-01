@@ -338,8 +338,8 @@ class _GradingState extends State<Grading> {
       var headers = {"Authorization": "Bearer ${tokens!}"};
       BaseOptions options = BaseOptions(
           baseUrl: baseUrl,
-          connectTimeout: 50000,
-          receiveTimeout: 50000,
+          connectTimeout: const Duration(minutes: 4),
+          receiveTimeout: const Duration(minutes: 4),
           headers: headers);
       var dio = Dio(options);
       var formData = FormData.fromMap({
@@ -374,7 +374,7 @@ class _GradingState extends State<Grading> {
     } on DioError catch (e) {
       //print('dio package');
       if (DioErrorType.receiveTimeout == e.type ||
-          DioErrorType.connectTimeout == e.type) {
+          DioErrorType.sendTimeout == e.type) {
         message('error', 'Server Can Not Be Reached.');
         // throw Exception('Server Can Not Be Reached');
         //print(e);
@@ -383,7 +383,7 @@ class _GradingState extends State<Grading> {
           isLoading = false;
         });
         return 'fail';
-      } else if (DioErrorType.response == e.type) {
+      } else if (DioErrorType.badResponse == e.type) {
         // throw Exception('Server Can Not Be Reached');
 
         message('error', 'Failed To Get Response From Server.');
@@ -393,8 +393,8 @@ class _GradingState extends State<Grading> {
           isLoading = false;
         });
         return 'fail';
-      } else if (DioErrorType.other == e.type) {
-        if (e.message.contains('SocketException')) {
+      } else if (DioErrorType.badCertificate == e.type) {
+        if (e.message!.contains('SocketException')) {
           // throw Exception('Server Can Not Be Reached');
           message('error', 'Network Connectivity Problem.');
 

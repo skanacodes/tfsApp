@@ -37,6 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // _determinePosition();
     Timer(const Duration(seconds: 5), () async {
       Map<Permission, PermissionStatus> statuses = await [
+        Permission.notification,
         Permission.location,
         Permission.camera,
         Permission.storage,

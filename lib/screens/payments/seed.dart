@@ -108,8 +108,8 @@ class _SeedsState extends State<Seeds> {
       };
       BaseOptions options = BaseOptions(
           baseUrl: baseUrlSeed,
-          connectTimeout: 50000,
-          receiveTimeout: 50000,
+          connectTimeout: const Duration(minutes: 4),
+          receiveTimeout: const Duration(minutes: 4),
           headers: headers);
       var dio = Dio(options);
       var formData = FormData.fromMap({
@@ -167,19 +167,19 @@ class _SeedsState extends State<Seeds> {
     } on DioError catch (e) {
       //print(('dio package');
       if (DioErrorType.receiveTimeout == e.type ||
-          DioErrorType.connectTimeout == e.type) {
+          DioErrorType.sendTimeout == e.type) {
         //print((e.toString());
         message('Server Can Not Be Reached.', 'error');
         // throw Exception('Server Can Not Be Reached');
         //print((e);
-      } else if (DioErrorType.response == e.type) {
+      } else if (DioErrorType.badResponse == e.type) {
         // throw Exception('Server Can Not Be Reached');
         // //print((e.message);
         message('Failed To Get Response From Server.', 'error');
         // throw Exception('Server Can Not Be Reached');
         //print((e);
-      } else if (DioErrorType.other == e.type) {
-        if (e.message.contains('SocketException')) {
+      } else if (DioErrorType.badCertificate == e.type) {
+        if (e.message!.contains('SocketException')) {
           // throw Exception('Server Can Not Be Reached');
           message(
             'Network Connectivity Problem.',

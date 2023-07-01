@@ -327,22 +327,42 @@ public class WelcomeActivity extends FlutterActivity {
                 .setMethodCallHandler(
                         (call, result) -> {
                             // Note: this method is invoked on the main thread.
+                            System.out.println("1234567890");
                             if (call.method.equals("getDeviceInfo")) {
-
-                                String parameter = call.argument("operation");
-
-                                System.out.println(parameter);
+                                System.out.println("1234567890");
+                                String m_androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                                System.out.println(m_androidId);
+                               // System.out.println("********************************************************");
                                 SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref",MODE_PRIVATE);
+
+// Creating an Editor object to edit(write to the file)
+                                SharedPreferences.Editor myEdit = sharedPreferences.edit();
+
+// Storing the key and its value as the data fetched from edittext
+                                myEdit.putString("brand", Build.BRAND);
+                                myEdit.putString("android_id",m_androidId );
+//                myEdit.putString("imeiSim1", imeiSIM1);
+//                myEdit.putString("imeiSim2", imeiSIM2);
+
+
+                                myEdit.commit();
+                                System.out.println(sharedPreferences.getAll());
+                                String parameter = call.argument("operation");
+                                System.out.println("1234567890");
+                                System.out.println(parameter);
+                                System.out.println("parameter");
+                                 sharedPreferences = getSharedPreferences("MySharedPref",MODE_PRIVATE);
                                 System.out.println(sharedPreferences.getString("brand",""));
 
                                 System.out.println(sharedPreferences.getAll());
+                                result.success(sharedPreferences.getAll());
 
-                                if (sharedPreferences.getString("brand","").equals("MobiWire") || sharedPreferences.getString("brand","").equals("MobiIoT") || sharedPreferences.getString("brand","").equals("qti")){
-
-                                    result.success(sharedPreferences.getAll());
-                                }else{
-                                    result.success("Not Supported");
-                                }
+//                                if (sharedPreferences.getString("brand","").equals("MobiWire") || sharedPreferences.getString("brand","").equals("MobiIoT") || sharedPreferences.getString("brand","").equals("qti")){
+//
+//                                    result.success(sharedPreferences.getAll());
+//                                }else{
+//                                    result.success("Not Supported");
+//                                }
 
 
 
@@ -1091,30 +1111,30 @@ if (type.equals("receipt")){
                 // TODO Auto-generated method stub
                 try {
 
-                    String[] splitName = name.split(" ");
-                    String[] dateMonths = currentDateandTime.split(" ");
-                    String[] firstPartOfYear=dateMonths[0].split("-");
-                    String[] secondPartOfYear = dateMonths[1].split(":");
-                    int sumOfTheYear = Integer.parseInt(firstPartOfYear[0])+Integer.parseInt(firstPartOfYear[1])+Integer.parseInt(firstPartOfYear[2])+Integer.parseInt(secondPartOfYear[0])+Integer.parseInt(secondPartOfYear[1])+Integer.parseInt(secondPartOfYear[2]);
-              StringBuilder code1 = new StringBuilder((controlNo.substring(controlNo.length()-3)));
-
-                    StringBuilder code2= new StringBuilder((receiptNo.substring(receiptNo.length()-3)));
-                    System.out.println(splitName);
-                    char fchar ;
-                    char Schar ;
-
-                    if (splitName.length>1){
-                         fchar = splitName[0].charAt(0);
-                         Schar = splitName[1].charAt(1);
-
-                    }
-                    else {
-                        fchar = splitName[0].charAt(0);
-                        Schar = 'a';
-                    }
-
-                    int fnum = (Character.toLowerCase(fchar) - 'a' + 1);
-                    int snum = Character.toLowerCase(Schar) - 'a' + 1;
+                  //  String[] splitName = name.split(" ");
+                  //  String[] dateMonths = currentDateandTime.split(" ");
+//                    String[] firstPartOfYear=dateMonths[0].split("-");
+//                    String[] secondPartOfYear = dateMonths[1].split(":");
+                //    int sumOfTheYear = Integer.parseInt(firstPartOfYear[0])+Integer.parseInt(firstPartOfYear[1])+Integer.parseInt(firstPartOfYear[2])+Integer.parseInt(secondPartOfYear[0])+Integer.parseInt(secondPartOfYear[1])+Integer.parseInt(secondPartOfYear[2]);
+//              StringBuilder code1 = new StringBuilder((controlNo.substring(controlNo.length()-3)));
+//
+//                    StringBuilder code2= new StringBuilder((receiptNo.substring(receiptNo.length()-3)));
+//                    System.out.println(splitName);
+//                    char fchar ;
+//                    char Schar ;
+//
+//                    if (splitName.length>1){
+//                         fchar = splitName[0].charAt(0);
+//                         Schar = splitName[1].charAt(1);
+//
+//                    }
+//                    else {
+//                        fchar = splitName[0].charAt(0);
+//                        Schar = 'a';
+//                    }
+//
+//                    int fnum = (Character.toLowerCase(fchar) - 'a' + 1);
+//                    int snum = Character.toLowerCase(Schar) - 'a' + 1;
                     String pversion,gray,sversion,level,imei = null;
 //                    Bitmap bitmap1 = BitmapFactory.decodeResource(getResources(), R.drawable.bitmap1);
 //                    Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.bitmap2);
@@ -1174,11 +1194,11 @@ if (type.equals("receipt")){
                         usbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_MIDDLE);
 
                         usbThermalPrinter.printLogo(decodedQr, false);
-                        usbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_MIDDLE);
-                        usbThermalPrinter.addString("--------------------------------\n"+Integer.toString(fnum)+Integer.toString(snum)+"-"+sumOfTheYear+"-"+code2.reverse()+code1.reverse());
+                      //  usbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_MIDDLE);
+                       // usbThermalPrinter.addString("--------------------------------\n"+Integer.toString(fnum)+Integer.toString(snum)+"-"+sumOfTheYear+"-"+code2.reverse()+code1.reverse());
                         usbThermalPrinter.printString();
                         usbThermalPrinter.walkPaper(15);
-                        telporesponse="success";
+                        telporesponse="Successfully Printed";
                     }
                     if (type.equals("bill")){
                         usbThermalPrinter.reset();
@@ -1223,7 +1243,7 @@ if (type.equals("receipt")){
                         usbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_MIDDLE);
 
                         usbThermalPrinter.walkPaper(15);
-                        telporesponse="success";
+                        telporesponse="Successfully Printed";
                     }
                 } catch (TelpoException e) {
                     // TODO Auto-generated catch block

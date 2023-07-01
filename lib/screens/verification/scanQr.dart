@@ -1,14 +1,21 @@
 // ignore_for_file: unused_import, unused_element, file_names, use_key_in_widget_constructors, prefer_typing_uninitialized_variables, avoid_print, non_constant_identifier_names, use_build_context_synchronously, library_private_types_in_public_api
 
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_qr_bar_scanner/flutter_qr_bar_scanner.dart';
 import 'package:flutter_qr_bar_scanner/qr_bar_scanner_camera.dart';
+// import 'package:flutter_qr_bar_scanner/flutter_qr_bar_scanner.dart';
+// import 'package:flutter_qr_bar_scanner/qr_bar_scanner_camera.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
-
+//import 'package:qrscan/qrscan.dart' as scanner;
 import 'package:http/http.dart' as http;
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:tfsappv1/screens/RealTimeConnection/realTimeConnection.dart';
 import 'package:tfsappv1/screens/verification/expectedTpHistory.dart';
 import 'package:tfsappv1/screens/verification/extension_approvalscreen.dart';
@@ -63,10 +70,31 @@ class _ScanQrState extends State<ScanQr> {
   );
   // Get battery level.
   String printing = '';
+  // Uint8List bytes = Uint8List(0);
+  // TextEditingController _inputController;
+  TextEditingController? _outputController;
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  Barcode? qrResult;
+  QRViewController? controller;
+  bool state = false;
+  bool stateCam = false;
+
+  // In order to get hot reload to work we need to pause the camera if the platform
+  // is android, or resume the camera if the platform is iOS.
+  // @override
+  // void reassemble() {
+  //   super.reassemble();
+  //   if (Platform.isAndroid) {
+  //     controller!.pauseCamera();
+  //   } else if (Platform.isIOS) {
+  //     controller!.resumeCamera();
+  //   }
+  // }
 
   getBrand() async {
     brand = await SharedPreferences.getInstance()
         .then((prefs) => prefs.getString('brand'));
+    print(brand);
   }
 
   Future<void> _printBill() async {
@@ -197,6 +225,7 @@ class _ScanQrState extends State<ScanQr> {
 
   @override
   void dispose() {
+    controller?.dispose();
     super.dispose();
   }
 
@@ -479,7 +508,7 @@ class _ScanQrState extends State<ScanQr> {
                   .then((prefs) => prefs.getString('checkpointName'));
               istp
                   ? messageToUser("info",
-                      "You are about to start verification for TP Number $tpNumberPrompt , at $checkpoint checkpoint, Are you sure vehicle has arrived at $checkpoint Checkpoint? ",
+                      "You are about to start verification for TP Number $tpNumberPrompt, that crossed at $checkpoint checkpoint, Are you sure vehicle has passed at $checkpoint Checkpoint? ",
                       token: tokens, tpNumber: tpNumberPrompt)
                   : await verifyReceipt(tpNumberPrompt!, tokens);
               setState(() {
@@ -566,12 +595,26 @@ class _ScanQrState extends State<ScanQr> {
     return Future.value(true);
   }
 
+  Future _scan() async {
+    //  await Permission.camera.request();
+    // String? barcode = await scanner.scan();
+    // if (barcode == null) {
+    //   print('nothing return.');
+    // } else {
+    //   print(barcode);
+    //   print("barcode");
+    //   _outputController!.text = barcode;
+    //   print(barcode);
+    // }
+  }
+
   @override
   void initState() {
     getBrand();
     RealTimeCommunication().createConnection(
       "7",
     );
+    _outputController = TextEditingController();
     // ignore: todo
     // TODO: implement initState
     super.initState();
@@ -580,25 +623,253 @@ class _ScanQrState extends State<ScanQr> {
   @override
   Widget build(BuildContext context) {
     return _camState
-        ? WillPopScope(
-            onWillPop: _willPopCallback,
-            child: Center(
-              child: SizedBox(
-                height: getProportionateScreenHeight(400),
-                width: getProportionateScreenWidth(350),
-                child: QRBarScannerCamera(
-                  fit: BoxFit.cover,
-                  onError: (context, error) => Text(
-                    error.toString(),
-                    style: const TextStyle(color: Colors.red),
+        ? brand == "qti"
+            ? WillPopScope(
+                onWillPop: _willPopCallback,
+                child: SizedBox(
+                  height: getProportionateScreenHeight(500),
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(flex: 6, child: _buildQrView(context)),
+                      Expanded(
+                        flex: 3,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              if (qrResult != null)
+                                Text(
+                                    'Barcode Type: ${describeEnum(qrResult!.format)}   Data: ${qrResult!.code}')
+                              else
+                                const Text(
+                                  'Scan a Transit Pass ',
+                                  style: TextStyle(
+                                      color: kPrimaryColor, fontSize: 20),
+                                ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SizedBox(
+                                  // height: 400,
+                                  width: 400,
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Expanded(
+                                            flex: 3,
+                                            child: FutureBuilder(
+                                              future:
+                                                  controller?.getFlashStatus(),
+                                              builder: (context, snapshot) {
+                                                return snapshot.data == true
+                                                    ? const Padding(
+                                                        padding:
+                                                            EdgeInsets.all(8.0),
+                                                        child: Text(
+                                                          'Flash Ligh: On',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                      )
+                                                    : const Text(
+                                                        'Flash Ligh: Off',
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      );
+                                              },
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 3,
+                                            child: CupertinoSwitch(
+                                              value: state,
+                                              onChanged: (value) async {
+                                                state = value;
+                                                await controller?.toggleFlash();
+                                                setState(
+                                                  () {},
+                                                );
+                                              },
+                                              thumbColor: state
+                                                  ? kPrimaryColor
+                                                  : Colors.grey[400],
+                                              activeColor:
+                                                  CupertinoColors.systemGrey5,
+                                              trackColor: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const Divider(
+                                        height: 3,
+                                        color: CupertinoColors.systemGrey2,
+                                      ),
+                                      // Text(
+                                      //   state == true
+                                      //       ? "Bluetooth turned on"
+                                      //       : "Bluetooth turned off",
+                                      //   style: TextStyle(
+                                      //       fontWeight: FontWeight.bold,
+                                      //       color: state == true
+                                      //           ? CupertinoColors.secondaryLabel
+                                      //           : CupertinoColors.activeOrange),
+                                      // ),
+
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Expanded(
+                                            flex: 3,
+                                            child: FutureBuilder(
+                                              future:
+                                                  controller?.getCameraInfo(),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.data != null) {
+                                                  return Text(
+                                                      'Camera facing: ${describeEnum(snapshot.data!)}',
+                                                      style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold));
+                                                } else {
+                                                  return const Text('loading',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold));
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 3,
+                                            child: CupertinoSwitch(
+                                              value: stateCam,
+                                              onChanged: (value) async {
+                                                stateCam = value;
+                                                await controller?.flipCamera();
+                                                setState(
+                                                  () {},
+                                                );
+                                              },
+                                              thumbColor: stateCam
+                                                  ? kPrimaryColor
+                                                  : Colors.grey[400],
+                                              activeColor:
+                                                  CupertinoColors.systemGrey5,
+                                              trackColor: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const Divider(
+                                        height: 3,
+                                        color: CupertinoColors.systemGrey2,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              // Row(
+                              //   mainAxisAlignment: MainAxisAlignment.center,
+                              //   crossAxisAlignment: CrossAxisAlignment.center,
+                              //   children: <Widget>[
+                              //     Container(
+                              //       margin: const EdgeInsets.all(8),
+                              //       child: OutlinedButton(
+                              //           onPressed: () async {
+                              //             await controller?.toggleFlash();
+                              //             setState(() {});
+                              //           },
+                              //           child: FutureBuilder(
+                              //             future: controller?.getFlashStatus(),
+                              //             builder: (context, snapshot) {
+                              //               return Text(
+                              //                   'Flash: ${snapshot.data}');
+                              //             },
+                              //           )),
+                              //     ),
+                              //     Container(
+                              //       margin: const EdgeInsets.all(8),
+                              //       child: ElevatedButton(
+                              //           onPressed: () async {
+                              //             await controller?.flipCamera();
+                              //             setState(() {});
+                              //           },
+                              //           child: FutureBuilder(
+                              //             future: controller?.getCameraInfo(),
+                              //             builder: (context, snapshot) {
+                              //               if (snapshot.data != null) {
+                              //                 return Text(
+                              //                     'Camera facing ${describeEnum(snapshot.data!)}');
+                              //               } else {
+                              //                 return const Text('loading');
+                              //               }
+                              //             },
+                              //           )),
+                              //     )
+                              //   ],
+                              // ),
+                              // Row(
+                              //   mainAxisAlignment: MainAxisAlignment.center,
+                              //   crossAxisAlignment: CrossAxisAlignment.center,
+                              //   children: <Widget>[
+                              //     Container(
+                              //       margin: const EdgeInsets.all(8),
+                              //       child: ElevatedButton(
+                              //         onPressed: () async {
+                              //           await controller?.pauseCamera();
+                              //         },
+                              //         child: const Text('pause',
+                              //             style: TextStyle(fontSize: 20)),
+                              //       ),
+                              //     ),
+                              //     Container(
+                              //       margin: const EdgeInsets.all(8),
+                              //       child: ElevatedButton(
+                              //         onPressed: () async {
+                              //           await controller?.resumeCamera();
+                              //         },
+                              //         child: const Text('resume',
+                              //             style: TextStyle(fontSize: 20)),
+                              //       ),
+                              //     )
+                              //   ],
+                              // ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                  qrCodeCallback: (code) {
-                    _qrCallback(code);
-                  },
                 ),
-              ),
-            ),
-          )
+              )
+            : WillPopScope(
+                onWillPop: _willPopCallback,
+                child: Center(
+                  child: SizedBox(
+                    height: getProportionateScreenHeight(400),
+                    width: getProportionateScreenWidth(350),
+                    child: QRBarScannerCamera(
+                      fit: BoxFit.cover,
+                      // formats: const [BarcodeFormats.QR_CODE],
+                      onError: (context, error) => Text(
+                        error.toString(),
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                      qrCodeCallback: (code) {
+                        _qrCallback(code);
+                      },
+                    ),
+                  ),
+                ),
+              )
         : iSscanned == false
             ? AnimationLimiter(
                 child: Column(
@@ -1034,5 +1305,51 @@ class _ScanQrState extends State<ScanQr> {
             ],
           );
         });
+  }
+
+  Widget _buildQrView(BuildContext context) {
+    // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
+    var scanArea = (MediaQuery.of(context).size.width < 400 ||
+            MediaQuery.of(context).size.height < 400)
+        ? 270.0
+        : 300.0;
+    // To ensure the Scanner view is properly sizes after rotation
+    // we need to listen for Flutter SizeChanged notification and update controller
+    return QRView(
+      key: qrKey,
+      onQRViewCreated: _onQRViewCreated,
+      overlay: QrScannerOverlayShape(
+          borderColor: Colors.green,
+          borderRadius: 10,
+          borderLength: 30,
+          borderWidth: 10,
+          cutOutSize: scanArea),
+      onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
+    );
+  }
+
+  void _onQRViewCreated(QRViewController controller) {
+    setState(() {
+      this.controller = controller;
+    });
+    controller.scannedDataStream.listen((scanData) {
+      setState(() {
+        qrResult = scanData;
+        _qrCallback(qrResult!.code.toString());
+      });
+    });
+
+    // qrResult!.code.toString() == "null"
+    //     ? ""
+    //     :
+  }
+
+  void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
+    log('${DateTime.now().toIso8601String()}_onPermissionSet $p');
+    if (!p) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('no Permission')),
+      );
+    }
   }
 }

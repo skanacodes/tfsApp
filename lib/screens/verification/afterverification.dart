@@ -348,8 +348,8 @@ class _AfterVerificationState extends State<AfterVerification> {
 
       BaseOptions options = BaseOptions(
           baseUrl: baseUrlTest,
-          connectTimeout: 50000,
-          receiveTimeout: 50000,
+          connectTimeout: const Duration(minutes: 4),
+          receiveTimeout: const Duration(minutes: 4),
           headers: headers);
       var dio = Dio(options);
       var formData = FormData.fromMap({
@@ -398,7 +398,7 @@ class _AfterVerificationState extends State<AfterVerification> {
     } on DioError catch (e) {
       ////print(('dio package');
       if (DioErrorType.receiveTimeout == e.type ||
-          DioErrorType.connectTimeout == e.type) {
+          DioErrorType.sendTimeout == e.type) {
         message('error', e.message.toString());
         ////print((e.message);
         // throw Exception('Server Can Not Be Reached');
@@ -407,14 +407,14 @@ class _AfterVerificationState extends State<AfterVerification> {
           isLoading = false;
         });
         return 'fail';
-      } else if (DioErrorType.response == e.type) {
+      } else if (DioErrorType.badResponse == e.type) {
         setState(() {
           isLoading = false;
         });
         message('error', e.message.toString());
         return 'fail';
-      } else if (DioErrorType.other == e.type) {
-        if (e.message.contains('SocketException')) {
+      } else if (DioErrorType.badCertificate == e.type) {
+        if (e.message!.contains('SocketException')) {
           // throw Exception('Server Can Not Be Reached');
           message('error', e.message.toString());
           ////print((e.message);

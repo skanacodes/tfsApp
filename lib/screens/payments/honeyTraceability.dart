@@ -80,9 +80,9 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
       print(quantities);
       var headers = {"Authorization": "Bearer ${widget.token}"};
       BaseOptions options = BaseOptions(
-          baseUrl: "https://mis.tfs.go.tz/honey-traceability",
-          connectTimeout: 50000,
-          receiveTimeout: 50000,
+          baseUrl: baseUrlHoneyTraceability,
+          connectTimeout: const Duration(minutes: 4),
+          receiveTimeout: const Duration(minutes: 4),
           headers: headers);
       var dio = Dio(options);
       var formData = FormData.fromMap({
@@ -93,8 +93,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
         "station_id": stationIds
       });
 
-      var response = await dio.post(
-          "https://mis.tfs.go.tz/honey-traceability/api/v1/generate-bill",
+      var response = await dio.post("$baseUrlHoneyTraceability/api/v1/generate-bill",
           data: formData, onSendProgress: (int sent, int total) {
         // setState(() {
         //   uploadMessage = sent.toString();
@@ -127,18 +126,18 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
     } on DioError catch (e) {
       print('dio package');
       if (DioErrorType.receiveTimeout == e.type ||
-          DioErrorType.connectTimeout == e.type) {
+          DioErrorType.sendTimeout == e.type) {
         message('Server Can Not Be Reached.', 'error');
         // throw Exception('Server Can Not Be Reached');
         print(e);
-      } else if (DioErrorType.response == e.type) {
+      } else if (DioErrorType.badResponse == e.type) {
         // throw Exception('Server Can Not Be Reached');
 
         message('Failed To Get Response From Server.', 'error');
         // throw Exception('Server Can Not Be Reached');
         print(e);
-      } else if (DioErrorType.other == e.type) {
-        if (e.message.contains('SocketException')) {
+      } else if (DioErrorType.badCertificate == e.type) {
+        if (e.message!.contains('SocketException')) {
           // throw Exception('Server Can Not Be Reached');
           message(
             'Network Connectivity Problem.',
@@ -1056,8 +1055,7 @@ class _HoneyTraceAbilityState extends State<HoneyTraceAbility> {
             res = json.decode(response.body);
             print(res);
             //widget.callback(jsonEncode(res["data"]));
-            messages(
-                "success", "C/N:  ${res["data"]["control_number"]}");
+            messages("success", "C/N:  ${res["data"]["control_number"]}");
           });
 
           break;

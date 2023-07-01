@@ -8,7 +8,7 @@ if (localPropertiesFile.exists()) {
 
 def flutterRoot = localProperties.getProperty('flutter.sdk')
 if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+    throw  GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
 }
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
@@ -27,7 +27,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
     buildToolsVersion "30.0.3"
     ndkVersion '21.1.6352462'
 
@@ -46,7 +46,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         multiDexEnabled true
         applicationId "com.example.tfsappv1"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -61,13 +61,19 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    
 }
 
 flutter {
     source '../..'
 }
 
+
+
 dependencies {
+    configurations {
+compile.exclude group: 'com.google.zxing'
+}
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation files('libs\\MP3_v07.jar')
     implementation files('libs\\CS_API_AGO_MP3P.jar')
@@ -78,4 +84,7 @@ dependencies {
     implementation files('libs\\zkandroidcore.jar')
     implementation files('libs\\zkandroidnidfpsensor.jar')
     implementation files('libs\\telpo_sdk_211227.jar')
+   
+
+    
 }

@@ -61,6 +61,7 @@ class _PosRegState extends State<PosReg> {
           await platform1.invokeMethod('getDeviceInfo', {"operation": "1"});
 
       print(result);
+      // print("afasfbsajhfsydfgwusfbuyhhwv");
       if (result == "Not Supported") {
         setState(() {
           isDevice = true;
@@ -71,7 +72,8 @@ class _PosRegState extends State<PosReg> {
         });
       }
     } catch (e) {
-      print(e);
+      print(e.toString() + "73475");
+      print("afasfbsajhfsydfgwusfbuyhhwv");
     }
   }
 
@@ -102,14 +104,14 @@ class _PosRegState extends State<PosReg> {
           .then((prefs) => prefs.getString('checkpointId'));
       var headers = {"Authorization": "Bearer ${tokens!}"};
       var url = Uri.parse('$baseUrl/api/v1/pos-reg');
-
+      print(checkpoint!);
       final response = await http.post(url,
           body: {
             "android_id": deviceInfo['android_id'].toString(),
             "station_id": stationId.toString(),
             "pos_name": _posnameController.text,
-            "imei_1": deviceInfo["imeiSim1"].toString(),
-            "imei_2": deviceInfo["imeiSim2"].toString(),
+            "imei_1": _imei1Controller!.text,
+            "imei_2": _imei2Controller!.text,
             "checkpoint_id": checkpoint,
             "brand": deviceInfo["brand"].toString(),
             "serial_no": _serialNoController!.text,
@@ -135,6 +137,13 @@ class _PosRegState extends State<PosReg> {
           setState(() {
             res = json.decode(response.body);
             message("error", "Something Went Wrong");
+            print(res);
+          });
+          break;
+        case 409:
+          setState(() {
+            res = json.decode(response.body);
+            message("error", res["message"].toString());
             print(res);
           });
           break;
@@ -345,8 +354,6 @@ class _PosRegState extends State<PosReg> {
         backgroundColor: kPrimaryColor,
         title: const Text(
           ' ',
-          style: TextStyle(
-              fontFamily: 'Ubuntu', color: Colors.black, fontSize: 17),
         ),
       ),
       body: SingleChildScrollView(
@@ -379,8 +386,8 @@ class _PosRegState extends State<PosReg> {
                               child: ListTile(
                                   tileColor: Colors.white,
                                   title: _title(),
-                                  trailing:
-                                      const Icon(Icons.document_scanner_rounded),
+                                  trailing: const Icon(
+                                      Icons.document_scanner_rounded),
                                   leading: const CircleAvatar(
                                     backgroundColor: Colors.pink,
                                     child: Icon(
@@ -440,14 +447,12 @@ class _PosRegState extends State<PosReg> {
                     ),
                     TextFieldConstant(
                       textName: _imei1Controller,
-                      enabled: false,
-                      textValue: deviceInfo["imeiSim1"].toString(),
+                      enabled: true,
                       hintText: "IMEI Sim1",
                     ),
                     TextFieldConstant(
                       textName: _imei2Controller,
-                      enabled: false,
-                      textValue: deviceInfo["imeiSim2"].toString(),
+                      enabled: true,
                       hintText: "IMEI Sim2",
                     ),
                     TextFieldConstant(
@@ -471,18 +476,18 @@ class _PosRegState extends State<PosReg> {
                       child: Card(
                         elevation: 1,
                         child: ListTile(
-                      leading: const CircleAvatar(
-                        backgroundColor: kPrimaryColor,
-                        foregroundColor: Colors.white,
-                        child: Icon(Icons.calendar_today),
-                      ),
-                      onTap: () {
-                        _selectDate(context);
-                      },
-                      title: Text(
-                        'Issuing Date: $formattedDate',
-                        style: const TextStyle(color: Colors.black54),
-                      ),
+                          leading: const CircleAvatar(
+                            backgroundColor: kPrimaryColor,
+                            foregroundColor: Colors.white,
+                            child: Icon(Icons.calendar_today),
+                          ),
+                          onTap: () {
+                            _selectDate(context);
+                          },
+                          title: Text(
+                            'Issuing Date: $formattedDate',
+                            style: const TextStyle(color: Colors.black54),
+                          ),
                         ),
                       ),
                     ),
@@ -516,8 +521,8 @@ class _PosRegState extends State<PosReg> {
                           style: const TextStyle(
                               color: Colors.white, fontFamily: 'Ubuntu'),
                           iconEnabledColor: Colors.black,
-                          items: ask
-                              .map<DropdownMenuItem<String>>((String value) {
+                          items:
+                              ask.map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem(
                               value: value,
                               child: Container(
@@ -544,8 +549,7 @@ class _PosRegState extends State<PosReg> {
                           },
                           onChanged: (value) {
                             setState(() {
-                              FocusScope.of(context)
-                                  .requestFocus(FocusNode());
+                              FocusScope.of(context).requestFocus(FocusNode());
                               ask1 = value!;
                             });
                           },
